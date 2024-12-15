@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+include 'gateway-service'
+
+
+rootProject.name = 'ranking-app'
+
