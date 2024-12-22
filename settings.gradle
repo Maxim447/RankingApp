@@ -4,7 +4,7 @@ pluginManagement {
     }
 }
 
-include 'gateway-service'
+include 'gateway-service', 'auth-service', 'common-module'
 
 
 rootProject.name = 'ranking-app'

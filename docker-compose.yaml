@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+
+  authentication-service:
+    build:
+      dockerfile: ./auth-service/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    depends_on:
+      auth-service-database:
+        condition: service_started
+    environment:
+      DB_HOST: auth-service-database
+      DB_PORT: 8000
+      POSTGRES_USER: auth-service-user
+      POSTGRES_PASSWORD: odn1Dl
+      spring.liquibase.enabled: true
+    networks:
+      - ranking-app-network
+
+  auth-service-database:
+    image: "postgres:17"
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: auth-service-user
+      POSTGRES_PASSWORD: odn1Dl
+      POSTGRES_DB: AuthenticationServiceDB
+    ports:
+      - "8000"
+    volumes:
+      - ./postgres-data:/var/lib/auth-service-database/data
+    command: -p 8000
+    networks:
+      - ranking-app-network
+
+networks:
+  ranking-app-network:
+    driver: bridge
