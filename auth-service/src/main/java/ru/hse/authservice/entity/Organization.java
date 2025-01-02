@@ -31,49 +31,33 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Сущность пользователя.
+ * Сущность организации.
  */
-@Table(name = "users")
+@Table(name = "organizations")
 @Entity
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class Organization implements UserDetails {
 
     @Id
-    @SequenceGenerator(name = "user_seq", sequenceName = "user_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
-    @Column(name = "user_id", unique = true, nullable = false, updatable = false)
+    @SequenceGenerator(name = "organization_seq", sequenceName = "organization_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "organization_seq")
+    @Column(name = "organization_id", unique = true, nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "email", unique = true, nullable = false)
+    @Column(name = "organization_name", unique = true, nullable = false)
+    private String name;
+
+    @Column(name = "organization_email", unique = true, nullable = false)
     private String email;
-
-    @Column(name = "personal_phone")
-    private String phone;
-
-    @Column(name = "emergency_phone")
-    private String emergencyPhone;
-
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "middle_name")
-    private String middleName;
-
-    //todo Может лучше дату рождения а не возраст
-    @Column(name = "age")
-    private Integer age;
 
     @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "role", nullable = false)
-    private Role role = Role.USER;
+    private Role role = Role.ORGANIZATION;
 
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
@@ -87,11 +71,11 @@ public class User implements UserDetails {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "organization_id")
+            joinColumns = @JoinColumn(name = "organization_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @ToString.Exclude
-    private Set<Organization> organizations;
+    private Set<User> users;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

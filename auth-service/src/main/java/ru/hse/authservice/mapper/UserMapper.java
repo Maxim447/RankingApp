@@ -2,8 +2,8 @@ package ru.hse.authservice.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.hse.authservice.dto.SignUpRequestDto;
-import ru.hse.authservice.dto.UserInfoDto;
+import ru.hse.authservice.dto.user.SignUpUserRequestDto;
+import ru.hse.authservice.dto.user.UserInfoDto;
 import ru.hse.authservice.entity.User;
 import ru.hse.commonmodule.enums.Role;
 
@@ -20,7 +20,13 @@ public interface UserMapper {
      * @return сущность пользователя
      */
     @Mapping(target = "role", expression = "java(Role.USER)")
-    User signUpRequestDtoToUser(SignUpRequestDto signUpRequestDto);
+    User signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
 
+    /**
+     * Получить информацию о пользователе.
+     *
+     * @param user cущность пользователя
+     * @return Информация о пользователе
+     */
     UserInfoDto mapToUserInfoDto(User user);
 }

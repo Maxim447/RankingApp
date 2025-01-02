@@ -1,4 +1,4 @@
-package ru.hse.authservice.dto;
+package ru.hse.authservice.dto.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -19,8 +19,14 @@ public class UserInfoDto {
     @Schema(description = "Почта")
     private String email;
 
-    @Schema(description = "Телефон")
+    @Schema(description = "Телефон пользователя")
     private String phone;
+
+    @Schema(description = "Телефон по которому можно позвонить в случае чего")
+    private String emergencyPhone;
+
+    @Schema(description = "Возраст")
+    private Integer age;
 
     @Schema(description = "Имя")
     private String firstName;

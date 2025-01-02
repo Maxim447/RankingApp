@@ -38,6 +38,9 @@ public enum BusinessExceptionsEnum {
     USER_EXPIRED("Срок действия пользователя истек", HttpStatus.FORBIDDEN),
     USER_DELETED("Пользователь был удален", HttpStatus.FORBIDDEN),
 
+    //organization authentication
+    ORGANIZATION_DELETED("Организация была удалена", HttpStatus.FORBIDDEN),
+
     //personal data
     PERSONAL_DATA_ALREADY_EXISTS("Персональные данные уже были отправлены", HttpStatus.CONFLICT),
     PERSONAL_DATA_NOT_FOUND("Персональные данные не найдены", HttpStatus.NOT_FOUND),

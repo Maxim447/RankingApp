@@ -8,13 +8,12 @@ import org.springframework.stereotype.Repository;
 import ru.hse.authservice.entity.User;
 
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Репозиторий для работы с сущностью пользователя.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     /**
      * Получить сущность пользователя по почте.
@@ -71,7 +70,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Modifying
     @Query(value = """
             UPDATE User u
-            SET u.password = :password
+            SET u.password = :password, u.modifyDttm = current timestamp, u.actionIndex = 'U'
             WHERE u.id = :id
             """)
     void updatePasswordById(@Param(value = "id") Long id, @Param(value = "password") String password);
@@ -85,7 +84,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Modifying
     @Query(value = """
             UPDATE User u
-            SET u.email = :email
+            SET u.email = :email, u.modifyDttm = current timestamp, u.actionIndex = 'U'
             WHERE u.id = :id
             """)
     void updateEmailById(@Param(value = "id") Long id, @Param(value = "email") String email);
