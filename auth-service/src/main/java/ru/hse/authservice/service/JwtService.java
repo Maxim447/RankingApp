@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import ru.hse.authservice.entity.Organization;
 import ru.hse.authservice.entity.User;
 import ru.hse.commonmodule.utils.JwtUtils;
 
@@ -52,12 +53,43 @@ public class JwtService {
         return generateToken(new HashMap<>(), user);
     }
 
+    /**
+     * Сгенерировать jwt токен.
+     */
+    public String generateToken(Organization organization) {
+        return generateToken(new HashMap<>(), organization);
+    }
+
     private String generateToken(Map<String, Object> extraClaims, User user) {
         return buildToken(extraClaims, user);
     }
 
+    private String generateToken(Map<String, Object> extraClaims, Organization organization) {
+        return buildTokenByOrganization(extraClaims, organization);
+    }
+
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         return jwtUtils.extractClaim(token, claimsResolver);
+    }
+
+    private String buildTokenByOrganization(
+            Map<String, Object> extraClaims,
+            Organization organization
+    ) {
+        extraClaims.put("id", organization.getId());
+        extraClaims.put("email", organization.getEmail());
+        extraClaims.put("name", organization.getName());
+        extraClaims.put("role", organization.getRole().name());
+        extraClaims.put("isOrganization", true);
+
+        return Jwts
+                .builder()
+                .claims(extraClaims)
+                .subject(organization.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + jwtUtils.getExpiresIn()))
+                .signWith(getSignInKey(), Jwts.SIG.HS256)
+                .compact();
     }
 
     private String buildToken(
@@ -65,10 +97,12 @@ public class JwtService {
             User user
     ) {
         extraClaims.put("id", user.getId());
-        extraClaims.put("phone", user.getPhone());
+        extraClaims.put("user_phone", user.getPhone());
+        extraClaims.put("emergency_phone", user.getEmergencyPhone());
         extraClaims.put("email", user.getEmail());
         extraClaims.put("fio", user.getLastName() + " " + user.getFirstName() + " " + user.getMiddleName());
         extraClaims.put("role", user.getRole().name());
+        extraClaims.put("isOrganization", false);
 
         return Jwts
                 .builder()

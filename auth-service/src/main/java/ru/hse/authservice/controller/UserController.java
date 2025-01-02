@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.hse.authservice.dto.UserInfoDto;
+import ru.hse.authservice.dto.user.UserInfoDto;
 import ru.hse.authservice.dto.user.UpdateEmailRequestDto;
 import ru.hse.authservice.dto.user.UpdatePasswordRequestDto;
 import ru.hse.authservice.dto.user.UpdatePhoneRequestDto;

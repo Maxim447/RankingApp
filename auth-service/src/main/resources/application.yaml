@@ -21,6 +21,7 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog.xml
     enabled: false
+    clear-checksums: true
 
   mail:
     host: smtp.gmail.com

@@ -10,15 +10,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.authservice.dto.LoginRequestDto;
 import ru.hse.authservice.dto.LoginResponseDto;
-import ru.hse.authservice.dto.SignUpRequestDto;
 import ru.hse.authservice.dto.VerificationCodeResponseDto;
+import ru.hse.authservice.dto.organization.SignUpOrganizationRequestDto;
+import ru.hse.authservice.dto.user.SignUpUserRequestDto;
+import ru.hse.authservice.entity.Organization;
 import ru.hse.authservice.entity.User;
+import ru.hse.authservice.mapper.OrganizationMapper;
 import ru.hse.authservice.mapper.UserMapper;
+import ru.hse.authservice.repository.OrganizationRepository;
 import ru.hse.authservice.repository.UserRepository;
 import ru.hse.authservice.utils.Validator;
 import ru.hse.authservice.utils.VerificationCodeGenerator;
 import ru.hse.commonmodule.enums.BusinessExceptionsEnum;
 import ru.hse.commonmodule.exception.BusinessException;
+
+import java.util.Optional;
 
 /**
  * Сервис для работы с аутентификацией пользователя.
@@ -30,7 +36,9 @@ public class AuthService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final OrganizationRepository organizationRepository;
     private final UserMapper userMapper;
+    private final OrganizationMapper organizationMapper;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
@@ -56,18 +64,38 @@ public class AuthService {
         return responseDto;
     }
 
+    /**
+     * Зарегистрировать организацию.
+     *
+     * @param signUpRequestDto Дто запроса для регистрации
+     */
+    public void signUpOrganization(SignUpOrganizationRequestDto signUpRequestDto) {
+        if (!signUpRequestDto.getPassword().equals(signUpRequestDto.getConfirmPassword())) {
+            throw new BusinessException(BusinessExceptionsEnum.PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD);
+        }
+
+        if (organizationRepository.existsByEmail(signUpRequestDto.getOrganizationEmail())) {
+            throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
+        }
+
+        Organization organization = organizationMapper.signUpRequestDtoToOrganization(signUpRequestDto);
+        organization.setPassword(passwordEncoder.encode(organization.getPassword()));
+        organizationRepository.save(organization);
+    }
+
+    /**
+     * Зарегистрировать пользователя.
+     *
+     * @param signUpRequestDto Дто запроса для регистрации
+     */
     @Transactional
-    public void signUp(SignUpRequestDto signUpRequestDto) {
+    public void signUp(SignUpUserRequestDto signUpRequestDto) {
         if (!signUpRequestDto.getPassword().equals(signUpRequestDto.getConfirmPassword())) {
             throw new BusinessException(BusinessExceptionsEnum.PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD);
         }
 
         if (userRepository.existsByEmail(signUpRequestDto.getEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
-        }
-
-        if (userRepository.existsByPhone(signUpRequestDto.getPhone())) {
-            throw new BusinessException(BusinessExceptionsEnum.PHONE_ALREADY_EXISTS);
         }
 
         User user = userMapper.signUpRequestDtoToUser(signUpRequestDto);
@@ -79,9 +107,7 @@ public class AuthService {
         String login = loginRequestDto.getLogin();
         Validator.validateLogin(login);
 
-        return login.contains("@") ?
-                loginByEmail(login, loginRequestDto.getPassword()) :
-                loginByPhone(login, loginRequestDto.getPassword());
+        return loginByEmail(login, loginRequestDto.getPassword());
     }
 
     /**
@@ -100,31 +126,18 @@ public class AuthService {
             throw new BusinessException(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            String jwtToken = jwtService.generateToken(userOptional.get());
+            return LoginResponseDto.of(jwtToken);
+        }
 
-        String jwtToken = jwtService.generateToken(user);
+        Optional<Organization> organizationOptional = organizationRepository.findByEmail(email);
+        if (organizationOptional.isPresent()) {
+            String jwtToken = jwtService.generateToken(organizationOptional.get());
+            return LoginResponseDto.of(jwtToken);
+        }
 
-        return LoginResponseDto.of(jwtToken);
-    }
-
-    /**
-     * Метод для авторизации пользователя по номеру телефона.
-     *
-     * @param phone    электронная почта
-     * @param password пароль
-     * @return Дто с jwt токеном
-     */
-    private LoginResponseDto loginByPhone(String phone, String password) {
-        User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_PHONE));
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), password)
-        );
-
-        String jwtToken = jwtService.generateToken(user);
-
-        return LoginResponseDto.of(jwtToken);
+        throw new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL);
     }
 }

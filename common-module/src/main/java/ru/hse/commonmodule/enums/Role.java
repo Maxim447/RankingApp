@@ -6,5 +6,6 @@ package ru.hse.commonmodule.enums;
 public enum Role {
 
     ADMIN,
-    USER
+    USER,
+    ORGANIZATION
 }

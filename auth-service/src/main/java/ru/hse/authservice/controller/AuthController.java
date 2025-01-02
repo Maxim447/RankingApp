@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.authservice.dto.LoginRequestDto;
 import ru.hse.authservice.dto.LoginResponseDto;
-import ru.hse.authservice.dto.SignUpRequestDto;
+import ru.hse.authservice.dto.organization.SignUpOrganizationRequestDto;
+import ru.hse.authservice.dto.user.SignUpUserRequestDto;
 import ru.hse.authservice.dto.VerificationCodeResponseDto;
 import ru.hse.authservice.service.AuthService;
 
@@ -45,9 +46,20 @@ public class AuthController {
      * @param signUpRequestDto Дто запроса для регистрации
      */
     @PostMapping("/sign-up")
-    @Operation(summary = "Регистрация")
-    public void signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
+    @Operation(summary = "Регистрация пользователя")
+    public void signUpUser(@RequestBody @Valid SignUpUserRequestDto signUpRequestDto) {
         authService.signUp(signUpRequestDto);
+    }
+
+    /**
+     * Зарегистрировать организацию.
+     *
+     * @param signUpRequestDto Дто запроса для регистрации
+     */
+    @PostMapping("/sign-up-organization")
+    @Operation(summary = "Регистрация организации")
+    public void signUpOrganization(@RequestBody @Valid SignUpOrganizationRequestDto signUpRequestDto) {
+        authService.signUpOrganization(signUpRequestDto);
     }
 
     /**
