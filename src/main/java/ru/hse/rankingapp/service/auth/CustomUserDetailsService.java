@@ -1,4 +1,4 @@
-package ru.hse.rankingapp.service;
+package ru.hse.rankingapp.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

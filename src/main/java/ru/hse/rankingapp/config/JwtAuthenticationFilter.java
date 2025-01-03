@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import ru.hse.rankingapp.service.JwtService;
+import ru.hse.rankingapp.service.auth.JwtService;
 
 import java.io.IOException;
 

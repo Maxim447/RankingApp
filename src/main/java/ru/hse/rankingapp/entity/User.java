@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.Role;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -65,9 +66,8 @@ public class User implements UserDetails {
     @Column(name = "middle_name")
     private String middleName;
 
-    //todo Может лучше дату рождения а не возраст
-    @Column(name = "age")
-    private Integer age;
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     @Column(name = "password", nullable = false)
     private String password;

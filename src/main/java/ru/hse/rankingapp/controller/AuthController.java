@@ -15,7 +15,7 @@ import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
 import ru.hse.rankingapp.dto.VerificationCodeResponseDto;
-import ru.hse.rankingapp.service.AuthService;
+import ru.hse.rankingapp.service.auth.AuthService;
 
 /**
  * API для аутентификации.
