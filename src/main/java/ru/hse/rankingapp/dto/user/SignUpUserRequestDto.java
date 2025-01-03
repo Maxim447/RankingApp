@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  * Дто запроса для регистрации.
  */
@@ -36,8 +38,8 @@ public class SignUpUserRequestDto {
     @Schema(description = "Отчество")
     private String middleName;
 
-    @Schema(description = "Возраст")
-    private Integer age;
+    @Schema(description = "Дата рождения")
+    private LocalDate birthDate;
 
     @Schema(description = "Пароль")
     @NotNull(message = "Пароль не может быть пустым")

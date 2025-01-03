@@ -1,4 +1,4 @@
-package ru.hse.rankingapp.service;
+package ru.hse.rankingapp.service.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hse.rankingapp.entity.enums.Role;
 
+import java.time.LocalDate;
+
 /**
  * Ответ на получение данных об авторизированном пользователе.
  */
@@ -25,8 +27,8 @@ public class UserInfoDto {
     @Schema(description = "Телефон по которому можно позвонить в случае чего")
     private String emergencyPhone;
 
-    @Schema(description = "Возраст")
-    private Integer age;
+    @Schema(description = "Дата рождения")
+    private LocalDate birthDate;
 
     @Schema(description = "Имя")
     private String firstName;
