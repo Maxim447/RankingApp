@@ -2,35 +2,35 @@ version: '3.8'
 
 services:
 
-  authentication-service:
+  ranking-app-service:
     build:
-      dockerfile: ./auth-service/Dockerfile
+      dockerfile: ./Dockerfile
     restart: unless-stopped
     ports:
       - "9000:9000"
     depends_on:
-      auth-service-database:
+      ranking-app-service-database:
         condition: service_started
     environment:
-      DB_HOST: auth-service-database
+      DB_HOST: ranking-app-service-database
       DB_PORT: 8000
-      POSTGRES_USER: auth-service-user
+      POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
       spring.liquibase.enabled: true
     networks:
       - ranking-app-network
 
-  auth-service-database:
+  ranking-app-service-database:
     image: "postgres:17"
     restart: unless-stopped
     environment:
-      POSTGRES_USER: auth-service-user
+      POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
-      POSTGRES_DB: AuthenticationServiceDB
+      POSTGRES_DB: RankingAppDB
     ports:
       - "8000"
     volumes:
-      - ./postgres-data:/var/lib/auth-service-database/data
+      - ./postgres-data:/var/lib/ranking-app-service-database/data
     command: -p 8000
     networks:
       - ranking-app-network
