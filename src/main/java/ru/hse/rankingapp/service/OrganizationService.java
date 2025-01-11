@@ -128,12 +128,12 @@ public class OrganizationService {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        OrganizationEntity attacheEntity = entityManager.find(OrganizationEntity.class, organization.getId());
+        OrganizationEntity attachedEntity = entityManager.find(OrganizationEntity.class, organization.getId());
 
         Set<UserEntity> users = userService.findUsersByEmails(usersEmails);
 
-        attacheEntity.addUsers(users);
+        attachedEntity.addUsers(users);
 
-        organizationRepository.save(attacheEntity);
+        organizationRepository.save(attachedEntity);
     }
 }
