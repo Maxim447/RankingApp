@@ -8,7 +8,7 @@ import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
@@ -31,7 +31,7 @@ public class UserService {
      * @param user авторизированный пользователь
      * @return dto c данными об авторизованном пользователе
      */
-    public UserInfoDto getAuthenticatedUser(User user) {
+    public UserInfoDto getAuthenticatedUser(UserEntity user) {
         return userMapper.mapToUserInfoDto(user);
     }
 
@@ -42,7 +42,7 @@ public class UserService {
      * @param user                  авторизированный пользователь
      */
     @Transactional
-    public void updatePhone(UpdatePhoneRequestDto updatePhoneRequestDto, User user) {
+    public void updatePhone(UpdatePhoneRequestDto updatePhoneRequestDto, UserEntity user) {
         String phone = updatePhoneRequestDto.getPhone();
         boolean exist = userRepository.existsByPhone(phone);
         if (exist) {
@@ -59,7 +59,7 @@ public class UserService {
      * @param user                     авторизированный пользователь
      */
     @Transactional
-    public void updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto, User user) {
+    public void updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto, UserEntity user) {
         if (updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getOldPassword()) ||
                 passwordEncoder.matches(updatePasswordRequestDto.getNewPassword(), user.getPassword())) {
             throw new BusinessException(BusinessExceptionsEnum.NEW_PASSWORD_EQUALS_OLD_PASSWORD);
@@ -79,7 +79,7 @@ public class UserService {
      * @param user                  авторизированный пользователь
      */
     @Transactional
-    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, User user) {
+    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, UserEntity user) {
         String email = updateEmailRequestDto.getEmail();
         boolean exist = userRepository.existsByEmail(email);
         if (exist) {

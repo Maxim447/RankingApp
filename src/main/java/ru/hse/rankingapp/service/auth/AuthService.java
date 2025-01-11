@@ -13,8 +13,8 @@ import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.VerificationCodeResponseDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
-import ru.hse.rankingapp.entity.Organization;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
@@ -78,7 +78,7 @@ public class AuthService {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
-        Organization organization = organizationMapper.signUpRequestDtoToOrganization(signUpRequestDto);
+        OrganizationEntity organization = organizationMapper.signUpRequestDtoToOrganization(signUpRequestDto);
         organization.setPassword(passwordEncoder.encode(organization.getPassword()));
         organizationRepository.save(organization);
     }
@@ -98,7 +98,7 @@ public class AuthService {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
-        User user = userMapper.signUpRequestDtoToUser(signUpRequestDto);
+        UserEntity user = userMapper.signUpRequestDtoToUser(signUpRequestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -126,13 +126,13 @@ public class AuthService {
             throw new BusinessException(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             String jwtToken = jwtService.generateToken(userOptional.get());
             return LoginResponseDto.of(jwtToken);
         }
 
-        Optional<Organization> organizationOptional = organizationRepository.findByEmail(email);
+        Optional<OrganizationEntity> organizationOptional = organizationRepository.findByEmail(email);
         if (organizationOptional.isPresent()) {
             String jwtToken = jwtService.generateToken(organizationOptional.get());
             return LoginResponseDto.of(jwtToken);

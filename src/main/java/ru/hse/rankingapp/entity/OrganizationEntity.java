@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Organization implements UserDetails {
+public class OrganizationEntity implements UserDetails {
 
     @Id
     @SequenceGenerator(name = "organization_seq", sequenceName = "organization_sequence", allocationSize = 1)
@@ -75,7 +76,10 @@ public class Organization implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @ToString.Exclude
-    private Set<User> users;
+    private Set<UserEntity> users;
+
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<CompetitionEntity> competitionEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
