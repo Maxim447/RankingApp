@@ -1,6 +1,7 @@
 package ru.hse.rankingapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +14,7 @@ import java.util.Optional;
  * Репозиторий для работы с сущностью организации.
  */
 @Repository
-public interface OrganizationRepository extends JpaRepository<OrganizationEntity, Long> {
+public interface OrganizationRepository extends JpaRepository<OrganizationEntity, Long>, JpaSpecificationExecutor<OrganizationEntity> {
 
     /**
      * Получить сущность пользователя по почте.

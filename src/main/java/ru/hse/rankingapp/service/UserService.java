@@ -1,18 +1,27 @@
 package ru.hse.rankingapp.service;
 
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
+import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Сервис для работы с пользователем.
@@ -87,5 +96,41 @@ public class UserService {
         }
 
         userRepository.updateEmailById(user.getId(), email);
+    }
+
+    /**
+     * Получить пользователей по параметрам поиска.
+     *
+     * @param searchParams поисковые параметры
+     * @param pageRequest пагинация
+     * @return пагинированный ответ
+     */
+    public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        Specification<UserEntity> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (searchParams.getFirstName() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("firstName"), searchParams.getFirstName()));
+            }
+
+            if (searchParams.getLastName() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("lastName"), searchParams.getLastName()));
+            }
+
+            if (searchParams.getMiddleName() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("middleName"), searchParams.getMiddleName()));
+            }
+
+            if (searchParams.getEmail() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("email"), searchParams.getEmail()));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<UserInfoDto> userPage = userRepository.findAll(specification, pageRequest.toPageRequest())
+                .map(userMapper::mapToUserInfoDto);
+
+        return new PageResponseDto<>(userPage.getTotalElements(), userPage.getTotalPages(), userPage.getContent());
     }
 }

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
+import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
@@ -61,5 +64,18 @@ public class OrganizationController {
     @Operation(description = "Изменить пароль")
     public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updatePassword(updatePasswordRequestDto, organization);
+    }
+
+    /**
+     * Получить организации по параметрам поиска.
+     *
+     * @param searchParams поисковые параметры
+     * @param pageRequest пагинация
+     * @return пагинированный ответ
+     */
+    @GetMapping("/search")
+    @Operation(description = "Найти организации по параметрам поиска")
+    public PageResponseDto<OrganizationInfoDto> searchOrganization(OrganizationSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        return organizationService.searchOrganization(searchParams, pageRequest);
     }
 }
