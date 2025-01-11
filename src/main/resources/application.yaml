@@ -15,8 +15,12 @@ spring:
     open-in-view: true
     hibernate:
       ddl-auto: none
-    show-sql: off
+    show-sql: true
     database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
 
   liquibase:
     change-log: classpath:/db/changelog.xml
@@ -47,6 +51,12 @@ springdoc:
 
 logging:
   level:
+#    org:
+#      hibernate:
+#        type:
+#          discriptor:
+#            sql:
+#              BasicBinder: TRACE
     root: INFO
     web: WARN
     org.springdoc: DEBUG
