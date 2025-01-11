@@ -19,6 +19,8 @@ import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.OrganizationService;
 
+import java.util.Set;
+
 /**
  * API для организаций.
  */
@@ -70,12 +72,24 @@ public class OrganizationController {
      * Получить организации по параметрам поиска.
      *
      * @param searchParams поисковые параметры
-     * @param pageRequest пагинация
+     * @param pageRequest  пагинация
      * @return пагинированный ответ
      */
     @GetMapping("/search")
     @Operation(description = "Найти организации по параметрам поиска")
     public PageResponseDto<OrganizationInfoDto> searchOrganization(OrganizationSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return organizationService.searchOrganization(searchParams, pageRequest);
+    }
+
+    /**
+     * Добавить пользователей к организации.
+     *
+     * @param organization Сущность организации
+     * @param usersEmail   почты пользователей
+     */
+    @PostMapping("/add-users")
+    @Operation(description = "Присоеденить пользоватлей к организации")
+    public void addUsersToOrganization(@AuthenticationPrincipal OrganizationEntity organization, @RequestBody Set<String> usersEmail) {
+        organizationService.addUsersToOrganization(organization, usersEmail);
     }
 }

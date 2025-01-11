@@ -2,8 +2,10 @@ package ru.hse.rankingapp.service;
 
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ import ru.hse.rankingapp.exception.BusinessException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис для работы с пользователем.
@@ -102,7 +105,7 @@ public class UserService {
      * Получить пользователей по параметрам поиска.
      *
      * @param searchParams поисковые параметры
-     * @param pageRequest пагинация
+     * @param pageRequest  пагинация
      * @return пагинированный ответ
      */
     public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
@@ -132,5 +135,22 @@ public class UserService {
                 .map(userMapper::mapToUserInfoDto);
 
         return new PageResponseDto<>(userPage.getTotalElements(), userPage.getTotalPages(), userPage.getContent());
+    }
+
+    /**
+     * Найти пользователей по почтам.
+     *
+     * @param usersEmails почты
+     * @return Сущности пользователей
+     */
+    public Set<UserEntity> findUsersByEmails(Set<String> usersEmails) {
+        Set<UserEntity> users = userRepository.findByEmails(usersEmails);
+
+        if (CollectionUtils.isEmpty(users)) {
+            throw new BusinessException(
+                    String.format("Не удалось найти пользователей по почтам %s", usersEmails), HttpStatus.NOT_FOUND);
+        }
+
+        return users;
     }
 }

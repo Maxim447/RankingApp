@@ -1,5 +1,7 @@
 package ru.hse.rankingapp.service;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,13 +16,15 @@ import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
-import ru.hse.rankingapp.mapper.OrganizationMapper;
-import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
+import ru.hse.rankingapp.mapper.OrganizationMapper;
+import ru.hse.rankingapp.repository.OrganizationRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис для работы с организацией.
@@ -30,8 +34,12 @@ import java.util.List;
 public class OrganizationService {
 
     private final OrganizationRepository organizationRepository;
+    private final UserService userService;
     private final OrganizationMapper organizationMapper;
     private final PasswordEncoder passwordEncoder;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -106,5 +114,26 @@ public class OrganizationService {
                 .map(organizationMapper::mapToOrganizationInfoDto);
 
         return new PageResponseDto<>(organizationInfoPage.getTotalElements(), organizationInfoPage.getTotalPages(), organizationInfoPage.getContent());
+    }
+
+    /**
+     * Добавить пользователей к организации.
+     *
+     * @param organization Сущность организации
+     * @param usersEmails почты пользователей
+     */
+    @Transactional
+    public void addUsersToOrganization(OrganizationEntity organization, Set<String> usersEmails) {
+        if (organization == null) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        OrganizationEntity attacheEntity = entityManager.find(OrganizationEntity.class, organization.getId());
+
+        Set<UserEntity> users = userService.findUsersByEmails(usersEmails);
+
+        attacheEntity.addUsers(users);
+
+        organizationRepository.save(attacheEntity);
     }
 }

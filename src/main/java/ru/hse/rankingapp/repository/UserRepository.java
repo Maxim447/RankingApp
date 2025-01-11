@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import ru.hse.rankingapp.entity.UserEntity;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Репозиторий для работы с сущностью пользователя.
@@ -89,4 +90,16 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
             WHERE u.id = :id
             """)
     void updateEmailById(@Param(value = "id") Long id, @Param(value = "email") String email);
+
+    /**
+     * Найти пользователей по почтам.
+     *
+     * @param usersEmails почты
+     * @return список пользователей
+     */
+    @Query(value = """
+            select u from UserEntity u
+            where u.email in :emails
+            """)
+    Set<UserEntity> findByEmails(@Param(value = "emails") Set<String> usersEmails);
 }
