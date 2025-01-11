@@ -10,10 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
+import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.service.UserService;
 
@@ -74,5 +77,18 @@ public class UserController {
     @Operation(description = "Изменить пароль")
     public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updatePassword(updatePasswordRequestDto, user);
+    }
+
+    /**
+     * Получить пользователей по параметрам поиска.
+     *
+     * @param searchParams поисковые параметры
+     * @param pageRequest пагинация
+     * @return пагинированный ответ
+     */
+    @GetMapping("/search")
+    @Operation(description = "Найти пользователей по параметрам поиска")
+    public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        return userService.searchUsers(searchParams, pageRequest);
     }
 }
