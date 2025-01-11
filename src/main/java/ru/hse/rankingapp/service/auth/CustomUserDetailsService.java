@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import ru.hse.rankingapp.entity.Organization;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
@@ -32,10 +32,10 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) {
-        Optional<User> userOptional = userRepository.findByEmail(email);
+        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            UserEntity user = userOptional.get();
 
             if (ActionIndex.D.equals(user.getActionIndex())) {
                 throw new BusinessException(BusinessExceptionsEnum.USER_DELETED);
@@ -44,10 +44,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             return user;
         }
 
-        Optional<Organization> organizationOptional = organizationRepository.findByEmail(email);
+        Optional<OrganizationEntity> organizationOptional = organizationRepository.findByEmail(email);
 
         if (organizationOptional.isPresent()) {
-            Organization organization = organizationOptional.get();
+            OrganizationEntity organization = organizationOptional.get();
 
             if (ActionIndex.D.equals(organization.getActionIndex())) {
                 throw new BusinessException(BusinessExceptionsEnum.ORGANIZATION_DELETED);

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
-import ru.hse.rankingapp.entity.Organization;
+import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.OrganizationService;
 
 /**
  * API для организаций.
  */
-@Tag(name = "Organization", description = "API для организаций")
+@Tag(name = "OrganizationEntity", description = "API для организаций")
 @RequestMapping("/api/v1/organization")
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class OrganizationController {
      */
     @GetMapping(value = "/info")
     @Operation(description = "Получить данные об авторизированном пользователе")
-    public OrganizationInfoDto getAuthenticatedUser(@AuthenticationPrincipal Organization organization) {
+    public OrganizationInfoDto getAuthenticatedUser(@AuthenticationPrincipal OrganizationEntity organization) {
         return organizationService.getAuthenticatedOrganization(organization);
     }
 
@@ -47,7 +47,7 @@ public class OrganizationController {
      */
     @PostMapping("/update-email")
     @Operation(description = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal Organization organization) {
+    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updateEmail(updateEmailRequestDto, organization);
     }
 
@@ -59,7 +59,7 @@ public class OrganizationController {
      */
     @PostMapping("/update-password")
     @Operation(description = "Изменить пароль")
-    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal Organization organization) {
+    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updatePassword(updatePasswordRequestDto, organization);
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.hse.rankingapp.entity.Organization;
+import ru.hse.rankingapp.entity.OrganizationEntity;
 
 import java.util.Optional;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
  * Репозиторий для работы с сущностью организации.
  */
 @Repository
-public interface OrganizationRepository extends JpaRepository<Organization, Long> {
+public interface OrganizationRepository extends JpaRepository<OrganizationEntity, Long> {
 
     /**
      * Получить сущность пользователя по почте.
@@ -21,7 +21,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
      * @param email почта
      * @return сущность пользователя
      */
-    Optional<Organization> findByEmail(String email);
+    Optional<OrganizationEntity> findByEmail(String email);
 
     /**
      * Проверить наличие записи по электронной почте.
@@ -39,7 +39,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
      */
     @Modifying
     @Query(value = """
-            UPDATE Organization o
+            UPDATE OrganizationEntity o
             SET o.password = :password, o.modifyDttm = current timestamp, o.actionIndex = 'U'
             WHERE o.id = :id
             """)
@@ -53,7 +53,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
      */
     @Modifying
     @Query(value = """
-            UPDATE Organization o
+            UPDATE OrganizationEntity o
             SET o.email = :email, o.modifyDttm = current timestamp, o.actionIndex = 'U'
             WHERE o.id = :id
             """)

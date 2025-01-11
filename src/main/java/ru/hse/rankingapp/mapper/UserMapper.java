@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.Role;
 
 /**
@@ -20,7 +20,7 @@ public interface UserMapper {
      * @return сущность пользователя
      */
     @Mapping(target = "role", expression = "java(Role.USER)")
-    User signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
+    UserEntity signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
 
     /**
      * Получить информацию о пользователе.
@@ -28,5 +28,5 @@ public interface UserMapper {
      * @param user cущность пользователя
      * @return Информация о пользователе
      */
-    UserInfoDto mapToUserInfoDto(User user);
+    UserInfoDto mapToUserInfoDto(UserEntity user);
 }

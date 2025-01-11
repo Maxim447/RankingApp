@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
-import ru.hse.rankingapp.entity.Organization;
+import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
@@ -30,7 +30,7 @@ public class OrganizationService {
      * @param organization авторизированная организация
      * @return dto c данными об авторизованном пользователе
      */
-    public OrganizationInfoDto getAuthenticatedOrganization(Organization organization) {
+    public OrganizationInfoDto getAuthenticatedOrganization(OrganizationEntity organization) {
         return organizationMapper.mapToOrganizationInfoDto(organization);
     }
 
@@ -41,7 +41,7 @@ public class OrganizationService {
      * @param organization             авторизированная организация
      */
     @Transactional
-    public void updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto, Organization organization) {
+    public void updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto, OrganizationEntity organization) {
         if (updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getOldPassword()) ||
                 passwordEncoder.matches(updatePasswordRequestDto.getNewPassword(), organization.getPassword())) {
             throw new BusinessException(BusinessExceptionsEnum.NEW_PASSWORD_EQUALS_OLD_PASSWORD);
@@ -61,7 +61,7 @@ public class OrganizationService {
      * @param organization          авторизированная организация
      */
     @Transactional
-    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, Organization organization) {
+    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, OrganizationEntity organization) {
         String email = updateEmailRequestDto.getEmail();
         boolean exist = organizationRepository.existsByEmail(email);
         if (exist) {

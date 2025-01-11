@@ -14,13 +14,13 @@ import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.service.UserService;
 
 /**
  * API для пользователей.
  */
-@Tag(name = "User", description = "API для пользователей")
+@Tag(name = "UserEntity", description = "API для пользователей")
 @RequestMapping("/api/v1/user")
 @RestController
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class UserController {
      */
     @GetMapping(value = "/info")
     @Operation(description = "Получить данные об авторизированном пользователе")
-    public UserInfoDto getAuthenticatedUser(@AuthenticationPrincipal User user) {
+    public UserInfoDto getAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
         return userService.getAuthenticatedUser(user);
     }
 
@@ -48,7 +48,7 @@ public class UserController {
      */
     @PostMapping("/update-phone")
     @Operation(description = "Изменить номер телефона")
-    public void updatePhone(@RequestBody @Valid UpdatePhoneRequestDto updatePhoneRequestDto, @AuthenticationPrincipal User user) {
+    public void updatePhone(@RequestBody @Valid UpdatePhoneRequestDto updatePhoneRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updatePhone(updatePhoneRequestDto, user);
     }
 
@@ -60,7 +60,7 @@ public class UserController {
      */
     @PostMapping("/update-email")
     @Operation(description = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal User user) {
+    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updateEmail(updateEmailRequestDto, user);
     }
 
@@ -72,7 +72,7 @@ public class UserController {
      */
     @PostMapping("/update-password")
     @Operation(description = "Изменить пароль")
-    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal User user) {
+    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updatePassword(updatePasswordRequestDto, user);
     }
 }

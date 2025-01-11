@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
-import ru.hse.rankingapp.entity.Organization;
+import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.enums.Role;
 
 /**
@@ -22,7 +22,7 @@ public interface OrganizationMapper {
     @Mapping(source = "organizationEmail", target = "email")
     @Mapping(source = "organizationName", target = "name")
     @Mapping(target = "role", expression = "java(Role.ORGANIZATION)")
-    Organization signUpRequestDtoToOrganization(SignUpOrganizationRequestDto signUpRequestDto);
+    OrganizationEntity signUpRequestDtoToOrganization(SignUpOrganizationRequestDto signUpRequestDto);
 
     /**
      * Получить информацию об организации.
@@ -30,5 +30,5 @@ public interface OrganizationMapper {
      * @param organization cущность организации
      * @return Информация об организации
      */
-    OrganizationInfoDto mapToOrganizationInfoDto(Organization organization);
+    OrganizationInfoDto mapToOrganizationInfoDto(OrganizationEntity organization);
 }

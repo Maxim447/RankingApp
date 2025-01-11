@@ -5,8 +5,8 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.hse.rankingapp.entity.Organization;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.utils.JwtUtils;
 
 import javax.crypto.SecretKey;
@@ -49,22 +49,22 @@ public class JwtService {
     /**
      * Сгенерировать jwt токен.
      */
-    public String generateToken(User user) {
+    public String generateToken(UserEntity user) {
         return generateToken(new HashMap<>(), user);
     }
 
     /**
      * Сгенерировать jwt токен.
      */
-    public String generateToken(Organization organization) {
+    public String generateToken(OrganizationEntity organization) {
         return generateToken(new HashMap<>(), organization);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, User user) {
+    private String generateToken(Map<String, Object> extraClaims, UserEntity user) {
         return buildToken(extraClaims, user);
     }
 
-    private String generateToken(Map<String, Object> extraClaims, Organization organization) {
+    private String generateToken(Map<String, Object> extraClaims, OrganizationEntity organization) {
         return buildTokenByOrganization(extraClaims, organization);
     }
 
@@ -74,7 +74,7 @@ public class JwtService {
 
     private String buildTokenByOrganization(
             Map<String, Object> extraClaims,
-            Organization organization
+            OrganizationEntity organization
     ) {
         extraClaims.put("id", organization.getId());
         extraClaims.put("email", organization.getEmail());
@@ -94,7 +94,7 @@ public class JwtService {
 
     private String buildToken(
             Map<String, Object> extraClaims,
-            User user
+            UserEntity user
     ) {
         extraClaims.put("id", user.getId());
         extraClaims.put("user_phone", user.getPhone());

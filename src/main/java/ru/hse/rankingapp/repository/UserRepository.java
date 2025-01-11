@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import ru.hse.rankingapp.entity.User;
+import ru.hse.rankingapp.entity.UserEntity;
 
 import java.util.Optional;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
  * Репозиторий для работы с сущностью пользователя.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     /**
      * Получить сущность пользователя по почте.
@@ -21,7 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param email почта
      * @return сущность пользователя
      */
-    Optional<User> findByEmail(String email);
+    Optional<UserEntity> findByEmail(String email);
 
     /**
      * Получить сущность пользователя по номеру телефона.
@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @param phone почта
      * @return сущность пользователя
      */
-    Optional<User> findByPhone(String phone);
+    Optional<UserEntity> findByPhone(String phone);
 
     /**
      * Проверить наличие записи по электронной почте.
@@ -55,7 +55,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Modifying
     @Query(value = """
-            UPDATE User u
+            UPDATE UserEntity u
             SET u.phone = :phone
             WHERE u.id = :id
             """)
@@ -69,7 +69,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Modifying
     @Query(value = """
-            UPDATE User u
+            UPDATE UserEntity u
             SET u.password = :password, u.modifyDttm = current timestamp, u.actionIndex = 'U'
             WHERE u.id = :id
             """)
@@ -83,7 +83,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Modifying
     @Query(value = """
-            UPDATE User u
+            UPDATE UserEntity u
             SET u.email = :email, u.modifyDttm = current timestamp, u.actionIndex = 'U'
             WHERE u.id = :id
             """)
