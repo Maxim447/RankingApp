@@ -3,6 +3,7 @@ package ru.hse.rankingapp.dto.user;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hse.rankingapp.entity.enums.Gender;
 import ru.hse.rankingapp.entity.enums.Role;
 
 import java.time.LocalDate;
@@ -29,6 +30,9 @@ public class UserInfoDto {
 
     @Schema(description = "Дата рождения")
     private LocalDate birthDate;
+
+    @Schema(description = "Пол (MALE/FEMALE)")
+    private Gender gender;
 
     @Schema(description = "Имя")
     private String firstName;
