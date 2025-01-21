@@ -29,6 +29,7 @@ import ru.hse.rankingapp.entity.enums.Role;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -108,5 +109,20 @@ public class UserEntity implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    /**
+     * Добавить пользователя к организации.
+     */
+    public void addOrganization(OrganizationEntity organization) {
+        if (organization == null) {
+            return;
+        }
+
+        if (this.organizations == null) {
+            this.organizations = new HashSet<>();
+        }
+
+        this.organizations.add(organization);
     }
 }

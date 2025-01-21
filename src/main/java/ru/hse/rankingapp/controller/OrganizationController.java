@@ -82,13 +82,13 @@ public class OrganizationController {
     }
 
     /**
-     * Добавить пользователей к организации.
+     * Отправить приглашение пользователю(ям) на вступление в организацию.
      *
      * @param organization Сущность организации
      * @param usersEmail   почты пользователей
      */
-    @PostMapping("/add-users")
-    @Operation(description = "Присоеденить пользоватлей к организации")
+    @PostMapping("/send-invite-to-users")
+    @Operation(description = "Отправить приглашение пользователю(ям) на вступление в организацию")
     public void addUsersToOrganization(@AuthenticationPrincipal OrganizationEntity organization, @RequestBody Set<String> usersEmail) {
         organizationService.addUsersToOrganization(organization, usersEmail);
     }

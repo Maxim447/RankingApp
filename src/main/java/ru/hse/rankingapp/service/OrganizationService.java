@@ -1,9 +1,9 @@
 package ru.hse.rankingapp.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +21,7 @@ import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.service.auth.EmailService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +38,7 @@ public class OrganizationService {
     private final UserService userService;
     private final OrganizationMapper organizationMapper;
     private final PasswordEncoder passwordEncoder;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final EmailService emailService;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -92,7 +91,7 @@ public class OrganizationService {
      * Получить организации по параметрам поиска.
      *
      * @param searchParams поисковые параметры
-     * @param pageRequest пагинация
+     * @param pageRequest  пагинация
      * @return пагинированный ответ
      */
     public PageResponseDto<OrganizationInfoDto> searchOrganization(OrganizationSearchParamsDto searchParams, PageRequestDto pageRequest) {
@@ -120,20 +119,22 @@ public class OrganizationService {
      * Добавить пользователей к организации.
      *
      * @param organization Сущность организации
-     * @param usersEmails почты пользователей
+     * @param usersEmails  почты пользователей
      */
-    @Transactional
     public void addUsersToOrganization(OrganizationEntity organization, Set<String> usersEmails) {
         if (organization == null) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        OrganizationEntity attachedEntity = entityManager.find(OrganizationEntity.class, organization.getId());
-
         Set<UserEntity> users = userService.findUsersByEmails(usersEmails);
 
-        attachedEntity.addUsers(users);
-
-        organizationRepository.save(attachedEntity);
+        CollectionUtils.emptyIfNull(users)
+                .forEach(userEntity -> {
+                    try {
+                        emailService.sendConfirmationMessage(userEntity, organization);
+                    } catch (MessagingException e) {
+                        throw new BusinessException(BusinessExceptionsEnum.CANNOT_SEND_MESSAGE);
+                    }
+                });
     }
 }

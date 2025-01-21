@@ -41,6 +41,7 @@ public enum BusinessExceptionsEnum {
     //organization
     ORGANIZATION_DELETED("Организация была удалена", HttpStatus.FORBIDDEN),
     NOT_ENOUGH_RULES("Вы не можете совершить данное действие", HttpStatus.CONFLICT),
+    ORGANIZATION_NOT_FOUND_BY_EMAIL("Организация с такой электронной почтой не найдена", HttpStatus.NOT_FOUND),
 
     //personal data
     PERSONAL_DATA_ALREADY_EXISTS("Персональные данные уже были отправлены",HttpStatus.CONFLICT),

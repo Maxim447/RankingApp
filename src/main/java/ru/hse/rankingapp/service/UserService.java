@@ -11,16 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
+import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
+import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.UserEntity;
-import ru.hse.rankingapp.mapper.UserMapper;
-import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
+import ru.hse.rankingapp.mapper.UserMapper;
+import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final OrganizationRepository organizationRepository;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -152,5 +156,23 @@ public class UserService {
         }
 
         return users;
+    }
+
+    /**
+     * Принять приглашение на вступление к организации.
+     *
+     * @param inviteDto информация о пользователе и организации.
+     */
+    @Transactional
+    public void confirmInviteIntoOrganization(ConfirmInviteDto inviteDto) {
+        UserEntity user = userRepository.findByEmail(inviteDto.getUserEmail())
+                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
+
+        OrganizationEntity organization = organizationRepository.findByEmail(inviteDto.getOrganizationEmail())
+                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.ORGANIZATION_NOT_FOUND_BY_EMAIL));
+
+        user.addOrganization(organization);
+
+        userRepository.save(user);
     }
 }
