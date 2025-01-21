@@ -10,8 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
+import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
@@ -90,5 +92,18 @@ public class UserController {
     @Operation(description = "Найти пользователей по параметрам поиска")
     public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return userService.searchUsers(searchParams, pageRequest);
+    }
+
+    /**
+     * Принять приглашение на вступление к организации.
+     *
+     * @param inviteDto информация о пользователе и организации.
+     */
+    @GetMapping("/confirm-invite")
+    @Operation(description = "Принять запрос на вступление в организцию")
+    public RedirectView confirmInvite(ConfirmInviteDto inviteDto) {
+        userService.confirmInviteIntoOrganization(inviteDto);
+        //todo написать редирект на главную страницу
+        return new RedirectView("/confirmation-success");
     }
 }

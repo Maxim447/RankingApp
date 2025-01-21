@@ -40,6 +40,7 @@ public class SecurityConfiguration {
                         request
                                 .requestMatchers(
                                         "/api/v1/auth/**",
+                                        "/api/v1/user/confirm-invite",
                                         "/ranking-app/swagger-ui",
                                         "/ranking-app/swagger-ui/*",
                                         "/ranking-app/v3/api-docs/*",
