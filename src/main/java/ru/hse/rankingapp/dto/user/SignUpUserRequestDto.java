@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import ru.hse.rankingapp.entity.enums.Gender;
 
 import java.time.LocalDate;
 
@@ -40,6 +41,9 @@ public class SignUpUserRequestDto {
 
     @Schema(description = "Дата рождения")
     private LocalDate birthDate;
+
+    @Schema(description = "Пол (MALE/FEMALE)")
+    private Gender gender;
 
     @Schema(description = "Пароль")
     @NotNull(message = "Пароль не может быть пустым")

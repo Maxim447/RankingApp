@@ -25,6 +25,7 @@ import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -130,6 +131,20 @@ public class UserService {
 
             if (searchParams.getEmail() != null) {
                 predicates.add(criteriaBuilder.equal(root.get("email"), searchParams.getEmail()));
+            }
+
+            if (searchParams.getGender() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("gender"), searchParams.getGender()));
+            }
+
+            if (searchParams.getAge() != null) {
+                LocalDate today = LocalDate.now();
+
+                Integer age = searchParams.getAge();
+                LocalDate startDate = today.minusYears(age);
+                LocalDate endDate = today.minusYears(age + 1);
+
+                predicates.add(criteriaBuilder.between(root.get("birthDate"), endDate, startDate));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

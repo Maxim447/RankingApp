@@ -24,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
+import ru.hse.rankingapp.entity.enums.Gender;
 import ru.hse.rankingapp.entity.enums.Role;
 
 import java.time.LocalDate;
@@ -86,6 +87,10 @@ public class UserEntity implements UserDetails {
     @Column(name = "action_index", nullable = false)
     @Enumerated(EnumType.STRING)
     private ActionIndex actionIndex = ActionIndex.I;
+
+    @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",
