@@ -3,9 +3,14 @@ package ru.hse.rankingapp.mapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Маппер для работы с сущностью соревнований.
@@ -28,4 +33,21 @@ public interface CompetitionMapper {
     @Mapping(source = "competition.competitionType", target = "competitionType")
     @Mapping(source = "organization", target = "organization")
     CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition);
+
+    /**
+     * Получить информацию о соревновании.
+     *
+     * @param competition сущность соревнования
+     * @return Информация о соревновании
+     */
+    CompetitionInfoDto mapToCompetitionInfoDto(CompetitionEntity competition);
+
+    /**
+     * Получить информацию о соревнованиях.
+     *
+     * @param competition сущности соревнований
+     * @return Информация о соревнованиях
+     */
+    @Named(value = "mapCompetitions")
+    List<CompetitionInfoDto> mapToCompetitionInfoDto(Set<CompetitionEntity> competition);
 }

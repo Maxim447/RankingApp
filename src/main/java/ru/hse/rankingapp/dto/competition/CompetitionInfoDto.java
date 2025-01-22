@@ -1,0 +1,31 @@
+package ru.hse.rankingapp.dto.competition;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.time.LocalDate;
+
+/**
+ * Дто с информацией о соревновании.
+ */
+@Data
+@Accessors(chain = true)
+@Schema(description = "Дто с информацией о соревновании")
+public class CompetitionInfoDto {
+
+    @Schema(description = "Название соревнования")
+    private String name;
+
+    @Schema(description = "Местоположение соревнования")
+    private String location;
+
+    @Schema(description = "Дата соревнования")
+    private LocalDate date;
+
+    @Schema(description = "Максимальное число участников")
+    private Integer maxParticipants;
+
+    @Schema(description = "Тип соревнования")
+    private String competitionType;
+}
