@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
@@ -33,15 +34,27 @@ public class OrganizationController {
     private final OrganizationService organizationService;
 
     /**
-     * Получить данные об авторизированном пользователе.
+     * Получить данные об авторизированной организации.
      *
      * @param organization авторизированная организация
      * @return dto c данными об авторизованном пользователе
      */
-    @GetMapping(value = "/info")
-    @Operation(description = "Получить данные об авторизированном пользователе")
+    @GetMapping(value = "/short-info")
+    @Operation(description = "Получить краткую информацию об авторизированной организации")
     public OrganizationInfoDto getAuthenticatedUser(@AuthenticationPrincipal OrganizationEntity organization) {
         return organizationService.getAuthenticatedOrganization(organization);
+    }
+
+    /**
+     * Получить полные данные об авторизированной организации.
+     *
+     * @param organization авторизированная организация
+     * @return dto c данными об авторизованном пользователе
+     */
+    @GetMapping(value = "/full-info")
+    @Operation(description = "Получить полную информацию об авторизированной организации")
+    public OrganizationFullInfoDto getOrganizationFullInfo(@AuthenticationPrincipal OrganizationEntity organization) {
+        return organizationService.getOrganizationFullInfo(organization);
     }
 
     /**

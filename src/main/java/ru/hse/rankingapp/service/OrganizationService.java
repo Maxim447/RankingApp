@@ -1,7 +1,6 @@
 package ru.hse.rankingapp.service;
 
 import jakarta.mail.MessagingException;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -9,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
@@ -22,9 +22,8 @@ import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.service.auth.EmailService;
+import ru.hse.rankingapp.service.search.OrganizationSearchWithSpec;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -39,6 +38,7 @@ public class OrganizationService {
     private final OrganizationMapper organizationMapper;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final OrganizationSearchWithSpec organizationSearchWithSpec;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -95,19 +95,7 @@ public class OrganizationService {
      * @return пагинированный ответ
      */
     public PageResponseDto<OrganizationInfoDto> searchOrganization(OrganizationSearchParamsDto searchParams, PageRequestDto pageRequest) {
-        Specification<OrganizationEntity> specification = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (searchParams.getName() != null) {
-                predicates.add(criteriaBuilder.like(root.get("name"), "%" + searchParams.getName() + "%"));
-            }
-
-            if (searchParams.getEmail() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("email"), searchParams.getEmail()));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<OrganizationEntity> specification = organizationSearchWithSpec.searchWithSpec(searchParams);
 
         Page<OrganizationInfoDto> organizationInfoPage = organizationRepository.findAll(specification, pageRequest.toPageRequest())
                 .map(organizationMapper::mapToOrganizationInfoDto);
@@ -136,5 +124,21 @@ public class OrganizationService {
                         throw new BusinessException(BusinessExceptionsEnum.CANNOT_SEND_MESSAGE);
                     }
                 });
+    }
+
+    /**
+     * Получить полные данные об авторизированной организации.
+     *
+     * @param organization авторизированная организация
+     * @return dto c данными об авторизованном пользователе
+     */
+    public OrganizationFullInfoDto getOrganizationFullInfo(OrganizationEntity organization) {
+        if (organization == null) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        OrganizationEntity attachedOrganization = organizationRepository.findOrganizationById(organization.getId());
+
+        return organizationMapper.mapToOrganizationFullInfoDto(attachedOrganization);
     }
 }

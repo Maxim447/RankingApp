@@ -76,4 +76,17 @@ public class CompetitionEntity {
 
     @OneToMany(mappedBy = "competitionEntity", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<CompetitionUserLinkEntity> competitionUserLinkEntities;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompetitionEntity that = (CompetitionEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

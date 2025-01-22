@@ -1,6 +1,5 @@
 package ru.hse.rankingapp.service;
 
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -24,10 +23,8 @@ import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
+import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,6 +38,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final OrganizationRepository organizationRepository;
+    private final UserSearchWithSpec userSearchWithSpec;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -114,41 +112,7 @@ public class UserService {
      * @return пагинированный ответ
      */
     public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
-        Specification<UserEntity> specification = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (searchParams.getFirstName() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("firstName"), searchParams.getFirstName()));
-            }
-
-            if (searchParams.getLastName() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("lastName"), searchParams.getLastName()));
-            }
-
-            if (searchParams.getMiddleName() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("middleName"), searchParams.getMiddleName()));
-            }
-
-            if (searchParams.getEmail() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("email"), searchParams.getEmail()));
-            }
-
-            if (searchParams.getGender() != null) {
-                predicates.add(criteriaBuilder.equal(root.get("gender"), searchParams.getGender()));
-            }
-
-            if (searchParams.getAge() != null) {
-                LocalDate today = LocalDate.now();
-
-                Integer age = searchParams.getAge();
-                LocalDate startDate = today.minusYears(age);
-                LocalDate endDate = today.minusYears(age + 1);
-
-                predicates.add(criteriaBuilder.between(root.get("birthDate"), endDate, startDate));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
+        Specification<UserEntity> specification = userSearchWithSpec.searchWithSpec(searchParams);
 
         Page<UserInfoDto> userPage = userRepository.findAll(specification, pageRequest.toPageRequest())
                 .map(userMapper::mapToUserInfoDto);

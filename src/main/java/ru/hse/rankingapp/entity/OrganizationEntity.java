@@ -80,7 +80,7 @@ public class OrganizationEntity implements UserDetails {
     private Set<UserEntity> users;
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<CompetitionEntity> competitionEntities;
+    private Set<CompetitionEntity> competitionEntities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -107,5 +107,18 @@ public class OrganizationEntity implements UserDetails {
         }
 
         this.users.addAll(users);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrganizationEntity that = (OrganizationEntity) o;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
