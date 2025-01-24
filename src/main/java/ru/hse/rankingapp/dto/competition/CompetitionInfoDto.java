@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 /**
  * Дто с информацией о соревновании.
@@ -28,4 +29,7 @@ public class CompetitionInfoDto {
 
     @Schema(description = "Тип соревнования")
     private String competitionType;
+
+    @Schema(description = "Юид соревнования")
+    private UUID competitionUuid;
 }

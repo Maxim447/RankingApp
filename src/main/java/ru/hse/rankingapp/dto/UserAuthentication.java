@@ -13,13 +13,9 @@ import ru.hse.rankingapp.entity.enums.Role;
 @NoArgsConstructor
 public class UserAuthentication {
 
-    private Long id;
-
     private String email;
 
-    private String phone;
-
-    private String fio;
-
     private Role role;
+
+    private boolean isOrganization;
 }

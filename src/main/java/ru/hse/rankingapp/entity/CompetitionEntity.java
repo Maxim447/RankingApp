@@ -22,8 +22,9 @@ import ru.hse.rankingapp.entity.enums.ActionIndex;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Сущность соревнования.
@@ -57,6 +58,9 @@ public class CompetitionEntity {
     @Column(name = "competition_type", nullable = false)
     private String competitionType;
 
+    @Column(name = "competition_uuid", nullable = false)
+    private UUID competitionUuid;
+
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
 
@@ -72,7 +76,7 @@ public class CompetitionEntity {
     private OrganizationEntity organization;
 
     @OneToMany(mappedBy = "competition", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<EventEntity> eventEntities;
+    private Set<EventEntity> eventEntities;
 
     @OneToMany(mappedBy = "competitionEntity", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<CompetitionUserLinkEntity> competitionUserLinkEntities;
@@ -88,5 +92,20 @@ public class CompetitionEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    /**
+     * Добавить мероприятие.
+     */
+    public void addEvent(EventEntity eventEntity) {
+        if (eventEntity == null) {
+            return;
+        }
+
+        if (this.eventEntities == null) {
+            this.eventEntities = new HashSet<>();
+        }
+
+        this.eventEntities.add(eventEntity);
     }
 }
