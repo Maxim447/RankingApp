@@ -4,8 +4,11 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.properties.JwtProperties;
@@ -68,13 +71,31 @@ public class JwtUtils {
     public UserAuthentication getUserAuthentication(String token) {
         Claims claims = extractAllClaims(token.substring(7));
 
-        Long id = Long.valueOf(claims.get("id", String.class));
         String email = claims.getSubject();
-        String phone = claims.get("phone", String.class);
-        String fio = claims.get("fio", String.class);
         String role = claims.get("role", String.class);
+        boolean isOrganization = claims.get("isOrganization", Boolean.class);
 
-        return UserAuthentication.of(id, email, phone, fio, Role.valueOf(role));
+        return UserAuthentication.of(email, Role.valueOf(role), isOrganization);
+    }
+
+    /**
+     * Получить информацию о пользователе из запроса.
+     */
+    public UserAuthentication getUserInfoFromRequest() {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+        if (attributes == null) {
+            return null;
+        }
+
+        HttpServletRequest request = attributes.getRequest();
+        String authorizationHeader = request.getHeader("Authorization");
+
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return getUserAuthentication(authorizationHeader);
+        }
+
+        return null;
     }
 
     /**

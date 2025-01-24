@@ -76,9 +76,8 @@ public class JwtService {
             Map<String, Object> extraClaims,
             OrganizationEntity organization
     ) {
-        extraClaims.put("id", organization.getId());
+
         extraClaims.put("email", organization.getEmail());
-        extraClaims.put("name", organization.getName());
         extraClaims.put("role", organization.getRole().name());
         extraClaims.put("isOrganization", true);
 
@@ -96,11 +95,8 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserEntity user
     ) {
-        extraClaims.put("id", user.getId());
-        extraClaims.put("user_phone", user.getPhone());
-        extraClaims.put("emergency_phone", user.getEmergencyPhone());
+
         extraClaims.put("email", user.getEmail());
-        extraClaims.put("fio", user.getLastName() + " " + user.getFirstName() + " " + user.getMiddleName());
         extraClaims.put("role", user.getRole().name());
         extraClaims.put("isOrganization", false);
 

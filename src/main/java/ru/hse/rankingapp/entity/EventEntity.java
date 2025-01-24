@@ -19,6 +19,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
+import ru.hse.rankingapp.entity.enums.Gender;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -48,7 +49,7 @@ public class EventEntity {
     private String style;
 
     @Column(name = "gender", nullable = false)
-    private String gender;
+    private Gender gender;
 
     @Column(name = "age_category", nullable = false)
     private String ageCategory;
@@ -90,5 +91,17 @@ public class EventEntity {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    /**
+     * Добавить соревнование
+     */
+    public void addCompetition(CompetitionEntity competition) {
+        if (competition == null) {
+            return;
+        }
+
+        this.competition = competition;
+        competition.addEvent(this);
     }
 }

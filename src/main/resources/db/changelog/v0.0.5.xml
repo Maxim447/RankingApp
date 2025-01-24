@@ -12,4 +12,12 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="24-01-2025 21:00:00" author="msalyaev">
+
+        <sqlFile path="v0.0.5/add_uuid_field_to_competition.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.5/rollback/add_uuid_field_to_competition_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
