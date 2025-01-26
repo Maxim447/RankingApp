@@ -48,7 +48,7 @@ public enum BusinessExceptionsEnum {
 
     PERSONAL_DATA_NOT_FOUND("Персональные данные не найдены",HttpStatus.NOT_FOUND),
 
-    CANNOT_SEND_MESSAGE("Не удалось отправить код подтверждение",HttpStatus.NOT_FOUND);
+    CANNOT_SEND_MESSAGE("Не удалось отправить сообщение на почту",HttpStatus.NOT_FOUND);
 
     private final String message;
 

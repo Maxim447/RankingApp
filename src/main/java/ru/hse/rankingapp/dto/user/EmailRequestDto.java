@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(chain = true)
 @Schema(description = "Запрос на изменение электронной почты")
-public class UpdateEmailRequestDto {
+public class EmailRequestDto {
 
     @Schema(description = "Электронная почта")
     @NotNull(message = "Электронная почта не может быть пустым")

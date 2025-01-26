@@ -15,7 +15,7 @@ import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
-import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
+import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
@@ -65,7 +65,7 @@ public class UserController {
      */
     @PostMapping("/update-email")
     @Operation(description = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal UserEntity user) {
+    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updateEmail(updateEmailRequestDto, user);
     }
 

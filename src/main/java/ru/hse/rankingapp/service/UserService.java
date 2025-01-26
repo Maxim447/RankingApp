@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
-import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
+import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
@@ -94,7 +94,7 @@ public class UserService {
      * @param user                  авторизированный пользователь
      */
     @Transactional
-    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, UserEntity user) {
+    public void updateEmail(EmailRequestDto updateEmailRequestDto, UserEntity user) {
         String email = updateEmailRequestDto.getEmail();
         boolean exist = userRepository.existsByEmail(email);
         if (exist) {

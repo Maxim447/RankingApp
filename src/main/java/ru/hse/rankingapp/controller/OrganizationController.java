@@ -15,7 +15,7 @@ import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
-import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
+import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.OrganizationService;
@@ -65,7 +65,7 @@ public class OrganizationController {
      */
     @PostMapping("/update-email")
     @Operation(description = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid UpdateEmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
+    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updateEmail(updateEmailRequestDto, organization);
     }
 

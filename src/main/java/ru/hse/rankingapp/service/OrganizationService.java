@@ -13,7 +13,7 @@ import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
-import ru.hse.rankingapp.dto.user.UpdateEmailRequestDto;
+import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -77,7 +77,7 @@ public class OrganizationService {
      * @param organization          авторизированная организация
      */
     @Transactional
-    public void updateEmail(UpdateEmailRequestDto updateEmailRequestDto, OrganizationEntity organization) {
+    public void updateEmail(EmailRequestDto updateEmailRequestDto, OrganizationEntity organization) {
         String email = updateEmailRequestDto.getEmail();
         boolean exist = organizationRepository.existsByEmail(email);
         if (exist) {
