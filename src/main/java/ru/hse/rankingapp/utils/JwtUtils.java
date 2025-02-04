@@ -75,7 +75,7 @@ public class JwtUtils {
         String role = claims.get("role", String.class);
         boolean isOrganization = claims.get("isOrganization", Boolean.class);
 
-        return UserAuthentication.of(email, Role.valueOf(role), isOrganization);
+        return UserAuthentication.of(email, isOrganization, Role.valueOf(role));
     }
 
     /**

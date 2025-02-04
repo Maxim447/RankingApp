@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.login.LoginRequestDto;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
@@ -72,5 +73,16 @@ public class AuthController {
     @Operation(summary = "Вход")
     public LoginResponseDto login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         return authService.login(loginRequestDto);
+    }
+
+    /**
+     * Получить Информацию о пользователе по токену.
+     *
+     * @param token Токен пользователя
+     * @return Информация о пользователе по токену
+     */
+    @GetMapping("/info-by-token")
+    public UserAuthentication getUserInfoByToken(@RequestParam(value = "token") String token) {
+        return authService.getUserInfoByToken(token);
     }
 }
