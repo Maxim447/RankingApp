@@ -15,4 +15,7 @@ public class OrganizationSearchParamsDto {
 
     @Schema(description = "Почта")
     private String email;
+
+    @Schema(description = "Признак открытости организации (true -> открытая, false -> закрытая)")
+    private Boolean isOpen;
 }

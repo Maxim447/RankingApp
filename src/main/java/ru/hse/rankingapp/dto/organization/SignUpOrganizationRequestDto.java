@@ -22,6 +22,9 @@ public class SignUpOrganizationRequestDto {
     @NotNull(message = "Наименование организации не может быть пустым")
     private String organizationName;
 
+    @Schema(description = "Признак открытости организации (true -> открытая, false -> закрытая), по умолчанию true")
+    private Boolean isOpen = Boolean.TRUE;
+
     @Schema(description = "Пароль")
     @NotNull(message = "Пароль не может быть пустым")
     @Size(min = 8, max = 256, message = "Длина пароля должна быть в интервале от 8 до 256 символов")

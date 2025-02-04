@@ -24,4 +24,7 @@ public class OrganizationInfoDto {
 
     @Schema(description = "Роль пользователя")
     private Role role;
+
+    @Schema(description = "Признак открытости организации (true -> открытая, false -> закрытая)")
+    private Boolean isOpen;
 }

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
+import ru.hse.rankingapp.dto.organization.UpdateIsOpenStatusDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
@@ -85,6 +86,17 @@ public class OrganizationService {
         }
 
         organizationRepository.updateEmailById(organization.getId(), email);
+    }
+
+    /**
+     * Изменить признак открытости у организации
+     *
+     * @param updateIsOpenStatusDto Дто для обновления статуса организации
+     * @param organization          авторизированная организация
+     */
+    @Transactional
+    public void updateOpenStatus(UpdateIsOpenStatusDto updateIsOpenStatusDto, OrganizationEntity organization) {
+        organizationRepository.updateOpenStatusById(organization.getId(), updateIsOpenStatusDto.getIsOpen());
     }
 
     /**
