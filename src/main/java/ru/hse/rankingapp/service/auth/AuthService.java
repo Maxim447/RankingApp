@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.login.LoginRequestDto;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.VerificationCodeResponseDto;
@@ -19,6 +20,7 @@ import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
+import ru.hse.rankingapp.utils.JwtUtils;
 import ru.hse.rankingapp.utils.Validator;
 import ru.hse.rankingapp.utils.VerificationCodeGenerator;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
@@ -41,6 +43,7 @@ public class AuthService {
     private final OrganizationMapper organizationMapper;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
 
     /**
      * Получить код для подтверждения электронной почты.
@@ -139,5 +142,15 @@ public class AuthService {
         }
 
         throw new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL);
+    }
+
+    /**
+     * Получить Информацию о пользователе по токену.
+     *
+     * @param token Токен пользователя
+     * @return Информация о пользователе по токену
+     */
+    public UserAuthentication getUserInfoByToken(String token) {
+        return jwtUtils.getUserAuthentication(token);
     }
 }
