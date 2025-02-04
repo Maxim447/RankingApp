@@ -151,6 +151,10 @@ public class AuthService {
      * @return Информация о пользователе по токену
      */
     public UserAuthentication getUserInfoByToken(String token) {
-        return jwtUtils.getUserAuthentication(token);
+        try {
+            return jwtUtils.getUserAuthentication(token);
+        } catch (Exception e) {
+            throw new BusinessException("Не удалось достать информацию из токена", HttpStatus.BAD_REQUEST);
+        }
     }
 }
