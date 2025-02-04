@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
+import ru.hse.rankingapp.dto.organization.UpdateIsOpenStatusDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
@@ -79,6 +80,18 @@ public class OrganizationController {
     @Operation(description = "Изменить пароль")
     public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updatePassword(updatePasswordRequestDto, organization);
+    }
+
+    /**
+     * Изменить признак открытости у организации
+     *
+     * @param updateIsOpenStatusDto Дто для обновления статуса организации
+     * @param organization          авторизированная организация
+     */
+    @PostMapping("/update-open-status")
+    @Operation(description = "Изменить признак открытости у организации")
+    public void updateOpenStatus(@RequestBody @Valid UpdateIsOpenStatusDto updateIsOpenStatusDto, @AuthenticationPrincipal OrganizationEntity organization) {
+        organizationService.updateOpenStatus(updateIsOpenStatusDto, organization);
     }
 
     /**

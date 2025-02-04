@@ -30,6 +30,10 @@ public class OrganizationSearchWithSpec {
                 predicates.add(criteriaBuilder.equal(root.get("email"), searchParams.getEmail()));
             }
 
+            if (searchParams.getIsOpen() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("isOpen"), searchParams.getIsOpen()));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

@@ -61,6 +61,9 @@ public class OrganizationEntity implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role = Role.ORGANIZATION;
 
+    @Column(name = "is_open", nullable = false)
+    private Boolean isOpen = Boolean.TRUE;
+
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
 

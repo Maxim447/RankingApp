@@ -67,4 +67,18 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
             WHERE o.id = :id
             """)
     void updateEmailById(@Param(value = "id") Long id, @Param(value = "email") String email);
+
+    /**
+     * Изменить поле isOpen по id.
+     *
+     * @param id    идентификатор пользователя
+     * @param isOpen статус открытости
+     */
+    @Modifying
+    @Query(value = """
+            UPDATE OrganizationEntity o
+            SET o.isOpen = :isOpen, o.modifyDttm = current timestamp, o.actionIndex = 'U'
+            WHERE o.id = :id
+            """)
+    void updateOpenStatusById(@Param(value = "id") Long id, @Param(value = "isOpen") Boolean isOpen);
 }
