@@ -69,7 +69,13 @@ public class JwtUtils {
      * @return модель с пользовательскими данными
      */
     public UserAuthentication getUserAuthentication(String token) {
-        Claims claims = extractAllClaims(token.substring(7));
+        Claims claims;
+
+        if (token.startsWith("Bearer ")) {
+            claims = extractAllClaims(token.substring(7));
+        } else {
+            claims = extractAllClaims(token);
+        }
 
         String email = claims.getSubject();
         String role = claims.get("role", String.class);
