@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.exception.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -21,6 +22,7 @@ import java.util.List;
  * Класс для обработки ошибок.
  */
 @ControllerAdvice
+@Slf4j
 public class BusinessExceptionsHandler extends ResponseEntityExceptionHandler {
 
     private static final String DEFAULT_ERROR_MESSAGE = "Непредвиденная ошибка";
@@ -52,6 +54,7 @@ public class BusinessExceptionsHandler extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     protected ResponseEntity<ErrorMessageDto> handleBusinessException(WebRequest request, Exception ex) {
+        log.error(request.getDescription(false), ex);
         ErrorMessageDto errorMessageDto = buildErrorMessageDto(request, ex);
         return new ResponseEntity<>(errorMessageDto, new HttpHeaders(), errorMessageDto.getStatus());
     }

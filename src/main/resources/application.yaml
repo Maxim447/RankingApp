@@ -51,15 +51,20 @@ springdoc:
 
 logging:
   level:
-#    org:
-#      hibernate:
-#        type:
-#          discriptor:
-#            sql:
-#              BasicBinder: TRACE
-    root: INFO
-    web: WARN
-    org.springdoc: DEBUG
+    root: INFO  # Уровень логирования для всего приложения
+    web: WARN   # Уровень логирования для веб-слоя
+    org:
+      springframework:
+        security: DEBUG  # Логирование Spring Security
+        web: DEBUG       # Логирование Spring Web
+      hibernate:
+        sql: DEBUG       # Логирование SQL-запросов
+        orm:
+          jdbc:
+            bind: TRACE # Логирование параметров SQL-запросов
+    ru:
+      hse:
+        rankingapp: DEBUG
 
 security:
   jwt:
