@@ -4,13 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.CompetitionService;
+
+import java.util.UUID;
 
 /**
  * API для соревнований.
@@ -33,5 +38,17 @@ public class CompetitionController {
     @Operation(summary = "Создать соревнование")
     public void createCompetition(@AuthenticationPrincipal OrganizationEntity organization, @RequestBody CreateCompetitionDto createCompetitionDto) {
         competitionService.createCompetition(organization, createCompetitionDto);
+    }
+
+    /**
+     * Найти соревнование по его uuid.
+     *
+     * @param uuid юид соревнования
+     * @return Полная информация о соревновании
+     */
+    @GetMapping("/find/{uuid}")
+    @Operation(summary = "Найти полную информацию о соревновании по его uuid")
+    public CompetitionFullInfoDto getCompetitionFullInfoByUuid(@PathVariable UUID uuid) {
+        return competitionService.getCompetitionFullInfoByUuid(uuid);
     }
 }

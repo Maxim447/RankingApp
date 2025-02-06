@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.mapper;
 
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
@@ -13,7 +14,8 @@ import ru.hse.rankingapp.entity.enums.Role;
  */
 @Mapper(componentModel = "spring",
         uses = {UserMapper.class, CompetitionMapper.class},
-        imports = Role.class
+        imports = Role.class,
+        injectionStrategy = InjectionStrategy.SETTER
 )
 public interface OrganizationMapper {
 

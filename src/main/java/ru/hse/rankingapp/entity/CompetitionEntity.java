@@ -59,7 +59,7 @@ public class CompetitionEntity {
     private String competitionType;
 
     @Column(name = "competition_uuid", nullable = false)
-    private UUID competitionUuid;
+    private UUID competitionUuid = UUID.randomUUID();
 
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();

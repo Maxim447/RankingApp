@@ -30,4 +30,19 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             """)
     Optional<CompetitionEntity> findByOrganizationEmailAndCompetitionUuid(
             @Param(value = "email") String email, @Param(value = "competitionUUID") UUID competitionUUID);
+
+
+    /**
+     * Найти {@link CompetitionEntity}.
+     *
+     * @param uuid UUID соревнования
+     * @return {@link CompetitionEntity}
+     */
+    @Query(value = """
+            select ce from CompetitionEntity ce
+            join fetch ce.eventEntities
+            join fetch ce.organization
+            where ce.competitionUuid = :uuid
+            """)
+    Optional<CompetitionEntity> findByCompetitionUuid(@Param(value = "uuid") UUID uuid);
 }
