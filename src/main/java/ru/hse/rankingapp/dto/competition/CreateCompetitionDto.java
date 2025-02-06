@@ -3,8 +3,10 @@ package ru.hse.rankingapp.dto.competition;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hse.rankingapp.dto.event.CreateEventDto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Дто для создания соревнования.
@@ -28,4 +30,7 @@ public class CreateCompetitionDto {
 
     @Schema(description = "Тип соревнования")
     private String competitionType;
+
+    @Schema(description = "Заплывы соревнования")
+    private List<CreateEventDto> events;
 }

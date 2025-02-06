@@ -24,6 +24,7 @@ import ru.hse.rankingapp.entity.enums.Gender;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Сущность события.
@@ -62,6 +63,9 @@ public class EventEntity {
 
     @Column(name = "end_time", nullable = false)
     private LocalDate endTime;
+
+    @Column(name = "event_uuid", nullable = false)
+    private UUID eventUuid;
 
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();

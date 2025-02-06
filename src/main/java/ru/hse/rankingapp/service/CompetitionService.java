@@ -3,8 +3,10 @@ package ru.hse.rankingapp.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
@@ -12,6 +14,9 @@ import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.CompetitionMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Сервис для работы с соревнованиями.
@@ -29,8 +34,8 @@ public class CompetitionService {
     /**
      * Создать соревнование.
      *
-     * @param organization организация
-     * @param createCompetitionDto  Дто для создания соревнования
+     * @param organization         организация
+     * @param createCompetitionDto Дто для создания соревнования
      */
     @Transactional
     public void createCompetition(OrganizationEntity organization, CreateCompetitionDto createCompetitionDto) {
@@ -43,5 +48,21 @@ public class CompetitionService {
         CompetitionEntity competitionEntity = competitionMapper.toCompetitionEntity(attachedEntity, createCompetitionDto);
 
         competitionRepository.save(competitionEntity);
+    }
+
+    /**
+     * Найти соревнование по его uuid.
+     *
+     * @param uuid юид соревнования
+     * @return Полная информация о соревновании
+     */
+    public CompetitionFullInfoDto getCompetitionFullInfoByUuid(UUID uuid) {
+        Optional<CompetitionEntity> competitionEntity = competitionRepository.findByCompetitionUuid(uuid);
+
+        if (competitionEntity.isPresent()) {
+            return competitionMapper.mapToCompetitionFullInfo(competitionEntity.get());
+        }
+
+        throw new BusinessException("Не удалось найти соревнование по uuid = " + uuid, HttpStatus.NOT_FOUND);
     }
 }

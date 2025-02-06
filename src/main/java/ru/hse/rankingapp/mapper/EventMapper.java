@@ -2,6 +2,7 @@ package ru.hse.rankingapp.mapper;
 
 import org.mapstruct.Mapper;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
+import ru.hse.rankingapp.dto.event.EventInfoDto;
 import ru.hse.rankingapp.entity.EventEntity;
 
 /**
@@ -18,4 +19,12 @@ public interface EventMapper {
      * @return {@link EventEntity}
      */
     EventEntity toEventEntity(CreateEventDto eventDto);
+
+    /**
+     * {@link EventEntity} to {@link EventInfoDto}.
+     *
+     * @param event cущность
+     * @return {@link EventInfoDto}
+     */
+    EventInfoDto toEventInfoDto(EventEntity event);
 }
