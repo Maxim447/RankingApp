@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
+import ru.hse.rankingapp.dto.event.EventFullInfoDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.enums.Role;
@@ -14,6 +15,9 @@ import ru.hse.rankingapp.mapper.EventMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
 import ru.hse.rankingapp.repository.EventRepository;
 import ru.hse.rankingapp.utils.JwtUtils;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Сервис для работы с мероприятиями.
@@ -51,5 +55,21 @@ public class EventService {
         event.addCompetition(competition);
 
         eventRepository.save(event);
+    }
+
+    /**
+     * Получить полную информацию о заплыве.
+     *
+     * @param uuid uuid Заплыва
+     * @return Полная информация о заплыве
+     */
+    public EventFullInfoDto findEventByUuid(UUID uuid) {
+        Optional<EventEntity> event = eventRepository.findByUuid(uuid);
+
+        if (event.isPresent()) {
+            return eventMapper.toEventFullInfoDto(event.get());
+        }
+
+        throw new BusinessException("Не удалось найти заплыв по uuid = " + uuid, HttpStatus.NOT_FOUND);
     }
 }

@@ -41,8 +41,8 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
      */
     @Query(value = """
             select ce from CompetitionEntity ce
-            join fetch ce.eventEntities
-            join fetch ce.organization
+            left join fetch ce.eventEntities
+            left join fetch ce.organization
             where ce.competitionUuid = :uuid
             """)
     Optional<CompetitionEntity> findByCompetitionUuid(@Param(value = "uuid") UUID uuid);
