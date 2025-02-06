@@ -1,6 +1,7 @@
 package ru.hse.rankingapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import java.util.UUID;
  * Репозиторий для работы с сущностью соревнований.
  */
 @Repository
-public interface CompetitionRepository extends JpaRepository<CompetitionEntity, Long> {
+public interface CompetitionRepository extends JpaRepository<CompetitionEntity, Long>, JpaSpecificationExecutor<CompetitionEntity> {
 
     /**
      * Найти соревнование по почте пользователя и uuid соревнования.

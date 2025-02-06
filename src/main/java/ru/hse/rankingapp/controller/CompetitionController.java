@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
+import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
+import ru.hse.rankingapp.dto.competition.CompetitionSearchParamsDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.CompetitionService;
 
@@ -31,8 +35,8 @@ public class CompetitionController {
     /**
      * Создать соревнование.
      *
-     * @param organization организация
-     * @param createCompetitionDto  Дто для создания соревнования
+     * @param organization         организация
+     * @param createCompetitionDto Дто для создания соревнования
      */
     @PostMapping("/create")
     @Operation(summary = "Создать соревнование")
@@ -50,5 +54,18 @@ public class CompetitionController {
     @Operation(summary = "Найти полную информацию о соревновании по его uuid")
     public CompetitionFullInfoDto getCompetitionFullInfoByUuid(@PathVariable UUID uuid) {
         return competitionService.getCompetitionFullInfoByUuid(uuid);
+    }
+
+    /**
+     * Найти соревнования по поисковым параметрам.
+     *
+     * @param searchParams поисковые параметры
+     * @param pageRequest пагинация
+     * @return соревнования
+     */
+    @GetMapping("/search")
+    @Operation(summary = "Найти соревнования по поисковым параметрам")
+    public PageResponseDto<CompetitionInfoDto> searchCompetitions(CompetitionSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        return competitionService.searchCompetitions(searchParams, pageRequest);
     }
 }
