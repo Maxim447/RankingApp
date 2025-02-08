@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,8 @@ import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.service.UserService;
+
+import java.util.UUID;
 
 /**
  * API для пользователей.
@@ -40,7 +43,7 @@ public class UserController {
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/info")
-    @Operation(description = "Получить данные об авторизированном пользователе")
+    @Operation(summary = "Получить данные об авторизированном пользователе")
     public UserInfoDto getAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
         return userService.getAuthenticatedUser(user);
     }
@@ -52,7 +55,7 @@ public class UserController {
      * @param user                  авторизированный пользователь
      */
     @PostMapping("/update-phone")
-    @Operation(description = "Изменить номер телефона")
+    @Operation(summary = "Изменить номер телефона")
     public void updatePhone(@RequestBody @Valid UpdatePhoneRequestDto updatePhoneRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updatePhone(updatePhoneRequestDto, user);
     }
@@ -64,7 +67,7 @@ public class UserController {
      * @param user                  авторизированный пользователь
      */
     @PostMapping("/update-email")
-    @Operation(description = "Изменить электронную почту")
+    @Operation(summary = "Изменить электронную почту")
     public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updateEmail(updateEmailRequestDto, user);
     }
@@ -76,7 +79,7 @@ public class UserController {
      * @param user                     авторизированный пользователь
      */
     @PostMapping("/update-password")
-    @Operation(description = "Изменить пароль")
+    @Operation(summary = "Изменить пароль")
     public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal UserEntity user) {
         userService.updatePassword(updatePasswordRequestDto, user);
     }
@@ -85,13 +88,25 @@ public class UserController {
      * Получить пользователей по параметрам поиска.
      *
      * @param searchParams поисковые параметры
-     * @param pageRequest пагинация
+     * @param pageRequest  пагинация
      * @return пагинированный ответ
      */
     @GetMapping("/search")
-    @Operation(description = "Найти пользователей по параметрам поиска")
+    @Operation(summary = "Найти пользователей по параметрам поиска")
     public PageResponseDto<UserInfoDto> searchUsers(UserSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return userService.searchUsers(searchParams, pageRequest);
+    }
+
+    /**
+     * Добавить пользователя к заплыву.
+     *
+     * @param entity Сущность пользователя
+     * @param eventUuid Юид заплыва
+     */
+    @PostMapping("/add-to-event/{uuid}")
+    @Operation(summary = "Записаться на заплыв")
+    public void addToEvent(@AuthenticationPrincipal UserEntity entity, @PathVariable(value = "uuid") UUID eventUuid) {
+        userService.addToEvent(entity, eventUuid);
     }
 
     /**
@@ -100,7 +115,7 @@ public class UserController {
      * @param inviteDto информация о пользователе и организации.
      */
     @GetMapping("/confirm-invite")
-    @Operation(description = "Принять запрос на вступление в организцию")
+    @Operation(summary = "Принять запрос на вступление в организцию")
     public RedirectView confirmInvite(ConfirmInviteDto inviteDto) {
         userService.confirmInviteIntoOrganization(inviteDto);
         //todo написать редирект на главную страницу

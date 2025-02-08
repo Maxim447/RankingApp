@@ -82,6 +82,7 @@ public class AuthController {
      * @return Информация о пользователе по токену
      */
     @GetMapping("/info-by-token")
+    @Operation(summary = "Получить информацию о пользователе по токену")
     public UserAuthentication getUserInfoByToken(@RequestParam(value = "token") String token) {
         return authService.getUserInfoByToken(token);
     }

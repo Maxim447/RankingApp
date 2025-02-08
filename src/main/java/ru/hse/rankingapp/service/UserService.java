@@ -26,6 +26,7 @@ import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Сервис для работы с пользователем.
@@ -39,6 +40,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final OrganizationRepository organizationRepository;
     private final UserSearchWithSpec userSearchWithSpec;
+    private final EventService eventService;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -153,5 +155,22 @@ public class UserService {
         user.addOrganization(organization);
 
         userRepository.save(user);
+    }
+
+    /**
+     * Добавить пользователя к заплыву.
+     *
+     * @param entity Сущность пользователя
+     * @param eventUuid Юид заплыва
+     */
+    public void addToEvent(UserEntity entity, UUID eventUuid) {
+        if (entity == null) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        UserEntity user = userRepository.findByEmail(entity.getEmail())
+                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
+
+        eventService.addUserToEvent(user, eventUuid);
     }
 }
