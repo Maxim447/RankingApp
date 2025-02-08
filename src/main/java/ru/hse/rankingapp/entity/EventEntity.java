@@ -23,6 +23,7 @@ import ru.hse.rankingapp.entity.enums.Gender;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,6 +51,7 @@ public class EventEntity {
     private String style;
 
     @Column(name = "gender", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     @Column(name = "age_category", nullable = false)
@@ -107,5 +109,16 @@ public class EventEntity {
 
         this.competition = competition;
         competition.addEvent(this);
+    }
+
+    /**
+     * Связать пользователя с заплывом.
+     */
+    public void addEventUserLink(EventUserLinkEntity entity) {
+        if (this.eventUserLinks == null) {
+            this.eventUserLinks = new HashSet<>();
+        }
+
+        this.eventUserLinks.add(entity);
     }
 }

@@ -41,7 +41,7 @@ public class OrganizationController {
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/short-info")
-    @Operation(description = "Получить краткую информацию об авторизированной организации")
+    @Operation(summary = "Получить краткую информацию об авторизированной организации")
     public OrganizationInfoDto getAuthenticatedUser(@AuthenticationPrincipal OrganizationEntity organization) {
         return organizationService.getAuthenticatedOrganization(organization);
     }
@@ -53,7 +53,7 @@ public class OrganizationController {
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/full-info")
-    @Operation(description = "Получить полную информацию об авторизированной организации")
+    @Operation(summary = "Получить полную информацию об авторизированной организации")
     public OrganizationFullInfoDto getOrganizationFullInfo(@AuthenticationPrincipal OrganizationEntity organization) {
         return organizationService.getOrganizationFullInfo(organization);
     }
@@ -65,7 +65,7 @@ public class OrganizationController {
      * @param organization          авторизированная организация
      */
     @PostMapping("/update-email")
-    @Operation(description = "Изменить электронную почту")
+    @Operation(summary = "Изменить электронную почту")
     public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updateEmail(updateEmailRequestDto, organization);
     }
@@ -77,7 +77,7 @@ public class OrganizationController {
      * @param organization             авторизированная организация
      */
     @PostMapping("/update-password")
-    @Operation(description = "Изменить пароль")
+    @Operation(summary = "Изменить пароль")
     public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updatePassword(updatePasswordRequestDto, organization);
     }
@@ -89,7 +89,7 @@ public class OrganizationController {
      * @param organization          авторизированная организация
      */
     @PostMapping("/update-open-status")
-    @Operation(description = "Изменить признак открытости у организации")
+    @Operation(summary = "Изменить признак открытости у организации")
     public void updateOpenStatus(@RequestBody @Valid UpdateIsOpenStatusDto updateIsOpenStatusDto, @AuthenticationPrincipal OrganizationEntity organization) {
         organizationService.updateOpenStatus(updateIsOpenStatusDto, organization);
     }
@@ -102,7 +102,7 @@ public class OrganizationController {
      * @return пагинированный ответ
      */
     @GetMapping("/search")
-    @Operation(description = "Найти организации по параметрам поиска")
+    @Operation(summary = "Найти организации по параметрам поиска")
     public PageResponseDto<OrganizationInfoDto> searchOrganization(OrganizationSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return organizationService.searchOrganization(searchParams, pageRequest);
     }
@@ -114,7 +114,7 @@ public class OrganizationController {
      * @param usersEmail   почты пользователей
      */
     @PostMapping("/send-invite-to-users")
-    @Operation(description = "Отправить приглашение пользователю(ям) на вступление в организацию")
+    @Operation(summary = "Отправить приглашение пользователю(ям) на вступление в организацию")
     public void addUsersToOrganization(@AuthenticationPrincipal OrganizationEntity organization, @RequestBody Set<String> usersEmail) {
         organizationService.addUsersToOrganization(organization, usersEmail);
     }

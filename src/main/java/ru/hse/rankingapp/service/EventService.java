@@ -3,11 +3,14 @@ package ru.hse.rankingapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.EventEntity;
+import ru.hse.rankingapp.entity.EventUserLinkEntity;
+import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
@@ -16,6 +19,7 @@ import ru.hse.rankingapp.repository.CompetitionRepository;
 import ru.hse.rankingapp.repository.EventRepository;
 import ru.hse.rankingapp.utils.JwtUtils;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,5 +75,26 @@ public class EventService {
         }
 
         throw new BusinessException("Не удалось найти заплыв по uuid = " + uuid, HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Добавить пользователя к заплыву.
+     *
+     * @param user Сущность пользователя
+     * @param eventUuid Юид заплыва
+     */
+    @Transactional
+    public void addUserToEvent(UserEntity user, UUID eventUuid) {
+        EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
+                new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
+
+        EventUserLinkEntity eventUserLinkEntity = new EventUserLinkEntity();
+        eventUserLinkEntity.setUser(user);
+        eventUserLinkEntity.setEvent(event);
+        eventUserLinkEntity.setRegistrationDate(LocalDate.now());
+
+        event.addEventUserLink(eventUserLinkEntity);
+
+        eventRepository.save(event);
     }
 }
