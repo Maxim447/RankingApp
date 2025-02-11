@@ -9,10 +9,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.properties.EmailCodeConfirmationProperties;
+import ru.hse.rankingapp.properties.EmailLinkProperties;
 import ru.hse.rankingapp.utils.FioUtils;
 
 import java.util.UUID;
@@ -28,6 +30,7 @@ public class EmailService {
     private final JavaMailSender emailSender;
 
     private final EmailCodeConfirmationProperties emailCodeConfirmationProperties;
+    private final EmailLinkProperties emailLinkProperties;
 
     /**
      * Отправить код подтверждения.
@@ -48,16 +51,13 @@ public class EmailService {
     /**
      * Отправить письмо на добавление в организацию.
      *
-     * @param userEntity сущность пользователя
+     * @param tokenEntity сущность для отправки email
      */
-    public void sendConfirmationMessage(UserEntity userEntity, OrganizationEntity organization) throws MessagingException {
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-        String userEmail = userEntity.getEmail();
+    public void sendConfirmationMessage(TokenEntity tokenEntity) throws MessagingException {
+        log.info("Страт отправки сообщения на почту для tokenUUID = {}", tokenEntity.getId());
+        String userEmail = tokenEntity.getUser().getEmail();
         String confirmationLink = String.format(
-                "http://127.0.0.1:9000/api/v1/user/confirm-invite?userEmail=%s&organizationEmail=%s",
-                userEmail, organization.getEmail()
+                emailLinkProperties.getAddToOrganization(), tokenEntity.getId()
         );
 
         String subject = "Подтверждение вступления в организацию";
@@ -71,15 +71,9 @@ public class EmailService {
                     <p>Если письмо пришло к Вам по ошибке, проигнорируете его.<p>
                 </body>
                 </html>
-                """.formatted(organization.getName(), confirmationLink);
+                """.formatted(tokenEntity.getOrganization().getName(), confirmationLink);
 
-        helper.setFrom(emailCodeConfirmationProperties.getSenderEmail());
-        helper.setTo(userEmail);
-        helper.setSubject(subject);
-        helper.setText(body, true);
-
-        emailSender.send(mimeMessage);
-        log.info("Письмо на вступление в организацию успешно отправлено. Email = {}", userEmail);
+        sendMessageWithBody(subject, body, userEmail);
     }
 
     /**
@@ -115,12 +109,12 @@ public class EmailService {
     }
 
     private void sendRecoveryPasswordEmail(String email, String name, UUID uuid) throws MessagingException {
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        log.info("Страт отправки сообщения на почту для tokenUUID = {}", uuid);
 
-        String confirmationLink = String.format("http://localhost:3000/recovery?token=%s", uuid.toString());
+        String confirmationLink = String.format(emailLinkProperties.getRecoveryPassword(), uuid);
 
         String subject = "Сброс пароля";
+
         String body = """
                 <html>
                 <body>
@@ -133,12 +127,19 @@ public class EmailService {
                 </html>
                 """.formatted(name, confirmationLink);
 
+        sendMessageWithBody(subject, body, email);
+    }
+
+    private void sendMessageWithBody(String subject, String htmlBody, String sendTo) throws MessagingException {
+        MimeMessage mimeMessage = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
         helper.setFrom(emailCodeConfirmationProperties.getSenderEmail());
-        helper.setTo(email);
+        helper.setTo(sendTo);
         helper.setSubject(subject);
-        helper.setText(body, true);
+        helper.setText(htmlBody, true);
 
         emailSender.send(mimeMessage);
-        log.info("Письмо на вступление в организацию успешно отправлено. Email = {}", email);
+        log.info("Письмо на вступление в организацию успешно отправлено. Email = {}", sendTo);
     }
 }
