@@ -2,29 +2,34 @@ package ru.hse.rankingapp.service;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
-import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.enums.ActionIndex;
+import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
-import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,9 +43,12 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final OrganizationRepository organizationRepository;
     private final UserSearchWithSpec userSearchWithSpec;
     private final EventService eventService;
+    private final TokenRepository tokenRepository;
+
+    @Value("${redirect.front-main}")
+    private String frontMainPage;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -142,25 +150,44 @@ public class UserService {
     /**
      * Принять приглашение на вступление к организации.
      *
-     * @param inviteDto информация о пользователе и организации.
+     * @param token токен на добавление
      */
     @Transactional
-    public void confirmInviteIntoOrganization(ConfirmInviteDto inviteDto) {
-        UserEntity user = userRepository.findByEmail(inviteDto.getUserEmail())
-                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
+    public RedirectView confirmInviteIntoOrganization(UUID token) {
+        TokenEntity tokenEntity = tokenRepository.findByIdFetched(token)
+                .orElseThrow(() -> new BusinessException("Токен на восстановление пароля не обнаружен", HttpStatus.NOT_FOUND));
 
-        OrganizationEntity organization = organizationRepository.findByEmail(inviteDto.getOrganizationEmail())
-                .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.ORGANIZATION_NOT_FOUND_BY_EMAIL));
+        if (!TokenAction.ADD_USER_TO_ORGANIZATION.equals(tokenEntity.getTokenAction())) {
+            throw new BusinessException("Невалидный токен", HttpStatus.BAD_REQUEST);
+        }
+
+        UserEntity user = tokenEntity.getUser();
+        if (user == null) {
+            throw new BusinessException("В токене отсутствует пользователь", HttpStatus.NOT_FOUND);
+        }
+
+        OrganizationEntity organization = tokenEntity.getOrganization();
+
+        if (organization == null) {
+            throw new BusinessException("В токене отсутствует организация", HttpStatus.NOT_FOUND);
+        }
 
         user.addOrganization(organization);
 
         userRepository.save(user);
+
+        tokenEntity.setModifyDttm(OffsetDateTime.now());
+        tokenEntity.setActionIndex(ActionIndex.D);
+
+        tokenRepository.save(tokenEntity);
+
+        return new RedirectView(frontMainPage);
     }
 
     /**
      * Добавить пользователя к заплыву.
      *
-     * @param entity Сущность пользователя
+     * @param entity    Сущность пользователя
      * @param eventUuid Юид заплыва
      */
     public void addToEvent(UserEntity entity, UUID eventUuid) {

@@ -78,3 +78,9 @@ email:
     confirmation:
       sender-email: rankingapp473@gmail.com
       subject-text: Код подтверждения
+  links:
+    add-to-organization: http://127.0.0.1:9000/api/v1/user/confirm-invite?token=%s
+    recovery-password: http://localhost:3000/recovery?token=%s
+
+redirect:
+  front-main: http://localhost:3000/

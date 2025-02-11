@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
-import ru.hse.rankingapp.dto.user.ConfirmInviteDto;
-import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
+import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.service.UserService;
@@ -112,13 +111,11 @@ public class UserController {
     /**
      * Принять приглашение на вступление к организации.
      *
-     * @param inviteDto информация о пользователе и организации.
+     * @param token токен на добавление
      */
     @GetMapping("/confirm-invite")
     @Operation(summary = "Принять запрос на вступление в организцию")
-    public RedirectView confirmInvite(ConfirmInviteDto inviteDto) {
-        userService.confirmInviteIntoOrganization(inviteDto);
-        //todo написать редирект на главную страницу
-        return new RedirectView("/confirmation-success");
+    public RedirectView confirmInvite(UUID token) {
+        return userService.confirmInviteIntoOrganization(token);
     }
 }

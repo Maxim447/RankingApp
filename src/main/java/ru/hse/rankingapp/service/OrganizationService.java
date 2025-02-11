@@ -17,15 +17,21 @@ import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.service.auth.EmailService;
 import ru.hse.rankingapp.service.search.OrganizationSearchWithSpec;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Сервис для работы с организацией.
@@ -40,6 +46,7 @@ public class OrganizationService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final OrganizationSearchWithSpec organizationSearchWithSpec;
+    private final TokenRepository tokenRepository;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -121,6 +128,7 @@ public class OrganizationService {
      * @param organization Сущность организации
      * @param usersEmails  почты пользователей
      */
+    @Transactional
     public void addUsersToOrganization(OrganizationEntity organization, Set<String> usersEmails) {
         if (organization == null) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
@@ -128,14 +136,22 @@ public class OrganizationService {
 
         Set<UserEntity> users = userService.findUsersByEmails(usersEmails);
 
+        List<TokenEntity> tokenEntities = new ArrayList<>();
         CollectionUtils.emptyIfNull(users)
                 .forEach(userEntity -> {
                     try {
-                        emailService.sendConfirmationMessage(userEntity, organization);
+                        TokenEntity tokenEntity = new TokenEntity(UUID.randomUUID(),
+                                TokenAction.ADD_USER_TO_ORGANIZATION,
+                                userEntity, organization);
+
+                        emailService.sendConfirmationMessage(tokenEntity);
+                        tokenEntities.add(tokenEntity);
                     } catch (MessagingException e) {
                         throw new BusinessException(BusinessExceptionsEnum.CANNOT_SEND_MESSAGE);
                     }
                 });
+
+        tokenRepository.saveAll(tokenEntities);
     }
 
     /**
