@@ -26,7 +26,7 @@ public enum BusinessExceptionsEnum {
     //password
     PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD("Пароль не совпадает с паролем подтверждения", HttpStatus.BAD_REQUEST),
     WRONG_OLD_PASSWORD("Неверный старый пароль", HttpStatus.BAD_REQUEST),
-    NEW_PASSWORD_EQUALS_OLD_PASSWORD("Новый пароль не совпадать со старым", HttpStatus.BAD_REQUEST),
+    NEW_PASSWORD_EQUALS_OLD_PASSWORD("Новый пароль не должен совпадать со старым", HttpStatus.BAD_REQUEST),
 
     //authentication
     MISSING_AUTH_HEADER("Отсутствует заголовок авторизации", HttpStatus.UNAUTHORIZED),
