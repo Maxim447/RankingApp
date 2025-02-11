@@ -26,8 +26,8 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
 
     @Query(value = """
             select o from OrganizationEntity o
-            join fetch o.users
-            join fetch o.competitionEntities
+            left join fetch o.users
+            left join fetch o.competitionEntities
             where o.id = :id
             """)
     OrganizationEntity findOrganizationById(@Param(value = "id") Long id);
