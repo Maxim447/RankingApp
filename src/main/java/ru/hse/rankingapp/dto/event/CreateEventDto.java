@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hse.rankingapp.entity.enums.Gender;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
@@ -31,10 +31,7 @@ public class CreateEventDto {
     private Integer maxPoints;
 
     @Schema(description = "Время проведения события")
-    private LocalDate startTime;
-
-    @Schema(description = "Примерное время конца события")
-    private LocalDate endTime;
+    private OffsetDateTime startTime;
 
     @Schema(description = "Прикрепление к определенному соревнованию")
     private UUID competitionUUID;

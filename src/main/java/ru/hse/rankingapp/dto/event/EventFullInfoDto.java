@@ -4,8 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hse.rankingapp.entity.enums.Gender;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 
-import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -33,10 +34,10 @@ public class EventFullInfoDto {
     private Integer maxPoints;
 
     @Schema(description = "Время начала заплыва")
-    private LocalDate startTime;
+    private OffsetDateTime startTime;
 
-    @Schema(description = "Время конца заплыва")
-    private LocalDate endTime;
+    @Schema(description = "Статус")
+    private StatusEnum status;
 
     @Schema(description = "Uuid заплыва")
     private UUID eventUuid;

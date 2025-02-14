@@ -20,8 +20,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.Gender;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -61,10 +61,11 @@ public class EventEntity {
     private Integer maxPoints;
 
     @Column(name = "start_time", nullable = false)
-    private LocalDate startTime;
+    private OffsetDateTime startTime;
 
-    @Column(name = "end_time", nullable = false)
-    private LocalDate endTime;
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
 
     @Column(name = "event_uuid", nullable = false)
     private UUID eventUuid = UUID.randomUUID();

@@ -8,11 +8,12 @@ import ru.hse.rankingapp.dto.event.EventInfoDto;
 import ru.hse.rankingapp.dto.event.EventUserDto;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 
 /**
  * Маппер для работы с сущностью мероприятий.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", imports = StatusEnum.class)
 public interface EventMapper {
 
 
@@ -22,6 +23,7 @@ public interface EventMapper {
      * @param eventDto дто для создания сущности
      * @return {@link EventEntity}
      */
+    @Mapping(target = "status", expression = "java(StatusEnum.IN_PROGRESS)")
     EventEntity toEventEntity(CreateEventDto eventDto);
 
     /**

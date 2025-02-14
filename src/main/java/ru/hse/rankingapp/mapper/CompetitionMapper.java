@@ -10,6 +10,7 @@ import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.Set;
  */
 @Mapper(componentModel = "spring",
         uses = {EventMapper.class, OrganizationMapper.class},
+        imports = StatusEnum.class,
         injectionStrategy = InjectionStrategy.SETTER
 )
 public interface CompetitionMapper {
@@ -38,6 +40,7 @@ public interface CompetitionMapper {
     @Mapping(source = "competition.competitionType", target = "competitionType")
     @Mapping(source = "organization", target = "organization")
     @Mapping(source = "competition.events", target = "eventEntities")
+    @Mapping(target = "status", expression = "java(StatusEnum.IN_PROGRESS)")
     CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition);
 
     /**
