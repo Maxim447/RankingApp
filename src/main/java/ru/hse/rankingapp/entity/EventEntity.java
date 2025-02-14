@@ -67,7 +67,7 @@ public class EventEntity {
     private LocalDate endTime;
 
     @Column(name = "event_uuid", nullable = false)
-    private UUID eventUuid;
+    private UUID eventUuid = UUID.randomUUID();
 
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();

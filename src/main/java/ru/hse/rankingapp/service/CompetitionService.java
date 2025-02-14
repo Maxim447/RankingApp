@@ -3,6 +3,7 @@ package ru.hse.rankingapp.service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,9 @@ public class CompetitionService {
         OrganizationEntity attachedEntity = entityManager.find(OrganizationEntity.class, organization.getId());
 
         CompetitionEntity competitionEntity = competitionMapper.toCompetitionEntity(attachedEntity, createCompetitionDto);
+
+        CollectionUtils.emptyIfNull(competitionEntity.getEventEntities())
+                .forEach(event -> event.setCompetition(competitionEntity));
 
         competitionRepository.save(competitionEntity);
     }
