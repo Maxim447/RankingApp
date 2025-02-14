@@ -44,4 +44,12 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="14-02-2025 17:00:00" author="msalyaev">
+
+        <sqlFile path="v0.0.5/add_status_column.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.5/rollback/add_status_column_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
