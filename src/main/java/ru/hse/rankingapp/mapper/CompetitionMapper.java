@@ -40,7 +40,7 @@ public interface CompetitionMapper {
     @Mapping(source = "competition.competitionType", target = "competitionType")
     @Mapping(source = "organization", target = "organization")
     @Mapping(source = "competition.events", target = "eventEntities")
-    @Mapping(target = "status", expression = "java(StatusEnum.IN_PROGRESS)")
+    @Mapping(target = "status", expression = "java(StatusEnum.CREATED)")
     CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition);
 
     /**

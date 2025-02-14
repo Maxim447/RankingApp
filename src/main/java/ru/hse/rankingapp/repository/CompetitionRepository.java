@@ -7,7 +7,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 
+import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -46,4 +48,19 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             where ce.competitionUuid = :uuid
             """)
     Optional<CompetitionEntity> findByCompetitionUuid(@Param(value = "uuid") UUID uuid);
+
+    /**
+     * Найти все соревнования на текущую дату.
+     *
+     * @param now Текущая дата
+     * @return Все соревнования на текущую дату
+     */
+    @Query(value = """
+            select ce from CompetitionEntity ce
+            left join fetch ce.eventEntities
+            where ce.date = :now
+            and ce.status = ru.hse.rankingapp.entity.enums.StatusEnum.CREATED
+            and ce.actionIndex <> ru.hse.rankingapp.entity.enums.ActionIndex.D
+            """)
+    Set<CompetitionEntity> findAllByCurrentDate(@Param(value = "now") LocalDate now);
 }
