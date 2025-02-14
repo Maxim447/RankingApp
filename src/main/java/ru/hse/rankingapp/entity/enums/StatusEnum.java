@@ -5,6 +5,7 @@ package ru.hse.rankingapp.entity.enums;
  */
 public enum StatusEnum {
 
+    CREATED,
     IN_PROGRESS,
     ENDED
 }

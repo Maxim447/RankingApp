@@ -23,7 +23,7 @@ public interface EventMapper {
      * @param eventDto дто для создания сущности
      * @return {@link EventEntity}
      */
-    @Mapping(target = "status", expression = "java(StatusEnum.IN_PROGRESS)")
+    @Mapping(target = "status", expression = "java(StatusEnum.CREATED)")
     EventEntity toEventEntity(CreateEventDto eventDto);
 
     /**
