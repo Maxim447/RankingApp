@@ -52,4 +52,12 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="15-02-2025 17:00:00" author="msalyaev">
+
+        <sqlFile path="v0.0.5/add_age_category_coulums.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.5/rollback/add_age_category_coulums_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

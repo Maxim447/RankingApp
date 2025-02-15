@@ -10,7 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum SeparatorEnum {
 
-    SPACE(" ");
+    SPACE(" "),
+    DASH("-");
 
     private final String value;
 }
