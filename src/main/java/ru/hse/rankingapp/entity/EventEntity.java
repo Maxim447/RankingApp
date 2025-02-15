@@ -54,8 +54,11 @@ public class EventEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "age_category", nullable = false)
-    private String ageCategory;
+    @Column(name = "age_from", nullable = false)
+    private Integer ageFrom;
+
+    @Column(name = "age_to", nullable = false)
+    private Integer ageTo;
 
     @Column(name = "max_points", nullable = false)
     private Integer maxPoints;

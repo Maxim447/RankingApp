@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.enums.SeparatorEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.utils.FioUtils;
 
@@ -39,14 +40,13 @@ public class XlsxService {
 
             // Создаем заголовок
             Row headerRow = sheet.createRow(0);
-            headerRow.createCell(0).setCellValue("ФИО участника");
+            headerRow.createCell(0).setCellValue("ФИО");
             headerRow.createCell(1).setCellValue("Почта участника");
             headerRow.createCell(2).setCellValue("Возраст");
-            headerRow.createCell(3).setCellValue("Пол");
-            headerRow.createCell(4).setCellValue("Время");
-            headerRow.createCell(5).setCellValue("Очки");
-            headerRow.createCell(6).setCellValue("Место");
-            headerRow.createCell(7).setCellValue("Место в категории");
+            headerRow.createCell(3).setCellValue("Возрастная категория");
+            headerRow.createCell(4).setCellValue("Дисциплина");
+            headerRow.createCell(5).setCellValue("Дистанция");
+            headerRow.createCell(6).setCellValue("Время");
 
             // Создаем стиль для прозрачного текста
             CellStyle transparentStyle = workbook.createCellStyle();
@@ -54,7 +54,7 @@ public class XlsxService {
             font.setColor(IndexedColors.WHITE.getIndex()); // Белый цвет текста (или цвет фона)
             transparentStyle.setFont(font);
 
-            Cell cell = headerRow.createCell(8);
+            Cell cell = headerRow.createCell(7);
             cell.setCellValue(event.getEventUuid().toString());
             cell.setCellStyle(transparentStyle);
 
@@ -67,16 +67,16 @@ public class XlsxService {
                 row.createCell(0).setCellValue(FioUtils.buildFullName(user));
                 row.createCell(1).setCellValue(user.getEmail());
                 row.createCell(2).setCellValue(Period.between(user.getBirthDate(), LocalDate.now()).getYears());
-                row.createCell(3).setCellValue(user.getGender().getValue());
-                row.createCell(4).setCellValue("");
-                row.createCell(5).setCellValue("");
+                row.createCell(3).setCellValue(event.getAgeFrom() + SeparatorEnum.DASH.getValue() + event.getAgeTo());
+                row.createCell(4).setCellValue(event.getStyle());
+                row.createCell(5).setCellValue(event.getDistance());
                 row.createCell(6).setCellValue("");
                 row.createCell(7).setCellValue("");
 
             }
 
             // Автоматически подгоняем ширину колонок под содержимое
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 7; i++) {
                 sheet.autoSizeColumn(i);
             }
 
