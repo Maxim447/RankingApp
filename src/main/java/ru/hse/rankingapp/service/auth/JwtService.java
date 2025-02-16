@@ -5,14 +5,15 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import ru.hse.rankingapp.entity.OrganizationEntity;
-import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.AccountEntity;
+import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.utils.JwtUtils;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -49,65 +50,28 @@ public class JwtService {
     /**
      * Сгенерировать jwt токен.
      */
-    public String generateToken(UserEntity user) {
-        return generateToken(new HashMap<>(), user);
-    }
+    public String generateToken(AccountEntity accountEntity) {
+        Map<String, Object> extraClaims = new HashMap<>();
 
-    /**
-     * Сгенерировать jwt токен.
-     */
-    public String generateToken(OrganizationEntity organization) {
-        return generateToken(new HashMap<>(), organization);
-    }
+        Set<Role> roles = accountEntity.getRoles();
 
-    private String generateToken(Map<String, Object> extraClaims, UserEntity user) {
-        return buildToken(extraClaims, user);
-    }
+        extraClaims.put("email", accountEntity.getEmail());
+        extraClaims.put("roles", accountEntity.getRoleString());
+        extraClaims.put("isOrganization", roles.contains(Role.ORGANIZATION));
+        extraClaims.put("isAdmin", roles.contains(Role.ADMIN));
 
-    private String generateToken(Map<String, Object> extraClaims, OrganizationEntity organization) {
-        return buildTokenByOrganization(extraClaims, organization);
+        return Jwts
+                .builder()
+                .claims(extraClaims)
+                .subject(accountEntity.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + jwtUtils.getExpiresIn()))
+                .signWith(getSignInKey(), Jwts.SIG.HS256)
+                .compact();
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         return jwtUtils.extractClaim(token, claimsResolver);
-    }
-
-    private String buildTokenByOrganization(
-            Map<String, Object> extraClaims,
-            OrganizationEntity organization
-    ) {
-
-        extraClaims.put("email", organization.getEmail());
-        extraClaims.put("role", organization.getRole().name());
-        extraClaims.put("isOrganization", true);
-
-        return Jwts
-                .builder()
-                .claims(extraClaims)
-                .subject(organization.getEmail())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtUtils.getExpiresIn()))
-                .signWith(getSignInKey(), Jwts.SIG.HS256)
-                .compact();
-    }
-
-    private String buildToken(
-            Map<String, Object> extraClaims,
-            UserEntity user
-    ) {
-
-        extraClaims.put("email", user.getEmail());
-        extraClaims.put("role", user.getRole().name());
-        extraClaims.put("isOrganization", false);
-
-        return Jwts
-                .builder()
-                .claims(extraClaims)
-                .subject(user.getEmail())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtUtils.getExpiresIn()))
-                .signWith(getSignInKey(), Jwts.SIG.HS256)
-                .compact();
     }
 
     private boolean isTokenExpired(String token) {

@@ -22,15 +22,19 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
      * @param email почта
      * @return сущность пользователя
      */
-    Optional<OrganizationEntity> findByEmail(String email);
-
     @Query(value = """
             select o from OrganizationEntity o
-            left join fetch o.users
-            left join fetch o.competitionEntities
-            where o.id = :id
+            where o.email = :email
             """)
-    OrganizationEntity findOrganizationById(@Param(value = "id") Long id);
+    Optional<OrganizationEntity> findByEmailOpt(@Param(value = "email") String email);
+
+    /**
+     * Получить сущность пользователя по почте.
+     *
+     * @param email почта
+     * @return сущность пользователя
+     */
+    OrganizationEntity findByEmail(String email);
 
     /**
      * Проверить наличие записи по электронной почте.
@@ -41,44 +45,44 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
     boolean existsByEmail(String email);
 
     /**
-     * Изменить поле password по id.
-     *
-     * @param id       идентификатор пользователя
-     * @param password пароль
-     */
-    @Modifying
-    @Query(value = """
-            UPDATE OrganizationEntity o
-            SET o.password = :password, o.modifyDttm = current timestamp, o.actionIndex = 'U'
-            WHERE o.id = :id
-            """)
-    void updatePasswordById(@Param(value = "id") Long id, @Param(value = "password") String password);
-
-    /**
      * Изменить поле email по id.
      *
-     * @param id    идентификатор пользователя
-     * @param email электронная почта
+     * @param oldEmail идентификатор пользователя
+     * @param email    электронная почта
      */
     @Modifying
     @Query(value = """
             UPDATE OrganizationEntity o
             SET o.email = :email, o.modifyDttm = current timestamp, o.actionIndex = 'U'
-            WHERE o.id = :id
+            WHERE o.email = :oldEmail
             """)
-    void updateEmailById(@Param(value = "id") Long id, @Param(value = "email") String email);
+    void updateEmailByOldEmail(@Param(value = "oldEmail") String oldEmail, @Param(value = "email") String email);
 
     /**
      * Изменить поле isOpen по id.
      *
-     * @param id    идентификатор пользователя
+     * @param email  Почта
      * @param isOpen статус открытости
      */
     @Modifying
     @Query(value = """
             UPDATE OrganizationEntity o
             SET o.isOpen = :isOpen, o.modifyDttm = current timestamp, o.actionIndex = 'U'
-            WHERE o.id = :id
+            WHERE o.email = :email
             """)
-    void updateOpenStatusById(@Param(value = "id") Long id, @Param(value = "isOpen") Boolean isOpen);
+    void updateOpenStatusByEmail(@Param(value = "email") String email, @Param(value = "isOpen") Boolean isOpen);
+
+    /**
+     * Найти организацию по почте.
+     *
+     * @param email Почта
+     * @return Сущность организации
+     */
+    @Query(value = """
+            select o from OrganizationEntity o
+            left join fetch o.users
+            left join fetch o.competitionEntities
+            where o.email = :email
+            """)
+    OrganizationEntity findByEmailWithFetch(@Param(value = "email") String email);
 }

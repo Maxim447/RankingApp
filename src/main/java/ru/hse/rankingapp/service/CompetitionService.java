@@ -1,7 +1,5 @@
 package ru.hse.rankingapp.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -9,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
 import ru.hse.rankingapp.dto.competition.CompetitionSearchParamsDto;
@@ -21,7 +20,9 @@ import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.CompetitionMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
+import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.service.search.CompetitionSearchWithSpec;
+import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -36,25 +37,24 @@ public class CompetitionService {
     private final CompetitionSearchWithSpec competitionSearchWithSpec;
     private final CompetitionRepository competitionRepository;
     private final CompetitionMapper competitionMapper;
-
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final OrganizationRepository organizationRepository;
+    private final JwtUtils jwtUtils;
 
     /**
      * Создать соревнование.
      *
-     * @param organization         организация
      * @param createCompetitionDto Дто для создания соревнования
      */
     @Transactional
-    public void createCompetition(OrganizationEntity organization, CreateCompetitionDto createCompetitionDto) {
-        if (organization == null) {
+    public void createCompetition(CreateCompetitionDto createCompetitionDto) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.isOrganization()) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        OrganizationEntity attachedEntity = entityManager.find(OrganizationEntity.class, organization.getId());
-
-        CompetitionEntity competitionEntity = competitionMapper.toCompetitionEntity(attachedEntity, createCompetitionDto);
+        OrganizationEntity organizationEntity = organizationRepository.findByEmail(userInfoFromRequest.getEmail());
+        CompetitionEntity competitionEntity = competitionMapper.toCompetitionEntity(organizationEntity, createCompetitionDto);
 
         CollectionUtils.emptyIfNull(competitionEntity.getEventEntities())
                 .forEach(event -> event.setCompetition(competitionEntity));

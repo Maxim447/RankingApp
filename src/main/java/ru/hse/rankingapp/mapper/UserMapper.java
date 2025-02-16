@@ -1,12 +1,10 @@
 package ru.hse.rankingapp.mapper;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.entity.UserEntity;
-import ru.hse.rankingapp.entity.enums.Role;
 
 import java.util.List;
 import java.util.Set;
@@ -14,7 +12,7 @@ import java.util.Set;
 /**
  * Маппер для работы с сущностью пользователя.
  */
-@Mapper(componentModel = "spring", imports = Role.class)
+@Mapper(componentModel = "spring")
 public interface UserMapper {
 
     /**
@@ -23,7 +21,6 @@ public interface UserMapper {
      * @param signUpRequestDto запрос для регистрации
      * @return сущность пользователя
      */
-    @Mapping(target = "role", expression = "java(Role.USER)")
     UserEntity signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
 
     /**

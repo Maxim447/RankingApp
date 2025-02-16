@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.password.PasswordChangeDto;
 import ru.hse.rankingapp.dto.password.PasswordValidateTokenDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
+import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -15,6 +17,7 @@ import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
+import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
@@ -36,6 +39,7 @@ public class PasswordService {
     private final OrganizationRepository organizationRepository;
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccountRepository accountRepository;
 
     /**
      * Изменить пароль.
@@ -53,15 +57,16 @@ public class PasswordService {
 
         TokenAction action = tokenEntity.getTokenAction();
 
+        String email;
         if (TokenAction.RESET_PASSWORD_USER.equals(action)) {
             UserEntity user = tokenEntity.getUser();
-
-            userRepository.updatePasswordById(user.getId(), passwordEncoder.encode(passwordChangeDto.getPassword()));
+            email = user.getEmail();
         } else {
             OrganizationEntity organization = tokenEntity.getOrganization();
-
-            organizationRepository.updatePasswordById(organization.getId(), passwordEncoder.encode(passwordChangeDto.getPassword()));
+            email = organization.getEmail();
         }
+
+        accountRepository.updatePasswordByEmail(email, passwordEncoder.encode(passwordChangeDto.getPassword()));
 
         tokenEntity.setActionIndex(ActionIndex.D);
         tokenEntity.setModifyDttm(OffsetDateTime.now());
@@ -75,7 +80,7 @@ public class PasswordService {
      */
     public void recoveryPassword(EmailRequestDto emailRequestDto) {
         String email = emailRequestDto.getEmail();
-        Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+        Optional<UserEntity> userOpt = userRepository.findByEmailOpt(email);
 
         if (userOpt.isPresent()) {
             UserEntity user = userOpt.get();
@@ -88,7 +93,7 @@ public class PasswordService {
             return;
         }
 
-        Optional<OrganizationEntity> organizationOpt = organizationRepository.findByEmail(email);
+        Optional<OrganizationEntity> organizationOpt = organizationRepository.findByEmailOpt(email);
 
         if (organizationOpt.isPresent()) {
             OrganizationEntity organization = organizationOpt.get();
@@ -120,5 +125,24 @@ public class PasswordService {
         if (ActionIndex.D.equals(tokenEntity.getActionIndex())) {
             throw new BusinessException("Токен на восстановление пароля был использован ранее", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    /**
+     * Обновить пароль пользователя.
+     *
+     * @param updatePasswordRequestDto Дто для обновления пароля
+     */
+    @Transactional
+    public void updateAccountPassword(UpdatePasswordRequestDto updatePasswordRequestDto, AccountEntity accountEntity) {
+        if (updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getOldPassword()) ||
+                passwordEncoder.matches(updatePasswordRequestDto.getNewPassword(), accountEntity.getPassword())) {
+            throw new BusinessException(BusinessExceptionsEnum.NEW_PASSWORD_EQUALS_OLD_PASSWORD);
+        }
+
+        if (!passwordEncoder.matches(updatePasswordRequestDto.getOldPassword(), accountEntity.getPassword())) {
+            throw new BusinessException(BusinessExceptionsEnum.WRONG_OLD_PASSWORD);
+        }
+
+        accountRepository.updatePasswordByEmail(accountEntity.getEmail(), passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
     }
 }

@@ -23,15 +23,19 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
      * @param email почта
      * @return сущность пользователя
      */
-    Optional<UserEntity> findByEmail(String email);
+    @Query(value = """
+            select u from UserEntity u
+            where u.email = :email
+            """)
+    Optional<UserEntity> findByEmailOpt(@Param(value = "email") String email);
 
     /**
-     * Получить сущность пользователя по номеру телефона.
+     * Получить сущность пользователя по почте.
      *
-     * @param phone почта
+     * @param email почта
      * @return сущность пользователя
      */
-    Optional<UserEntity> findByPhone(String phone);
+    UserEntity findByEmail(String email);
 
     /**
      * Проверить наличие записи по электронной почте.
@@ -52,44 +56,30 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     /**
      * Изменить поле phone по id.
      *
-     * @param id    идентификатор пользователя
+     * @param email Почта пользователя
      * @param phone номер телефона
      */
     @Modifying
     @Query(value = """
             UPDATE UserEntity u
             SET u.phone = :phone
-            WHERE u.id = :id
+            WHERE u.email = :email
             """)
-    void updatePhoneById(@Param(value = "id") Long id, @Param(value = "phone") String phone);
-
-    /**
-     * Изменить поле password по id.
-     *
-     * @param id       идентификатор пользователя
-     * @param password пароль
-     */
-    @Modifying
-    @Query(value = """
-            UPDATE UserEntity u
-            SET u.password = :password, u.modifyDttm = current timestamp, u.actionIndex = 'U'
-            WHERE u.id = :id
-            """)
-    void updatePasswordById(@Param(value = "id") Long id, @Param(value = "password") String password);
+    void updatePhoneByEmail(@Param(value = "email") String email, @Param(value = "phone") String phone);
 
     /**
      * Изменить поле email по id.
      *
-     * @param id    идентификатор пользователя
-     * @param email электронная почта
+     * @param oldEmail Текущая почта пользователя
+     * @param email    новая электронная почта
      */
     @Modifying
     @Query(value = """
             UPDATE UserEntity u
             SET u.email = :email, u.modifyDttm = current timestamp, u.actionIndex = 'U'
-            WHERE u.id = :id
+            WHERE u.email = :oldEmail
             """)
-    void updateEmailById(@Param(value = "id") Long id, @Param(value = "email") String email);
+    void updateEmailByOldEmail(@Param(value = "oldEmail") String oldEmail, @Param(value = "email") String email);
 
     /**
      * Найти пользователей по почтам.

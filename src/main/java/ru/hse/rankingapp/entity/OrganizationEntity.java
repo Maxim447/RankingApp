@@ -20,16 +20,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
-import ru.hse.rankingapp.entity.enums.Role;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,7 +34,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrganizationEntity implements UserDetails {
+public class OrganizationEntity {
 
     @Id
     @SequenceGenerator(name = "organization_seq", sequenceName = "organization_sequence", allocationSize = 1)
@@ -54,12 +47,6 @@ public class OrganizationEntity implements UserDetails {
 
     @Column(name = "organization_email", unique = true, nullable = false)
     private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "role", nullable = false)
-    private Role role = Role.ORGANIZATION;
 
     @Column(name = "is_open", nullable = false)
     private Boolean isOpen = Boolean.TRUE;
@@ -84,33 +71,6 @@ public class OrganizationEntity implements UserDetails {
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<CompetitionEntity> competitionEntities;
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    /**
-     * Добавить пользователей к организации.
-     *
-     * @param users Пользователи
-     */
-    public void addUsers(Set<UserEntity> users) {
-        if (users.isEmpty()) {
-            return;
-        }
-
-        if (this.users == null) {
-            this.users = new HashSet<>();
-        }
-
-        this.users.addAll(users);
-    }
 
     @Override
     public boolean equals(Object o) {

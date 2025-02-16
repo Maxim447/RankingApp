@@ -7,14 +7,12 @@ import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
 import ru.hse.rankingapp.entity.OrganizationEntity;
-import ru.hse.rankingapp.entity.enums.Role;
 
 /**
  * Маппер для работы с сущностью организации.
  */
 @Mapper(componentModel = "spring",
         uses = {UserMapper.class, CompetitionMapper.class},
-        imports = Role.class,
         injectionStrategy = InjectionStrategy.SETTER
 )
 public interface OrganizationMapper {
@@ -27,7 +25,6 @@ public interface OrganizationMapper {
      */
     @Mapping(source = "organizationEmail", target = "email")
     @Mapping(source = "organizationName", target = "name")
-    @Mapping(target = "role", expression = "java(Role.ORGANIZATION)")
     OrganizationEntity signUpRequestDtoToOrganization(SignUpOrganizationRequestDto signUpRequestDto);
 
     /**

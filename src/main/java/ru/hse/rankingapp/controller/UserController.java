@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,11 +14,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
-import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
-import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.service.UserService;
 
 import java.util.UUID;
@@ -38,49 +35,34 @@ public class UserController {
     /**
      * Получить данные об авторизированном пользователе.
      *
-     * @param user авторизированный пользователь
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/info")
     @Operation(summary = "Получить данные об авторизированном пользователе")
-    public UserInfoDto getAuthenticatedUser(@AuthenticationPrincipal UserEntity user) {
-        return userService.getAuthenticatedUser(user);
+    public UserInfoDto getAuthenticatedUser() {
+        return userService.getAuthenticatedUser();
     }
 
     /**
      * Изменить номер телефона.
      *
      * @param updatePhoneRequestDto dto для изменения номера телефона
-     * @param user                  авторизированный пользователь
      */
     @PostMapping("/update-phone")
     @Operation(summary = "Изменить номер телефона")
-    public void updatePhone(@RequestBody @Valid UpdatePhoneRequestDto updatePhoneRequestDto, @AuthenticationPrincipal UserEntity user) {
-        userService.updatePhone(updatePhoneRequestDto, user);
+    public void updatePhone(@RequestBody @Valid UpdatePhoneRequestDto updatePhoneRequestDto) {
+        userService.updatePhone(updatePhoneRequestDto);
     }
 
     /**
      * Изменить электронную почту.
      *
      * @param updateEmailRequestDto dto для изменения электронной почты
-     * @param user                  авторизированный пользователь
      */
     @PostMapping("/update-email")
     @Operation(summary = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal UserEntity user) {
-        userService.updateEmail(updateEmailRequestDto, user);
-    }
-
-    /**
-     * Изменить пароль.
-     *
-     * @param updatePasswordRequestDto dto для изменения пароля
-     * @param user                     авторизированный пользователь
-     */
-    @PostMapping("/update-password")
-    @Operation(summary = "Изменить пароль")
-    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal UserEntity user) {
-        userService.updatePassword(updatePasswordRequestDto, user);
+    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
+        userService.updateEmail(updateEmailRequestDto);
     }
 
     /**
@@ -99,13 +81,12 @@ public class UserController {
     /**
      * Добавить пользователя к заплыву.
      *
-     * @param entity Сущность пользователя
      * @param eventUuid Юид заплыва
      */
     @PostMapping("/add-to-event/{uuid}")
     @Operation(summary = "Записаться на заплыв")
-    public void addToEvent(@AuthenticationPrincipal UserEntity entity, @PathVariable(value = "uuid") UUID eventUuid) {
-        userService.addToEvent(entity, eventUuid);
+    public void addToEvent(@PathVariable(value = "uuid") UUID eventUuid) {
+        userService.addToEvent(eventUuid);
     }
 
     /**

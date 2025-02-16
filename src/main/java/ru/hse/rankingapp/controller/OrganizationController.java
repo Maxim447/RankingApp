@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +16,6 @@ import ru.hse.rankingapp.dto.organization.UpdateIsOpenStatusDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
-import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
-import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.service.OrganizationService;
 
 import java.util.Set;
@@ -37,61 +34,45 @@ public class OrganizationController {
     /**
      * Получить данные об авторизированной организации.
      *
-     * @param organization авторизированная организация
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/short-info")
     @Operation(summary = "Получить краткую информацию об авторизированной организации")
-    public OrganizationInfoDto getAuthenticatedUser(@AuthenticationPrincipal OrganizationEntity organization) {
-        return organizationService.getAuthenticatedOrganization(organization);
+    public OrganizationInfoDto getAuthenticatedUser() {
+        return organizationService.getAuthenticatedOrganization();
     }
 
     /**
      * Получить полные данные об авторизированной организации.
      *
-     * @param organization авторизированная организация
      * @return dto c данными об авторизованном пользователе
      */
     @GetMapping(value = "/full-info")
     @Operation(summary = "Получить полную информацию об авторизированной организации")
-    public OrganizationFullInfoDto getOrganizationFullInfo(@AuthenticationPrincipal OrganizationEntity organization) {
-        return organizationService.getOrganizationFullInfo(organization);
+    public OrganizationFullInfoDto getOrganizationFullInfo() {
+        return organizationService.getOrganizationFullInfo();
     }
 
     /**
      * Изменить электронную почту.
      *
      * @param updateEmailRequestDto dto для изменения электронной почты
-     * @param organization          авторизированная организация
      */
     @PostMapping("/update-email")
     @Operation(summary = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
-        organizationService.updateEmail(updateEmailRequestDto, organization);
-    }
-
-    /**
-     * Изменить пароль.
-     *
-     * @param updatePasswordRequestDto dto для изменения пароля
-     * @param organization             авторизированная организация
-     */
-    @PostMapping("/update-password")
-    @Operation(summary = "Изменить пароль")
-    public void updatePassword(@RequestBody @Valid UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal OrganizationEntity organization) {
-        organizationService.updatePassword(updatePasswordRequestDto, organization);
+    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
+        organizationService.updateEmail(updateEmailRequestDto);
     }
 
     /**
      * Изменить признак открытости у организации
      *
      * @param updateIsOpenStatusDto Дто для обновления статуса организации
-     * @param organization          авторизированная организация
      */
     @PostMapping("/update-open-status")
     @Operation(summary = "Изменить признак открытости у организации")
-    public void updateOpenStatus(@RequestBody @Valid UpdateIsOpenStatusDto updateIsOpenStatusDto, @AuthenticationPrincipal OrganizationEntity organization) {
-        organizationService.updateOpenStatus(updateIsOpenStatusDto, organization);
+    public void updateOpenStatus(@RequestBody @Valid UpdateIsOpenStatusDto updateIsOpenStatusDto) {
+        organizationService.updateOpenStatus(updateIsOpenStatusDto);
     }
 
     /**
@@ -110,12 +91,11 @@ public class OrganizationController {
     /**
      * Отправить приглашение пользователю(ям) на вступление в организацию.
      *
-     * @param organization Сущность организации
-     * @param usersEmail   почты пользователей
+     * @param usersEmail почты пользователей
      */
     @PostMapping("/send-invite-to-users")
     @Operation(summary = "Отправить приглашение пользователю(ям) на вступление в организацию")
-    public void addUsersToOrganization(@AuthenticationPrincipal OrganizationEntity organization, @RequestBody Set<String> usersEmail) {
-        organizationService.addUsersToOrganization(organization, usersEmail);
+    public void addUsersToOrganization(@RequestBody Set<String> usersEmail) {
+        organizationService.addUsersToOrganization(usersEmail);
     }
 }

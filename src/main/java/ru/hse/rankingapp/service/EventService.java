@@ -51,7 +51,7 @@ public class EventService {
             throw new BusinessException("Не удалось получить информацию о пользователе", HttpStatus.NOT_FOUND);
         }
 
-        if (userInfoFromRequest.getRole().equals(Role.USER)) {
+        if (userInfoFromRequest.getRoles().contains(Role.USER)) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
