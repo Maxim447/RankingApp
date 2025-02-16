@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.view.RedirectView;
+import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
-import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
@@ -21,6 +20,7 @@ import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
+import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
@@ -28,6 +28,7 @@ import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
+import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
@@ -42,10 +43,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
     private final UserSearchWithSpec userSearchWithSpec;
     private final EventService eventService;
     private final TokenRepository tokenRepository;
+    private final JwtUtils jwtUtils;
 
     @Value("${redirect.front-main}")
     private String frontMainPage;
@@ -53,65 +54,62 @@ public class UserService {
     /**
      * Получить данные об авторизированном пользователе.
      *
-     * @param user авторизированный пользователь
      * @return dto c данными об авторизованном пользователе
      */
-    public UserInfoDto getAuthenticatedUser(UserEntity user) {
-        return userMapper.mapToUserInfoDto(user);
+    public UserInfoDto getAuthenticatedUser() {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        UserEntity userEntity = userRepository.findByEmail(userInfoFromRequest.getEmail());
+
+        return userMapper.mapToUserInfoDto(userEntity);
     }
 
     /**
      * Изменить номер телефона.
      *
      * @param updatePhoneRequestDto dto для изменения номера телефона
-     * @param user                  авторизированный пользователь
      */
     @Transactional
-    public void updatePhone(UpdatePhoneRequestDto updatePhoneRequestDto, UserEntity user) {
+    public void updatePhone(UpdatePhoneRequestDto updatePhoneRequestDto) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
         String phone = updatePhoneRequestDto.getPhone();
         boolean exist = userRepository.existsByPhone(phone);
         if (exist) {
             throw new BusinessException(BusinessExceptionsEnum.PHONE_ALREADY_EXISTS);
         }
 
-        userRepository.updatePhoneById(user.getId(), phone);
-    }
-
-    /**
-     * Изменить пароль.
-     *
-     * @param updatePasswordRequestDto для изменения пароля
-     * @param user                     авторизированный пользователь
-     */
-    @Transactional
-    public void updatePassword(UpdatePasswordRequestDto updatePasswordRequestDto, UserEntity user) {
-        if (updatePasswordRequestDto.getNewPassword().equals(updatePasswordRequestDto.getOldPassword()) ||
-                passwordEncoder.matches(updatePasswordRequestDto.getNewPassword(), user.getPassword())) {
-            throw new BusinessException(BusinessExceptionsEnum.NEW_PASSWORD_EQUALS_OLD_PASSWORD);
-        }
-
-        if (!passwordEncoder.matches(updatePasswordRequestDto.getOldPassword(), user.getPassword())) {
-            throw new BusinessException(BusinessExceptionsEnum.WRONG_OLD_PASSWORD);
-        }
-
-        userRepository.updatePasswordById(user.getId(), passwordEncoder.encode(updatePasswordRequestDto.getNewPassword()));
+        userRepository.updatePhoneByEmail(userInfoFromRequest.getEmail(), phone);
     }
 
     /**
      * Изменить электронную почту.
      *
      * @param updateEmailRequestDto dto для изменения электронной почты
-     * @param user                  авторизированный пользователь
      */
     @Transactional
-    public void updateEmail(EmailRequestDto updateEmailRequestDto, UserEntity user) {
+    public void updateEmail(EmailRequestDto updateEmailRequestDto) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
         String email = updateEmailRequestDto.getEmail();
         boolean exist = userRepository.existsByEmail(email);
         if (exist) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
-        userRepository.updateEmailById(user.getId(), email);
+        userRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
     }
 
     /**
@@ -187,15 +185,16 @@ public class UserService {
     /**
      * Добавить пользователя к заплыву.
      *
-     * @param entity    Сущность пользователя
      * @param eventUuid Юид заплыва
      */
-    public void addToEvent(UserEntity entity, UUID eventUuid) {
-        if (entity == null) {
+    public void addToEvent(UUID eventUuid) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        UserEntity user = userRepository.findByEmail(entity.getEmail())
+        UserEntity user = userRepository.findByEmailOpt(userInfoFromRequest.getEmail())
                 .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
 
         eventService.addUserToEvent(user, eventUuid);

@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.hse.rankingapp.entity.enums.Role;
 
+import java.util.Set;
+
 /**
  * Модель с пользовательскими данными из jwt токена.
  */
@@ -23,10 +25,13 @@ public class UserAuthentication {
     @Schema(description = "true -> организация, false -> спортсмен")
     private boolean isOrganization;
 
+    @Schema(description = "Является ли пользователь админом")
+    private boolean isAdmin;
+
     /**
-     * Роль пользователя.
+     * Роли пользователя.
      */
     @Hidden
     @JsonIgnore
-    private Role role;
+    private Set<Role> roles;
 }

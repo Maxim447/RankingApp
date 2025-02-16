@@ -9,24 +9,28 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.dto.VerificationCodeResponseDto;
 import ru.hse.rankingapp.dto.login.LoginRequestDto;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
-import ru.hse.rankingapp.dto.VerificationCodeResponseDto;
 import ru.hse.rankingapp.dto.organization.SignUpOrganizationRequestDto;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.enums.Role;
+import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
+import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.mapper.UserMapper;
+import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.utils.JwtUtils;
 import ru.hse.rankingapp.utils.Validator;
 import ru.hse.rankingapp.utils.VerificationCodeGenerator;
-import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
-import ru.hse.rankingapp.exception.BusinessException;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Сервис для работы с аутентификацией пользователя.
@@ -44,6 +48,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final AccountRepository accountRepository;
 
     /**
      * Получить код для подтверждения электронной почты.
@@ -72,18 +77,25 @@ public class AuthService {
      *
      * @param signUpRequestDto Дто запроса для регистрации
      */
+    @Transactional
     public void signUpOrganization(SignUpOrganizationRequestDto signUpRequestDto) {
         if (!signUpRequestDto.getPassword().equals(signUpRequestDto.getConfirmPassword())) {
             throw new BusinessException(BusinessExceptionsEnum.PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD);
         }
 
-        if (organizationRepository.existsByEmail(signUpRequestDto.getOrganizationEmail())) {
+        if (accountRepository.existsByEmail(signUpRequestDto.getOrganizationEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
         OrganizationEntity organization = organizationMapper.signUpRequestDtoToOrganization(signUpRequestDto);
-        organization.setPassword(passwordEncoder.encode(organization.getPassword()));
+
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setEmail(signUpRequestDto.getOrganizationEmail());
+        accountEntity.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
+        accountEntity.setRoles(Set.of(Role.ORGANIZATION));
+
         organizationRepository.save(organization);
+        accountRepository.save(accountEntity);
     }
 
     /**
@@ -97,13 +109,19 @@ public class AuthService {
             throw new BusinessException(BusinessExceptionsEnum.PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD);
         }
 
-        if (userRepository.existsByEmail(signUpRequestDto.getEmail())) {
+        if (accountRepository.existsByEmail(signUpRequestDto.getEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
         UserEntity user = userMapper.signUpRequestDtoToUser(signUpRequestDto);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setEmail(signUpRequestDto.getEmail());
+        accountEntity.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
+        accountEntity.setRoles(Set.of(Role.USER));
+
         userRepository.save(user);
+        accountRepository.save(accountEntity);
     }
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
@@ -129,15 +147,9 @@ public class AuthService {
             throw new BusinessException(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        Optional<UserEntity> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            String jwtToken = jwtService.generateToken(userOptional.get());
-            return LoginResponseDto.of(jwtToken);
-        }
-
-        Optional<OrganizationEntity> organizationOptional = organizationRepository.findByEmail(email);
-        if (organizationOptional.isPresent()) {
-            String jwtToken = jwtService.generateToken(organizationOptional.get());
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findByEmail(email);
+        if (accountEntityOptional.isPresent()) {
+            String jwtToken = jwtService.generateToken(accountEntityOptional.get());
             return LoginResponseDto.of(jwtToken);
         }
 

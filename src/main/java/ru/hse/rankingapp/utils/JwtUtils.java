@@ -9,13 +9,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.entity.enums.Role;
+import ru.hse.rankingapp.enums.SeparatorEnum;
 import ru.hse.rankingapp.properties.JwtProperties;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Класс для работы с jwt токеном.
@@ -78,10 +82,15 @@ public class JwtUtils {
         }
 
         String email = claims.getSubject();
-        String role = claims.get("role", String.class);
+        String rolesString = claims.get("roles", String.class);
         boolean isOrganization = claims.get("isOrganization", Boolean.class);
+        boolean isAdmin = claims.get("isAdmin", Boolean.class);
 
-        return UserAuthentication.of(email, isOrganization, Role.valueOf(role));
+        Set<Role> roles = Arrays.stream(rolesString.split(SeparatorEnum.SPACE.getValue()))
+                .map(Role::valueOf)
+                .collect(Collectors.toSet());
+
+        return UserAuthentication.of(email, isOrganization, isAdmin, roles);
     }
 
     /**

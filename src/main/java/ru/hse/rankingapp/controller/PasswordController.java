@@ -3,6 +3,7 @@ package ru.hse.rankingapp.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.password.PasswordChangeDto;
 import ru.hse.rankingapp.dto.password.PasswordValidateTokenDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
+import ru.hse.rankingapp.dto.user.UpdatePasswordRequestDto;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.service.PasswordService;
 
 /**
@@ -52,5 +55,16 @@ public class PasswordController {
     @Operation(summary = "Валидация токена на смену пароля")
     public void validatePasswordToken(@RequestBody PasswordValidateTokenDto passwordValidateTokenDto) {
         passwordService.validateToken(passwordValidateTokenDto);
+    }
+
+    /**
+     * Обновить пароль пользователя.
+     *
+     * @param updatePasswordRequestDto Дто для обновления пароля
+     */
+    @PostMapping("/update")
+    @Operation(summary = "Обновить пароль пользователя")
+    public void updateAccountPassword(@RequestBody UpdatePasswordRequestDto updatePasswordRequestDto, @AuthenticationPrincipal AccountEntity accountEntity) {
+        passwordService.updateAccountPassword(updatePasswordRequestDto, accountEntity);
     }
 }

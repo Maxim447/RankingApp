@@ -41,7 +41,9 @@ public class SecurityConfiguration {
                                 .requestMatchers(
                                         "/api/v1/auth/**",
                                         "/api/v1/user/confirm-invite",
-                                        "/api/v1/password/**",
+                                        "/api/v1/password/change",
+                                        "/api/v1/password/validate-token",
+                                        "/api/v1/password/recovery",
                                         "/ranking-app/swagger-ui",
                                         "/ranking-app/swagger-ui/*",
                                         "/ranking-app/v3/api-docs/*",
