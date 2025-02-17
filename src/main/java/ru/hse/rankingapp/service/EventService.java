@@ -5,9 +5,11 @@ import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
+import ru.hse.rankingapp.dto.event.EventResultDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
@@ -21,8 +23,13 @@ import ru.hse.rankingapp.repository.EventRepository;
 import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Сервис для работы с мероприятиями.
@@ -114,5 +121,26 @@ public class EventService {
         byte[] xlsxData = xlsxService.generateXlsxTemplateByEvent(event);
 
         return Pair.of(String.format(XLSX_TEMPLATE_NAME, LocalDate.now()), xlsxData);
+    }
+
+    @Transactional
+    public void uploadEventResults(MultipartFile file, UUID eventUuid) {
+        EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
+                new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
+
+        Map<String, EventUserLinkEntity> userLinkEntityMap = event.getEventUserLinks().stream()
+                .collect(Collectors.toMap(
+                        userEvent -> userEvent.getUser().getEmail(),
+                        Function.identity()
+                ));
+        List<EventResultDto> eventResultDto = xlsxService.parseXlsxTemplate(file);
+        eventResultDto.sort(Comparator.comparing(EventResultDto::getTime));
+
+        int place = 1;
+        for (EventResultDto resultDto : eventResultDto) {
+            EventUserLinkEntity eventUserLinkEntity = userLinkEntityMap.get(resultDto.getEmail());
+            eventUserLinkEntity.setPlace(place++);
+            eventUserLinkEntity.setTime(resultDto.getTime());
+        }
     }
 }

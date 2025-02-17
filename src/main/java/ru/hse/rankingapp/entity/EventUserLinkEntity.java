@@ -20,6 +20,7 @@ import lombok.Setter;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 /**
@@ -40,7 +41,7 @@ public class EventUserLinkEntity {
     private Long id;
 
     @Column(name = "time")
-    private Double time;
+    private LocalTime time;
 
     @Column(name = "points")
     private Integer points;
