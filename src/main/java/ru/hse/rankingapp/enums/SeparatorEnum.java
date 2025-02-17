@@ -11,6 +11,7 @@ import lombok.Getter;
 public enum SeparatorEnum {
 
     SPACE(" "),
+    SEMICOLON(":"),
     DASH("-");
 
     private final String value;
