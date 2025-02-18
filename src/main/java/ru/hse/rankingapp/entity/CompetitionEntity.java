@@ -50,6 +50,12 @@ public class CompetitionEntity {
     @Column(name = "location", nullable = false)
     private String location;
 
+    @Column(name = "contact_link", nullable = false)
+    private String contactLink;
+
+    @Column(name = "description")
+    private String description;
+
     @Column(name = "date", nullable = false)
     private LocalDate date;
 

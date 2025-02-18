@@ -13,5 +13,13 @@
         <sqlFile path="v0.0.6/change_time_column_type.sql" relativeToChangelogFile="true"/>
         <rollback>
             <sqlFile path="v0.0.6/rollback/change_time_column_type_rollback.sql" relativeToChangelogFile="true"/>
-        </rollback></changeSet>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="18-02-2025 17:00:00" author="msalyaev">
+        <sqlFile path="v0.0.6/alter_competition_table.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.6/rollback/alter_competition_table_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
