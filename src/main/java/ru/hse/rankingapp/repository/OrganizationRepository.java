@@ -45,7 +45,7 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
     boolean existsByEmail(String email);
 
     /**
-     * Изменить поле email по id.
+     * Изменить поле email по старой почте.
      *
      * @param oldEmail идентификатор пользователя
      * @param email    электронная почта

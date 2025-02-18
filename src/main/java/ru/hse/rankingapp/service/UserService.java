@@ -25,6 +25,7 @@ import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
+import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
@@ -47,6 +48,7 @@ public class UserService {
     private final EventService eventService;
     private final TokenRepository tokenRepository;
     private final JwtUtils jwtUtils;
+    private final AccountRepository accountRepository;
 
     @Value("${redirect.front-main}")
     private String frontMainPage;
@@ -104,12 +106,13 @@ public class UserService {
         }
 
         String email = updateEmailRequestDto.getEmail();
-        boolean exist = userRepository.existsByEmail(email);
+        boolean exist = accountRepository.existsByEmail(email);
         if (exist) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
         userRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+        accountRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
     }
 
     /**
