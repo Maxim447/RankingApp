@@ -23,6 +23,7 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             select ee from EventEntity ee
             left join fetch ee.eventUserLinks eul
             left join fetch eul.user
+            left join fetch ee.competition
             where ee.eventUuid = :uuid
             """)
     Optional<EventEntity> findByUuid(@Param(value = "uuid") UUID uuid);
