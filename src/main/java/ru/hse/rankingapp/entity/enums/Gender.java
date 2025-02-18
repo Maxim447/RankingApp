@@ -10,7 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Gender {
     MALE("Мужчина"),
-    FEMALE("Женщина");
+    FEMALE("Женщина"),
+    MIXED("Смешанный");
 
     private final String value;
 }
