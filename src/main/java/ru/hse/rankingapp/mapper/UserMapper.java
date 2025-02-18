@@ -1,8 +1,10 @@
 package ru.hse.rankingapp.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
+import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.entity.UserEntity;
 
@@ -12,7 +14,7 @@ import java.util.Set;
 /**
  * Маппер для работы с сущностью пользователя.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {OrganizationMapper.class, EventMapper.class, CompetitionMapper.class})
 public interface UserMapper {
 
     /**
@@ -39,4 +41,16 @@ public interface UserMapper {
      */
     @Named(value = "mapUsers")
     List<UserInfoDto> mapUserInfoList(Set<UserEntity> users);
+
+
+    /**
+     * Смапить полную информацию о пользователе.
+     *
+     * @param userEntity Сущность пользователя
+     * @return Полная информация о пользователе
+     */
+    @Mapping(source = "organizations", target = "userOrganizations")
+    @Mapping(source = "competitionUserLinks", target = "userCompetitions")
+    @Mapping(source = "eventUserLinks", target = "userEvents")
+    UserFullInfoDto mapToUserFullInfoDto(UserEntity userEntity);
 }

@@ -9,6 +9,7 @@ import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
+import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.enums.StatusEnum;
 
@@ -71,4 +72,21 @@ public interface CompetitionMapper {
     @Mapping(source = "eventEntities", target = "events")
     @Mapping(source = "organization", target = "organizationInfo")
     CompetitionFullInfoDto mapToCompetitionFullInfo(CompetitionEntity competitionEntity);
+
+    /**
+     * Смапить информацию о соревнованиях.
+     *
+     * @param competitionUserLinkEntities Линковочная таблица для пользователя и соревнований.
+     * @return Информация о соревнованиях
+     */
+    List<CompetitionInfoDto> mapCompetitionInfoDtoList(Set<CompetitionUserLinkEntity> competitionUserLinkEntities);
+
+    /**
+     * Смапить информацию о соревнованиях.
+     *
+     * @param competitionUserLinkEntities Линковочная таблица для пользователя и соревнований.
+     * @return Информация о соревнованиях
+     */
+    @Mapping(source = "competitionEntity", target = ".")
+    CompetitionInfoDto mapCompetitionInfoDtoList(CompetitionUserLinkEntity competitionUserLinkEntities);
 }

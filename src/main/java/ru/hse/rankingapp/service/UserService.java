@@ -15,6 +15,7 @@ import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
+import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.entity.AccountEntity;
@@ -209,5 +210,22 @@ public class UserService {
                 .orElseThrow(() -> new BusinessException(BusinessExceptionsEnum.USER_NOT_FOUND_BY_EMAIL));
 
         eventService.addUserToEvent(user, eventUuid);
+    }
+
+    /**
+     * Получить полную информацию о пользователе.
+     *
+     * @return Полная информация о пользователе
+     */
+    public UserFullInfoDto getUserFullInfo() {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        UserEntity userEntity = userRepository.findAllInfoByEmail(userInfoFromRequest.getEmail());
+
+        return userMapper.mapToUserFullInfoDto(userEntity);
     }
 }

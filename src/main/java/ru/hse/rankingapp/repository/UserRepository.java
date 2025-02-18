@@ -38,6 +38,23 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     UserEntity findByEmail(String email);
 
     /**
+     * Получить сущность пользователя по почте.
+     *
+     * @param email почта
+     * @return сущность пользователя
+     */
+    @Query(value = """
+            select u from UserEntity u
+            left join fetch u.organizations
+            left join fetch u.eventUserLinks eul
+            left join fetch eul.event
+            left join fetch u.competitionUserLinks cul
+            left join fetch cul.competitionEntity
+            where u.email = :email
+            """)
+    UserEntity findAllInfoByEmail(@Param(value = "email") String email);
+
+    /**
      * Проверить наличие записи по электронной почте.
      *
      * @param email почта

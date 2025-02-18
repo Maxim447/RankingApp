@@ -10,6 +10,9 @@ import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.enums.StatusEnum;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Маппер для работы с сущностью мероприятий.
  */
@@ -51,4 +54,21 @@ public interface EventMapper {
      */
     @Mapping(source = "user.", target = ".")
     EventUserDto mapEventUserDto(EventUserLinkEntity entity);
+
+    /**
+     * Смапить список информаций о заплывах.
+     *
+     * @param eventUserLinkEntities Линковочная таблица пользователя и заплыва
+     * @return Информация о заплывах
+     */
+    List<EventInfoDto> mapEventInfoDtoList(Set<EventUserLinkEntity> eventUserLinkEntities);
+
+    /**
+     * Смапить информацию о заплыве.
+     *
+     * @param eventUserLinkEntities Линковочная таблица пользователя и заплыва
+     * @return Информация о заплыве
+     */
+    @Mapping(source = "event", target = ".")
+    EventInfoDto mapEventInfoDto(EventUserLinkEntity eventUserLinkEntities);
 }
