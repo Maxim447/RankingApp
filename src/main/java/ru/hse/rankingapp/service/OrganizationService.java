@@ -22,6 +22,7 @@ import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
+import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.service.auth.EmailService;
@@ -47,6 +48,7 @@ public class OrganizationService {
     private final OrganizationSearchWithSpec organizationSearchWithSpec;
     private final TokenRepository tokenRepository;
     private final JwtUtils jwtUtils;
+    private final AccountRepository accountRepository;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -78,13 +80,14 @@ public class OrganizationService {
         }
 
         String email = updateEmailRequestDto.getEmail();
-        boolean exist = organizationRepository.existsByEmail(email);
+        boolean exist = accountRepository.existsByEmail(email);
 
         if (exist) {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
         organizationRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+        accountRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
     }
 
     /**

@@ -35,4 +35,18 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
 
     boolean existsByEmail(String email);
+
+    /**
+     * Изменить поле email по старой почте.
+     *
+     * @param oldEmail идентификатор пользователя
+     * @param email    электронная почта
+     */
+    @Modifying
+    @Query(value = """
+            UPDATE AccountEntity ae
+            SET ae.email = :email
+            WHERE ae.email = :oldEmail
+            """)
+    void updateEmailByOldEmail(@Param(value = "oldEmail") String oldEmail, @Param(value = "email") String email);
 }
