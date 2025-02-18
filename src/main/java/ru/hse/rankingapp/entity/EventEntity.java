@@ -87,7 +87,7 @@ public class EventEntity {
     @JoinColumn(name = "competition_id")
     private CompetitionEntity competition;
 
-    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<EventUserLinkEntity> eventUserLinks;
 
     @Override

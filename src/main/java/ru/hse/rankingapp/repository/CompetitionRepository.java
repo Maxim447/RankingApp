@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.repository;
 
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -63,4 +64,20 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             and ce.actionIndex <> ru.hse.rankingapp.entity.enums.ActionIndex.D
             """)
     Set<CompetitionEntity> findAllByCurrentDate(@Param(value = "now") LocalDate now);
+
+    /**
+     * Получить соревнование и почту организации по uuid.
+     *
+     * @param competitionUuid Uuid соревнования
+     * @return соревнование и почта организации.
+     */
+    @Query(value = """
+            select ce, o.email from CompetitionEntity ce
+            left join ce.organization o
+            left join fetch ce.eventEntities ee
+            left join fetch ee.eventUserLinks
+            left join fetch ce.competitionUserLinkEntities
+            where ce.competitionUuid = :uuid
+            """)
+    Optional<Tuple> findByUuidWithOrganization(@Param(value = "uuid") UUID competitionUuid);
 }
