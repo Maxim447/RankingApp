@@ -147,7 +147,7 @@ public class AuthService {
             throw new BusinessException(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findByEmail(email);
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findByEmailOpt(email);
         if (accountEntityOptional.isPresent()) {
             String jwtToken = jwtService.generateToken(accountEntityOptional.get());
             return LoginResponseDto.of(jwtToken);

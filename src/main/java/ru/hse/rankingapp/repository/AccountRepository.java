@@ -12,12 +12,31 @@ import java.util.Optional;
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
+    /**
+     * Получить сущность аккаунта по почте.
+     *
+     * @param email Почта
+     * @return Сущность аккаунта
+     */
     @Query(value = """
             select ae from AccountEntity ae
             join fetch ae.roles
             where ae.email = :email
             """)
-    Optional<AccountEntity> findByEmail(@Param(value = "email") String email);
+    Optional<AccountEntity> findByEmailOpt(@Param(value = "email") String email);
+
+    /**
+     * Получить сущность аккаунта по почте.
+     *
+     * @param email Почта
+     * @return Сущность аккаунта
+     */
+    @Query(value = """
+            select ae from AccountEntity ae
+            join fetch ae.roles
+            where ae.email = :email
+            """)
+    AccountEntity findByEmail(@Param(value = "email") String email);
 
     /**
      * Изменить поле password по email.
