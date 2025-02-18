@@ -28,7 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String email) {
-        Optional<AccountEntity> accountEntityOptional = accountRepository.findByEmail(email);
+        Optional<AccountEntity> accountEntityOptional = accountRepository.findByEmailOpt(email);
 
         if (accountEntityOptional.isPresent()) {
             return accountEntityOptional.get();

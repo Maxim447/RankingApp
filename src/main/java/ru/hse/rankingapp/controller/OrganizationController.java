@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
@@ -60,8 +61,8 @@ public class OrganizationController {
      */
     @PostMapping("/update-email")
     @Operation(summary = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
-        organizationService.updateEmail(updateEmailRequestDto);
+    public LoginResponseDto updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
+        return organizationService.updateEmail(updateEmailRequestDto);
     }
 
     /**

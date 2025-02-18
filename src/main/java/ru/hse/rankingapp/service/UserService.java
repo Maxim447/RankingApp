@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -28,6 +30,7 @@ import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
+import ru.hse.rankingapp.service.auth.JwtService;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 import ru.hse.rankingapp.utils.JwtUtils;
 
@@ -48,6 +51,7 @@ public class UserService {
     private final EventService eventService;
     private final TokenRepository tokenRepository;
     private final JwtUtils jwtUtils;
+    private final JwtService jwtService;
     private final AccountRepository accountRepository;
 
     @Value("${redirect.front-main}")
@@ -98,7 +102,7 @@ public class UserService {
      * @param updateEmailRequestDto dto для изменения электронной почты
      */
     @Transactional
-    public void updateEmail(EmailRequestDto updateEmailRequestDto) {
+    public LoginResponseDto updateEmail(EmailRequestDto updateEmailRequestDto) {
         UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
 
         if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
@@ -111,8 +115,13 @@ public class UserService {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
-        userRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+        AccountEntity accountEntity = accountRepository.findByEmail(userInfoFromRequest.getEmail());
+
+        userRepository.updateEmailByOldEmail(accountEntity.getEmail(), email);
         accountRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+
+        String token = jwtService.generateToken(accountEntity);
+        return LoginResponseDto.of(token);
     }
 
     /**

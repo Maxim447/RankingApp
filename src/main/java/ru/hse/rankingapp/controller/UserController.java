@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
@@ -61,8 +62,8 @@ public class UserController {
      */
     @PostMapping("/update-email")
     @Operation(summary = "Изменить электронную почту")
-    public void updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
-        userService.updateEmail(updateEmailRequestDto);
+    public LoginResponseDto updateEmail(@RequestBody @Valid EmailRequestDto updateEmailRequestDto) {
+        return userService.updateEmail(updateEmailRequestDto);
     }
 
     /**

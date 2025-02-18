@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationSearchParamsDto;
@@ -15,6 +16,7 @@ import ru.hse.rankingapp.dto.organization.UpdateIsOpenStatusDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -26,6 +28,7 @@ import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.service.auth.EmailService;
+import ru.hse.rankingapp.service.auth.JwtService;
 import ru.hse.rankingapp.service.search.OrganizationSearchWithSpec;
 import ru.hse.rankingapp.utils.JwtUtils;
 
@@ -47,6 +50,7 @@ public class OrganizationService {
     private final EmailService emailService;
     private final OrganizationSearchWithSpec organizationSearchWithSpec;
     private final TokenRepository tokenRepository;
+    private final JwtService jwtService;
     private final JwtUtils jwtUtils;
     private final AccountRepository accountRepository;
 
@@ -72,7 +76,7 @@ public class OrganizationService {
      * @param updateEmailRequestDto dto для изменения электронной почты
      */
     @Transactional
-    public void updateEmail(EmailRequestDto updateEmailRequestDto) {
+    public LoginResponseDto updateEmail(EmailRequestDto updateEmailRequestDto) {
         UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
 
         if (userInfoFromRequest == null || !userInfoFromRequest.isOrganization()) {
@@ -86,8 +90,12 @@ public class OrganizationService {
             throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
         }
 
+        AccountEntity accountEntity = accountRepository.findByEmail(userInfoFromRequest.getEmail());
+
         organizationRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
-        accountRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+        accountRepository.updateEmailByOldEmail(accountEntity.getEmail(), email);
+
+        return LoginResponseDto.of(jwtService.generateToken(accountEntity));
     }
 
     /**
