@@ -16,6 +16,7 @@ import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
+import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.service.UserService;
@@ -99,5 +100,16 @@ public class UserController {
     @Operation(summary = "Принять запрос на вступление в организцию")
     public RedirectView confirmInvite(UUID token) {
         return userService.confirmInviteIntoOrganization(token);
+    }
+
+    /**
+     * Получить полную информацию о пользователе.
+     *
+     * @return Полная информация о пользователе
+     */
+    @GetMapping("/full-info")
+    @Operation(summary = "Получить полную информацию о пользователе")
+    public UserFullInfoDto getUserFullInfoDto() {
+        return userService.getUserFullInfo();
     }
 }
