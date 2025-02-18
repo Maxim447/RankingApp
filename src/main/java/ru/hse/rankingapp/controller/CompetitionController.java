@@ -3,6 +3,7 @@ package ru.hse.rankingapp.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,5 +65,16 @@ public class CompetitionController {
     @Operation(summary = "Найти соревнования по поисковым параметрам")
     public PageResponseDto<CompetitionInfoDto> searchCompetitions(CompetitionSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return competitionService.searchCompetitions(searchParams, pageRequest);
+    }
+
+    /**
+     * Удалить соревнование по uuid.
+     *
+     * @param competitionUuid Uuid соревнования
+     */
+    @DeleteMapping("/delete/{uuid}")
+    @Operation(summary = "Удалить соревнование по uuid")
+    public void deleteCompetitionByUuid(@PathVariable(value = "uuid") UUID competitionUuid) {
+        competitionService.deleteCompetition(competitionUuid);
     }
 }

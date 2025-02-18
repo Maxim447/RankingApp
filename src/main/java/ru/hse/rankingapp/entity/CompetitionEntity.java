@@ -86,10 +86,10 @@ public class CompetitionEntity {
     @JoinColumn(name = "organization_id")
     private OrganizationEntity organization;
 
-    @OneToMany(mappedBy = "competition", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "competition", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<EventEntity> eventEntities;
 
-    @OneToMany(mappedBy = "competitionEntity", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "competitionEntity", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     private Set<CompetitionUserLinkEntity> competitionUserLinkEntities;
 
     @Override

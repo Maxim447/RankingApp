@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.service;
 
+import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.CompetitionMapper;
@@ -92,5 +94,30 @@ public class CompetitionService {
                 .map(competitionMapper::mapToCompetitionInfoDto);
 
         return new PageResponseDto<>(page.getTotalElements(), page.getTotalPages(), page.getContent());
+    }
+
+    /**
+     * Удалить соревнование по uuid.
+     *
+     * @param competitionUuid Uuid соревнования
+     */
+    @Transactional
+    public void deleteCompetition(UUID competitionUuid) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null) {
+            throw new BusinessException("Не удалось получить информацию о пользователе", HttpStatus.NOT_FOUND);
+        }
+
+        Tuple competitionTuple = competitionRepository.findByUuidWithOrganization(competitionUuid).orElseThrow(() ->
+                new BusinessException("Не удалось найти соревнование по uuid = " + competitionUuid, HttpStatus.NOT_FOUND));
+
+        String email = competitionTuple.get(1, String.class);
+        if (!userInfoFromRequest.getRoles().contains(Role.ORGANIZATION) || !email.equals(userInfoFromRequest.getEmail())) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        CompetitionEntity competition = competitionTuple.get(0, CompetitionEntity.class);
+        competitionRepository.delete(competition);
     }
 }

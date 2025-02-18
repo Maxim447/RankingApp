@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.repository;
 
+import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +26,17 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             where ee.eventUuid = :uuid
             """)
     Optional<EventEntity> findByUuid(@Param(value = "uuid") UUID uuid);
+
+    /**
+     * Найти заплыв по uuid.
+     */
+    @Query(value = """
+            select ee, o.email from EventEntity ee
+            left join fetch ee.eventUserLinks eul
+            left join eul.user
+            left join ee.competition c
+            left join c.organization o
+            where ee.eventUuid = :uuid
+            """)
+    Optional<Tuple> findByUuidWithOrganization(@Param(value = "uuid") UUID uuid);
 }
