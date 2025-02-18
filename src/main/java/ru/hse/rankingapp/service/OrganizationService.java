@@ -93,7 +93,7 @@ public class OrganizationService {
         AccountEntity accountEntity = accountRepository.findByEmail(userInfoFromRequest.getEmail());
 
         organizationRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
-        accountRepository.updateEmailByOldEmail(accountEntity.getEmail(), email);
+        accountEntity.setEmail(email);
 
         return LoginResponseDto.of(jwtService.generateToken(accountEntity));
     }

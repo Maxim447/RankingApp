@@ -118,10 +118,9 @@ public class UserService {
         AccountEntity accountEntity = accountRepository.findByEmail(userInfoFromRequest.getEmail());
 
         userRepository.updateEmailByOldEmail(accountEntity.getEmail(), email);
-        accountRepository.updateEmailByOldEmail(userInfoFromRequest.getEmail(), email);
+        accountEntity.setEmail(email);
 
-        String token = jwtService.generateToken(accountEntity);
-        return LoginResponseDto.of(token);
+        return LoginResponseDto.of(jwtService.generateToken(accountEntity));
     }
 
     /**
