@@ -12,6 +12,7 @@ import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
 import ru.hse.rankingapp.dto.event.EventResultDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
+import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -100,6 +101,15 @@ public class EventService {
         EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
+        CompetitionEntity competition = event.getCompetition();
+
+        CompetitionUserLinkEntity competitionUserLinkEntity = new CompetitionUserLinkEntity();
+        competitionUserLinkEntity.setCompetitionEntity(competition);
+        competitionUserLinkEntity.setUser(user);
+        competitionUserLinkEntity.setRegistrationDate(LocalDate.now());
+
+        competition.addCompetitionUserLink(competitionUserLinkEntity);
+
         EventUserLinkEntity eventUserLinkEntity = new EventUserLinkEntity();
         eventUserLinkEntity.setUser(user);
         eventUserLinkEntity.setEvent(event);
@@ -107,6 +117,7 @@ public class EventService {
 
         event.addEventUserLink(eventUserLinkEntity);
 
+        competitionRepository.save(competition);
         eventRepository.save(event);
     }
 

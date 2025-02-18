@@ -119,4 +119,19 @@ public class CompetitionEntity {
 
         this.eventEntities.add(eventEntity);
     }
+
+    /**
+     * Добавить связь с пользователем.
+     */
+    public void addCompetitionUserLink(CompetitionUserLinkEntity competitionUserLinkEntity) {
+        if (competitionUserLinkEntity == null) {
+            return;
+        }
+
+        if (this.competitionUserLinkEntities == null) {
+            this.competitionUserLinkEntities = new HashSet<>();
+        }
+
+        this.competitionUserLinkEntities.add(competitionUserLinkEntity);
+    }
 }
