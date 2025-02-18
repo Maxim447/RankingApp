@@ -24,6 +24,12 @@ public class CompetitionInfoDto {
     @Schema(description = "Дата соревнования")
     private LocalDate date;
 
+    @Schema(description = "Описание соревнования")
+    private String description;
+
+    @Schema(description = "Поле для связи с организатором")
+    private String contactLink;
+
     @Schema(description = "Максимальное число участников")
     private Integer maxParticipants;
 

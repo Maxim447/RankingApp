@@ -38,6 +38,8 @@ public interface CompetitionMapper {
     @Mapping(source = "competition.competitionDate", target = "date")
     @Mapping(source = "competition.maxParticipants", target = "maxParticipants")
     @Mapping(source = "competition.competitionType", target = "competitionType")
+    @Mapping(source = "competition.description", target = "description")
+    @Mapping(source = "competition.contactLink", target = "contactLink")
     @Mapping(source = "organization", target = "organization")
     @Mapping(source = "competition.events", target = "eventEntities")
     @Mapping(target = "status", expression = "java(StatusEnum.CREATED)")
