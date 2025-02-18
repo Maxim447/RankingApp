@@ -80,4 +80,15 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             where ce.competitionUuid = :uuid
             """)
     Optional<Tuple> findByUuidWithOrganization(@Param(value = "uuid") UUID competitionUuid);
+
+    /**
+     * Записан ли пользователь на соревнование.
+     */
+    @Query(value = """
+            SELECT EXISTS(
+            SELECT 1 FROM competition_user_link
+                     WHERE user_id = :userId AND competition_id = :competitionId
+            )
+            """, nativeQuery = true)
+    boolean userExistsInCompetition(@Param(value = "competitionId") Long competitionId, @Param(value = "userId") Long userId);
 }

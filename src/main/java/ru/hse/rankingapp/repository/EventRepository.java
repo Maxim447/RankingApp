@@ -40,4 +40,15 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
             where ee.eventUuid = :uuid
             """)
     Optional<Tuple> findByUuidWithOrganization(@Param(value = "uuid") UUID uuid);
+
+    /**
+     * Записан ли пользователь на заплыв.
+     */
+    @Query(value = """
+            SELECT EXISTS(
+                SELECT 1 FROM event_users_link
+                         where user_id = :userId and event_id = :eventId
+            )
+            """, nativeQuery = true)
+    boolean userExistsInEvent(@Param(value = "eventId") Long eventId, @Param(value = "userId") Long userId);
 }

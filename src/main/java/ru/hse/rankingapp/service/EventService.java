@@ -103,22 +103,26 @@ public class EventService {
 
         CompetitionEntity competition = event.getCompetition();
 
-        CompetitionUserLinkEntity competitionUserLinkEntity = new CompetitionUserLinkEntity();
-        competitionUserLinkEntity.setCompetitionEntity(competition);
-        competitionUserLinkEntity.setUser(user);
-        competitionUserLinkEntity.setRegistrationDate(LocalDate.now());
+        if (!competitionRepository.userExistsInCompetition(competition.getId(), user.getId())) {
+            CompetitionUserLinkEntity competitionUserLinkEntity = new CompetitionUserLinkEntity();
+            competitionUserLinkEntity.setCompetitionEntity(competition);
+            competitionUserLinkEntity.setUser(user);
+            competitionUserLinkEntity.setRegistrationDate(LocalDate.now());
 
-        competition.addCompetitionUserLink(competitionUserLinkEntity);
+            competition.addCompetitionUserLink(competitionUserLinkEntity);
+            competitionRepository.save(competition);
+        }
 
-        EventUserLinkEntity eventUserLinkEntity = new EventUserLinkEntity();
-        eventUserLinkEntity.setUser(user);
-        eventUserLinkEntity.setEvent(event);
-        eventUserLinkEntity.setRegistrationDate(LocalDate.now());
+        if (!eventRepository.userExistsInEvent(event.getId(), user.getId())) {
+            EventUserLinkEntity eventUserLinkEntity = new EventUserLinkEntity();
+            eventUserLinkEntity.setUser(user);
+            eventUserLinkEntity.setEvent(event);
+            eventUserLinkEntity.setRegistrationDate(LocalDate.now());
 
-        event.addEventUserLink(eventUserLinkEntity);
+            event.addEventUserLink(eventUserLinkEntity);
 
-        competitionRepository.save(competition);
-        eventRepository.save(event);
+            eventRepository.save(event);
+        }
     }
 
     /**
