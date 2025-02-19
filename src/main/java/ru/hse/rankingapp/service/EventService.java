@@ -1,6 +1,5 @@
 package ru.hse.rankingapp.service;
 
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
@@ -173,15 +172,14 @@ public class EventService {
             throw new BusinessException("Не удалось получить информацию о пользователе", HttpStatus.NOT_FOUND);
         }
 
-        Tuple eventTuple = eventRepository.findByUuidWithOrganization(eventUuid).orElseThrow(() ->
+        EventEntity eventEntity = eventRepository.findByUuidWithOrganization(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
-        String email = eventTuple.get(1, String.class);
+        String email = eventEntity.getCompetition().getOrganization().getEmail();
         if (!userInfoFromRequest.getRoles().contains(Role.ORGANIZATION) || !email.equals(userInfoFromRequest.getEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        EventEntity eventEntity = eventTuple.get(0, EventEntity.class);
         eventRepository.delete(eventEntity);
     }
 }

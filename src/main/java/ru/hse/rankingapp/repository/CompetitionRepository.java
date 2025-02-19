@@ -1,6 +1,5 @@
 package ru.hse.rankingapp.repository;
 
-import jakarta.persistence.Tuple;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -72,14 +71,14 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
      * @return соревнование и почта организации.
      */
     @Query(value = """
-            select ce, o.email from CompetitionEntity ce
-            left join ce.organization o
+            select ce from CompetitionEntity ce
+            left join fetch ce.organization o
             left join fetch ce.eventEntities ee
             left join fetch ee.eventUserLinks
             left join fetch ce.competitionUserLinkEntities
             where ce.competitionUuid = :uuid
             """)
-    Optional<Tuple> findByUuidWithOrganization(@Param(value = "uuid") UUID competitionUuid);
+    Optional<CompetitionEntity> findByUuidWithOrganization(@Param(value = "uuid") UUID competitionUuid);
 
     /**
      * Записан ли пользователь на соревнование.
