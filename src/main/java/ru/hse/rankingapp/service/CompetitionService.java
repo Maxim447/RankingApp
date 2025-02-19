@@ -1,6 +1,5 @@
 package ru.hse.rankingapp.service;
 
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -109,15 +108,14 @@ public class CompetitionService {
             throw new BusinessException("Не удалось получить информацию о пользователе", HttpStatus.NOT_FOUND);
         }
 
-        Tuple competitionTuple = competitionRepository.findByUuidWithOrganization(competitionUuid).orElseThrow(() ->
+        CompetitionEntity competition = competitionRepository.findByUuidWithOrganization(competitionUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти соревнование по uuid = " + competitionUuid, HttpStatus.NOT_FOUND));
 
-        String email = competitionTuple.get(1, String.class);
+        String email = competition.getOrganization().getEmail();
         if (!userInfoFromRequest.getRoles().contains(Role.ORGANIZATION) || !email.equals(userInfoFromRequest.getEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
-        CompetitionEntity competition = competitionTuple.get(0, CompetitionEntity.class);
         competitionRepository.delete(competition);
     }
 }
