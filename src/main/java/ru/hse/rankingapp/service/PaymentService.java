@@ -3,6 +3,7 @@ package ru.hse.rankingapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.hse.rankingapp.dto.payment.PaymentCreateDto;
+import ru.hse.rankingapp.dto.payment.PaymentInfoDto;
 import ru.hse.rankingapp.dto.payment.PaymentRequestDto;
 import ru.hse.rankingapp.dto.payment.PaymentResponseDto;
 import ru.hse.rankingapp.dto.payment.PaymentResultDto;
@@ -34,5 +35,12 @@ public class PaymentService {
                 .setId(payment.getId())
                 .setStatus(payment.getStatus())
                 .setRedirectUrl(payment.getConfirmation().getConfirmationUrl());
+    }
+
+    /**
+     * Получить информацию о платеже.
+     */
+    public PaymentInfoDto getPaymentInfo(String paymentId) {
+        return paymentFeignClient.getPaymentInfo(paymentId);
     }
 }
