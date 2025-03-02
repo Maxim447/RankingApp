@@ -84,3 +84,8 @@ email:
 
 redirect:
   front-main: http://localhost:3000/
+
+payment:
+  key: test_vyJh2VLoyZcoJPsNgaP45hLni4SxIjnSWpx-YQPcm-k
+  id: 1043964
+  url: https://api.yookassa.ru/v3
