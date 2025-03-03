@@ -10,4 +10,11 @@
             <sqlFile path="v0.0.7/rollback/add_price_column_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="03-03-2025 18:00:00" author="msalyaev">
+        <sqlFile path="v0.0.7/add_participants_type_column.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.7/rollback/add_participants_type_column_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
