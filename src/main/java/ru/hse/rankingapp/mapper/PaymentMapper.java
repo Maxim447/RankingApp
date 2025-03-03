@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.hse.rankingapp.dto.payment.PaymentCreateDto;
 import ru.hse.rankingapp.dto.payment.PaymentRequestDto;
+import ru.hse.rankingapp.dto.payment.PaymentWidgetCreateDto;
 
 /**
  * Маппер для платежей.
@@ -21,4 +22,13 @@ public interface PaymentMapper {
     @Mapping(source = "redirectUrl", target = "confirmation.returnUrl")
     @Mapping(target = "capture", constant = "true")
     PaymentRequestDto toPaymentRequestDto(PaymentCreateDto paymentCreateDto);
+
+    /**
+     * Маппинг из {@link PaymentWidgetCreateDto} в {@link PaymentRequestDto}.
+     */
+    @Mapping(source = "paymentSum", target = "amount.value")
+    @Mapping(target = "amount.currency", constant = "RUB")
+    @Mapping(target = "confirmation.type", constant = "embedded")
+    @Mapping(target = "capture", constant = "true")
+    PaymentRequestDto toPaymentRequestDto(PaymentWidgetCreateDto paymentCreateDto);
 }

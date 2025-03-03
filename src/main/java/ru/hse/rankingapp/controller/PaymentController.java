@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.payment.PaymentCreateDto;
 import ru.hse.rankingapp.dto.payment.PaymentInfoDto;
 import ru.hse.rankingapp.dto.payment.PaymentResultDto;
+import ru.hse.rankingapp.dto.payment.PaymentWidgetCreateDto;
+import ru.hse.rankingapp.dto.payment.PaymentWidgetResponseDto;
 import ru.hse.rankingapp.service.PaymentService;
 
 /**
@@ -30,9 +32,18 @@ public class PaymentController {
      * Создать платеж.
      */
     @PostMapping
-    @Operation(summary = "Создать платеж")
+    @Operation(summary = "Создать платеж c redirect")
     public PaymentResultDto createPayment(@RequestBody @Valid PaymentCreateDto paymentCreateDto) {
         return paymentService.createPayment(paymentCreateDto);
+    }
+
+    /**
+     * Создать платеж.
+     */
+    @PostMapping("/widget")
+    @Operation(summary = "Создать платеж для widget")
+    public PaymentWidgetResponseDto createPaymentWidget(@RequestBody @Valid PaymentWidgetCreateDto paymentCreateDto) {
+        return paymentService.createPaymentWidget(paymentCreateDto);
     }
 
     /**

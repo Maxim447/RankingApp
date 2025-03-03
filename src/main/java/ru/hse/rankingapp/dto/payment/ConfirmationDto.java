@@ -21,4 +21,10 @@ public class ConfirmationDto {
      */
     @JsonProperty("confirmation_url")
     private String confirmationUrl;
+
+    /**
+     * Токен для виджета.
+     */
+    @JsonProperty("confirmation_token")
+    private String confirmationToken;
 }
