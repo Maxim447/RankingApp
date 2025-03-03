@@ -66,6 +66,9 @@ public class EventEntity {
     @Column(name = "start_time", nullable = false)
     private OffsetDateTime startTime;
 
+    @Column(name = "price", nullable = false)
+    private Double price;
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
