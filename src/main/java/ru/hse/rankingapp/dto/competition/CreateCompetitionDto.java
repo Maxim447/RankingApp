@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -33,6 +34,9 @@ public class CreateCompetitionDto {
 
     @Schema(description = "Максимальное число участников")
     private Integer maxParticipants;
+
+    @Schema(description = "Тип участников")
+    private ParticipantsTypeEnum participantsType;
 
     @Schema(description = "Тип соревнования")
     private String competitionType;

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import ru.hse.rankingapp.dto.event.EventInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -35,6 +36,9 @@ public class CompetitionFullInfoDto {
 
     @Schema(description = "Максимальное число участников")
     private Integer maxParticipants;
+
+    @Schema(description = "Тип участников")
+    private ParticipantsTypeEnum participantsType;
 
     @Schema(description = "Тип соревнования")
     private String competitionType;

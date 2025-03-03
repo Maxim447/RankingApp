@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.StatusEnum;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -71,6 +72,10 @@ public class CompetitionEntity {
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
+
+    @Column(name = "participants_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ParticipantsTypeEnum participantsType;
 
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();

@@ -3,6 +3,7 @@ package ru.hse.rankingapp.dto.competition;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -29,6 +30,9 @@ public class CompetitionInfoDto {
 
     @Schema(description = "Поле для связи с организатором")
     private String contactLink;
+
+    @Schema(description = "Тип участников")
+    private ParticipantsTypeEnum participantsType;
 
     @Schema(description = "Максимальное число участников")
     private Integer maxParticipants;
