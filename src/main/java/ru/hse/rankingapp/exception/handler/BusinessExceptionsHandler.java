@@ -1,5 +1,6 @@
 package ru.hse.rankingapp.exception.handler;
 
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,9 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.hse.rankingapp.exception.dto.ValidationExceptionResponseDto;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.exception.dto.ErrorMessageDto;
+import ru.hse.rankingapp.exception.dto.ValidationExceptionResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,6 +71,9 @@ public class BusinessExceptionsHandler extends ResponseEntityExceptionHandler {
     private HttpStatusCode determineHttpStatus(Exception ex) {
         if (ex instanceof BusinessException) {
             return ((BusinessException) ex).getStatus();
+        } else if (ex instanceof FeignException) {
+            int status = ((FeignException) ex).status();
+            return HttpStatusCode.valueOf(status);
         } else {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }
@@ -78,9 +82,11 @@ public class BusinessExceptionsHandler extends ResponseEntityExceptionHandler {
     private String determineErrorMessage(Exception ex) {
         if (ex instanceof BusinessException) {
             return ex.getMessage();
+        } else if (ex instanceof FeignException) {
+            return ex.getLocalizedMessage();
+        } else {
+            return DEFAULT_ERROR_MESSAGE;
         }
-
-        return DEFAULT_ERROR_MESSAGE;
     }
 }
 

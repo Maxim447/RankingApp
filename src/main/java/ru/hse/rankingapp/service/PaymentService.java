@@ -7,6 +7,8 @@ import ru.hse.rankingapp.dto.payment.PaymentInfoDto;
 import ru.hse.rankingapp.dto.payment.PaymentRequestDto;
 import ru.hse.rankingapp.dto.payment.PaymentResponseDto;
 import ru.hse.rankingapp.dto.payment.PaymentResultDto;
+import ru.hse.rankingapp.dto.payment.PaymentWidgetCreateDto;
+import ru.hse.rankingapp.dto.payment.PaymentWidgetResponseDto;
 import ru.hse.rankingapp.feign.PaymentFeignClient;
 import ru.hse.rankingapp.mapper.PaymentMapper;
 
@@ -42,5 +44,20 @@ public class PaymentService {
      */
     public PaymentInfoDto getPaymentInfo(String paymentId) {
         return paymentFeignClient.getPaymentInfo(paymentId);
+    }
+
+    /**
+     * Создать платеж.
+     */
+    public PaymentWidgetResponseDto createPaymentWidget(PaymentWidgetCreateDto paymentCreateDto) {
+        PaymentRequestDto paymentRequestDto = paymentMapper.toPaymentRequestDto(paymentCreateDto);
+
+        String uniqueKey = UUID.randomUUID().toString();
+        PaymentResponseDto payment = paymentFeignClient.createPayment(paymentRequestDto, uniqueKey);
+
+        return new PaymentWidgetResponseDto()
+                .setId(payment.getId())
+                .setStatus(payment.getStatus())
+                .setToken(payment.getConfirmation().getConfirmationToken());
     }
 }
