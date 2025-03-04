@@ -225,7 +225,7 @@ public class EventService {
                             .setAge(fullUserAge)
                             .setGender(user.getGender().getValue())
                             .setFullName(FioUtils.buildFullName(user))
-                            .setCategory(category == null ? null : category.toString());
+                            .setCategory(category == null ? null : category.getStringValue());
                 });
 
         return new PageResponseDto<>(page.getTotalElements(), page.getTotalPages(), page.getContent());

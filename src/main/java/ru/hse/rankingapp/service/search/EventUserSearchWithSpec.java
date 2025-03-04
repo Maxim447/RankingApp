@@ -39,11 +39,11 @@ public class EventUserSearchWithSpec {
             if (age != null) {
                 LocalDate today = LocalDate.now();
 
-                LocalDate startDate = today.minusYears(age);
-                LocalDate endDate = today.minusYears(age + 1);
+                LocalDate upperDate = today.minusYears(age);
+                LocalDate lowerDate = today.minusYears(age + 1);
                 Expression<LocalDate> birthDate = user.get("birthDate");
 
-                predicates.add(cb.between(birthDate, startDate, endDate));
+                predicates.add(cb.between(birthDate, lowerDate, upperDate));
             }
 
             if (searchParams.getGender() != null) {

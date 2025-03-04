@@ -53,8 +53,7 @@ public enum CategoryEnum {
         );
     }
 
-    @Override
-    public String toString() {
+    public String getStringValue() {
         return from + "-" + to;
     }
 }
