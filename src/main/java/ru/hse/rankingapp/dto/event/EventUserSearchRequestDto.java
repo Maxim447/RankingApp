@@ -17,6 +17,6 @@ public class EventUserSearchRequestDto {
     @Schema(description = "Возраст участника")
     private Integer age;
 
-    @Schema(description = "Категория возраста через \"-\" (Пример: 18-21)")
+    @Schema(description = "Категория возраста")
     private CategoryEnum category;
 }
