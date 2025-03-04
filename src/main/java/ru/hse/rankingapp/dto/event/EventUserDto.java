@@ -44,7 +44,7 @@ public class EventUserDto {
     private LocalTime time;
 
     @Schema(description = "Очки за заплыв")
-    private Integer points;
+    private Double points;
 
     @Schema(description = "Место в заплыве")
     private Integer place;

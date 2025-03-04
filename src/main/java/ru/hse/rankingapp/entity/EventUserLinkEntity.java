@@ -44,7 +44,7 @@ public class EventUserLinkEntity {
     private Long time;
 
     @Column(name = "points")
-    private Integer points;
+    private Double points;
 
     @Column(name = "place")
     private Integer place;
