@@ -1,6 +1,8 @@
 package ru.hse.rankingapp.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,10 @@ import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
 import ru.hse.rankingapp.dto.event.EventResultDto;
+import ru.hse.rankingapp.dto.event.EventUserSearchRequestDto;
+import ru.hse.rankingapp.dto.event.EventUserSearchResponseDto;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.EventEntity;
@@ -17,14 +23,21 @@ import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
+import ru.hse.rankingapp.enums.CategoryEnum;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.EventMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
 import ru.hse.rankingapp.repository.EventRepository;
+import ru.hse.rankingapp.repository.EventUserRepository;
+import ru.hse.rankingapp.service.search.EventUserSearchWithSpec;
+import ru.hse.rankingapp.utils.FioUtils;
 import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +59,8 @@ public class EventService {
     private final EventMapper eventMapper;
     private final JwtUtils jwtUtils;
     private final XlsxService xlsxService;
+    private final EventUserRepository eventUserRepository;
+    private final EventUserSearchWithSpec eventUserSearchWithSpec;
 
     /**
      * Создать мероприятие к определенному соревнованию.
@@ -176,10 +191,43 @@ public class EventService {
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
         String email = eventEntity.getCompetition().getOrganization().getEmail();
-        if (!userInfoFromRequest.getRoles().contains(Role.ORGANIZATION) || !email.equals(userInfoFromRequest.getEmail())) {
+        if (!userInfoFromRequest.getRoles()
+                .contains(Role.ORGANIZATION) || !email.equals(userInfoFromRequest.getEmail())) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
         eventRepository.delete(eventEntity);
+    }
+
+    public PageResponseDto<EventUserSearchResponseDto> searchEventUsers(UUID eventUuid, PageRequestDto pageRequestDto, EventUserSearchRequestDto searchDto) {
+        EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
+                new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
+
+        CompetitionEntity competition = event.getCompetition();
+        ParticipantsTypeEnum participantsType = competition.getParticipantsType();
+
+        EnumSet<CategoryEnum> categoryEnums = CategoryEnum.getEnumSetByParticipantsType(participantsType);
+
+        Specification<EventUserLinkEntity> specification = eventUserSearchWithSpec.searchWithSpec(searchDto, eventUuid);
+
+        Page<EventUserSearchResponseDto> page = eventUserRepository.findAll(specification, pageRequestDto.toPageRequest())
+                .map(element -> {
+                    UserEntity user = element.getUser();
+                    LocalDate birthDate = user.getBirthDate();
+                    long fullUserAge = ChronoUnit.YEARS.between(birthDate, LocalDate.now());
+
+                    CategoryEnum category = categoryEnums.stream()
+                            .filter(categoryEnum -> categoryEnum.getFrom() <= fullUserAge && categoryEnum.getTo() > fullUserAge)
+                            .findFirst()
+                            .orElse(null);
+
+                    return new EventUserSearchResponseDto()
+                            .setAge(fullUserAge)
+                            .setGender(user.getGender().getValue())
+                            .setFullName(FioUtils.buildFullName(user))
+                            .setCategory(category == null ? null : category.toString());
+                });
+
+        return new PageResponseDto<>(page.getTotalElements(), page.getTotalPages(), page.getContent());
     }
 }

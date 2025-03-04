@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
+import ru.hse.rankingapp.dto.event.EventUserSearchRequestDto;
+import ru.hse.rankingapp.dto.event.EventUserSearchResponseDto;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.service.EventService;
 import ru.hse.rankingapp.utils.ControllerUtils;
 
@@ -84,5 +88,19 @@ public class EventController {
     @Operation(summary = "Удалить заплыв по uuid")
     public void deleteEvent(@PathVariable(value = "uuid") UUID eventUuid) {
         eventService.deleteEvent(eventUuid);
+    }
+
+    /**
+     * Найти частников соревнования по поисковому дто.
+     *
+     * @param eventUuid uuid соревнования
+     * @param requestDto пагинация
+     * @param searchDto Поисковое дто
+     * @return Участники соревнования.
+     */
+    @GetMapping("/search/{uuid}/users")
+    @Operation(summary = "Метод для фильтрации участников заплыва по параметрам")
+    public PageResponseDto<EventUserSearchResponseDto> searchEventUsers(@PathVariable(value = "uuid") UUID eventUuid, PageRequestDto requestDto, EventUserSearchRequestDto searchDto) {
+        return eventService.searchEventUsers(eventUuid, requestDto, searchDto);
     }
 }

@@ -41,7 +41,7 @@ public class EventUserLinkEntity {
     private Long id;
 
     @Column(name = "time")
-    private LocalTime time;
+    private Long time;
 
     @Column(name = "points")
     private Integer points;
@@ -69,4 +69,16 @@ public class EventUserLinkEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "event_id")
     private EventEntity event;
+
+    public LocalTime getTime() {
+        if (this.time == null) {
+            return null;
+        }
+
+        return LocalTime.ofNanoOfDay(this.time * 1_000_000);
+    }
+
+    public void setTime(LocalTime localTime) {
+        this.time = localTime.toNanoOfDay() / 1_000_000;
+    }
 }
