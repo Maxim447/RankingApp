@@ -21,7 +21,9 @@ import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.enums.Gender;
 import ru.hse.rankingapp.entity.enums.Role;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.enums.CategoryEnum;
 import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
@@ -33,11 +35,14 @@ import ru.hse.rankingapp.repository.EventUserRepository;
 import ru.hse.rankingapp.service.search.EventUserSearchWithSpec;
 import ru.hse.rankingapp.utils.FioUtils;
 import ru.hse.rankingapp.utils.JwtUtils;
+import ru.hse.rankingapp.utils.RatingCalculator;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -158,20 +163,55 @@ public class EventService {
         EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
+        if (StatusEnum.ENDED.equals(event.getStatus())) {
+            throw new BusinessException("Заплыв уже завершился. " +
+                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
+        }
+
         Map<String, EventUserLinkEntity> userLinkEntityMap = event.getEventUserLinks().stream()
                 .collect(Collectors.toMap(
                         userEvent -> userEvent.getUser().getEmail(),
                         Function.identity()
                 ));
-        List<EventResultDto> eventResultDto = xlsxService.parseXlsxTemplate(file);
-        eventResultDto.sort(Comparator.comparing(EventResultDto::getTime));
+        List<EventResultDto> resultDtos = xlsxService.parseXlsxTemplate(file);
+        Map<Gender, List<EventResultDto>> collect = resultDtos.stream()
+                .collect(Collectors.groupingBy(
+                        EventResultDto::getGender,
+                        Collectors.collectingAndThen(Collectors.toList(), list -> {
+                            list.sort(Comparator.comparing(EventResultDto::getTime));
+                            return list;
+                        }))
+                );
+
+        resultDtos.sort(Comparator.comparing(EventResultDto::getTime));
+
+        CompetitionEntity competition = event.getCompetition();
+        ParticipantsTypeEnum participantsType = competition.getParticipantsType();
+
+        Map<String, Double> pointsByEmail = new HashMap<>();
+        for (Map.Entry<Gender, List<EventResultDto>> genderListEntry : collect.entrySet()) {
+            List<EventResultDto> value = genderListEntry.getValue();
+            LocalTime fastestTime = value.getFirst().getTime();
+
+            for (EventResultDto resultDto : value) {
+                if (ParticipantsTypeEnum.AMATEURS.equals(participantsType)) {
+                    Double points = RatingCalculator.calculate(fastestTime, resultDto.getTime(), resultDto.getDistance());
+                    pointsByEmail.put(resultDto.getEmail(), points);
+                }
+            }
+
+        }
 
         int place = 1;
-        for (EventResultDto resultDto : eventResultDto) {
+
+        for (EventResultDto resultDto : resultDtos) {
             EventUserLinkEntity eventUserLinkEntity = userLinkEntityMap.get(resultDto.getEmail());
+            eventUserLinkEntity.setPoints(pointsByEmail.get(resultDto.getEmail()));
             eventUserLinkEntity.setPlace(place++);
             eventUserLinkEntity.setTime(resultDto.getTime());
         }
+
+        event.setStatus(StatusEnum.ENDED);
     }
 
     /**
