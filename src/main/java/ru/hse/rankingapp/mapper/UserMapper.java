@@ -23,6 +23,7 @@ public interface UserMapper {
      * @param signUpRequestDto запрос для регистрации
      * @return сущность пользователя
      */
+    @Mapping(target = "rating", constant = "0.0")
     UserEntity signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
 
     /**

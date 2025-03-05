@@ -43,6 +43,9 @@ public class UserFullInfoDto {
     @Schema(description = "Отчество")
     private String middleName;
 
+    @Schema(description = "Рейтинг участника")
+    private Double rating;
+
     @Schema(description = "Соревнования на которые записался пользователь")
     private List<CompetitionInfoDto> userCompetitions;
 

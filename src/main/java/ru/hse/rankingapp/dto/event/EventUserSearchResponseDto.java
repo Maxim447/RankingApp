@@ -18,7 +18,7 @@ public class EventUserSearchResponseDto {
     private Long age;
 
     @Schema(description = "Рейтинг")
-    private Integer rating;
+    private Double rating;
 
     @Schema(description = "Категория")
     private String category;

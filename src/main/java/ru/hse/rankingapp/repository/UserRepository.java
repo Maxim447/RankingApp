@@ -109,4 +109,12 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
             where u.email in :emails
             """)
     Set<UserEntity> findByEmails(@Param(value = "emails") Set<String> usersEmails);
+
+    @Modifying
+    @Query(value = """
+            update UserEntity u
+            set u.rating = :rating, u.modifyDttm = current timestamp, u.actionIndex = 'U'
+            where u.id = :id
+            """)
+    void updateUserRating(@Param(value = "id") Long id, @Param("rating") Double updatedRating);
 }

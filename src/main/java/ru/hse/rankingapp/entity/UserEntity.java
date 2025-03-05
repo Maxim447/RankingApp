@@ -80,6 +80,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(name = "rating", nullable = false)
+    private Double rating;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",
             joinColumns = @JoinColumn(name = "user_id"),
