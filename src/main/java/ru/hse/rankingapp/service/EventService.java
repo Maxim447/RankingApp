@@ -32,6 +32,7 @@ import ru.hse.rankingapp.mapper.EventMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
 import ru.hse.rankingapp.repository.EventRepository;
 import ru.hse.rankingapp.repository.EventUserRepository;
+import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.EventUserSearchWithSpec;
 import ru.hse.rankingapp.utils.FioUtils;
 import ru.hse.rankingapp.utils.JwtUtils;
@@ -66,6 +67,7 @@ public class EventService {
     private final XlsxService xlsxService;
     private final EventUserRepository eventUserRepository;
     private final EventUserSearchWithSpec eventUserSearchWithSpec;
+    private final UserRepository userRepository;
 
     /**
      * Создать мероприятие к определенному соревнованию.
@@ -206,9 +208,15 @@ public class EventService {
 
         for (EventResultDto resultDto : resultDtos) {
             EventUserLinkEntity eventUserLinkEntity = userLinkEntityMap.get(resultDto.getEmail());
-            eventUserLinkEntity.setPoints(pointsByEmail.get(resultDto.getEmail()));
+            Double points = pointsByEmail.get(resultDto.getEmail());
+
+            eventUserLinkEntity.setPoints(points);
             eventUserLinkEntity.setPlace(place++);
             eventUserLinkEntity.setTime(resultDto.getTime());
+            UserEntity user = eventUserLinkEntity.getUser();
+
+            Double updatedRating = user.getRating() + points;
+            userRepository.updateUserRating(user.getId(), updatedRating);
         }
 
         event.setStatus(StatusEnum.ENDED);
@@ -264,6 +272,7 @@ public class EventService {
                     return new EventUserSearchResponseDto()
                             .setAge(fullUserAge)
                             .setGender(user.getGender().getValue())
+                            .setRating(user.getRating())
                             .setFullName(FioUtils.buildFullName(user))
                             .setCategory(category == null ? null : category.getStringValue());
                 });

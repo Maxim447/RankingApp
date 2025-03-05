@@ -38,4 +38,7 @@ public class UserInfoDto {
 
     @Schema(description = "Отчество")
     private String middleName;
+
+    @Schema(description = "Рейтинг участника")
+    private Double rating;
 }
