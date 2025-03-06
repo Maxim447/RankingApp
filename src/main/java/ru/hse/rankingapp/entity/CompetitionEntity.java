@@ -54,14 +54,17 @@ public class CompetitionEntity {
     @Column(name = "contact_link", nullable = false)
     private String contactLink;
 
+    @Column(name = "contact_link_2")
+    private String contactLink2;
+
+    @Column(name = "contact_link_3")
+    private String contactLink3;
+
     @Column(name = "description")
     private String description;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
-
-    @Column(name = "max_participants", nullable = false)
-    private Integer maxParticipants;
 
     @Column(name = "competition_type", nullable = false)
     private String competitionType;

@@ -36,6 +36,12 @@ public class CreateEventDto {
     @Schema(description = "Максимальное кол-во очков за событие")
     private Integer maxPoints;
 
+    @Schema(description = "Максимальное число участников")
+    private Integer maxParticipants;
+
+    @Schema(description = "Ссылка на трансляцию (Например, ВК видео)")
+    private String videoLink;
+
     @Schema(description = "Время проведения события")
     private OffsetDateTime startTime;
 

@@ -35,6 +35,12 @@ public class EventInfoDto {
     @Schema(description = "Максимальное кол-во очков за заплыв")
     private Integer maxPoints;
 
+    @Schema(description = "Максимальное число участников")
+    private Integer maxParticipants;
+
+    @Schema(description = "Ссылка на трансляцию")
+    private String videoLink;
+
     @Schema(description = "Стоимость заплыва")
     private Double price;
 

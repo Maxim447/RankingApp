@@ -33,6 +33,12 @@ public class EventFullInfoDto {
     @Schema(description = "Возрастная категория по")
     private Integer ageTo;
 
+    @Schema(description = "Максимальное число участников")
+    private Integer maxParticipants;
+
+    @Schema(description = "Ссылка на трансляцию")
+    private String videoLink;
+
     @Schema(description = "Стоимость заплыва")
     private Double price;
 
