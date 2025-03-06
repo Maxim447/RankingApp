@@ -21,14 +21,16 @@ services:
       - ranking-app-network
 
   ranking-app-service-database:
-    image: "postgres:17"
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
     restart: unless-stopped
     environment:
       POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
       POSTGRES_DB: RankingAppDB
     ports:
-      - "8000"
+      - "5436:8000"
     volumes:
       - ./postgres-data:/var/lib/ranking-app-service-database/data
     command: -p 8000
@@ -38,3 +40,6 @@ services:
 networks:
   ranking-app-network:
     driver: bridge
+
+volumes:
+  postgres-data:

@@ -1,4 +1,3 @@
-CREATE EXTENSION IF NOT EXISTS postgis;
 create sequence if not exists map_coordinates_sequence;
 
 create table if not exists map_coordinates
