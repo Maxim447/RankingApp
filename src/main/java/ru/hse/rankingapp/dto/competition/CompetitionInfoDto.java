@@ -31,11 +31,14 @@ public class CompetitionInfoDto {
     @Schema(description = "Поле для связи с организатором")
     private String contactLink;
 
+    @Schema(description = "Поле для связи с организатором")
+    private String contactLink2;
+
+    @Schema(description = "Поле для связи с организатором")
+    private String contactLink3;
+
     @Schema(description = "Тип участников")
     private ParticipantsTypeEnum participantsType;
-
-    @Schema(description = "Максимальное число участников")
-    private Integer maxParticipants;
 
     @Schema(description = "Тип соревнования")
     private String competitionType;
