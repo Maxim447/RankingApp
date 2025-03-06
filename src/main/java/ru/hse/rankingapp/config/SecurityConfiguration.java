@@ -49,7 +49,13 @@ public class SecurityConfiguration {
                                         "/ranking-app/swagger-ui/*",
                                         "/ranking-app/v3/api-docs/*",
                                         "/ranking-app/v3/api-docs",
-                                        "/actuator/*")
+                                        "/actuator/*",
+                                        "/api/v1/event/find/**",
+                                        "/api/v1/event/search/**",
+                                        "/api/v1/competition/find/**",
+                                        "/api/v1/competition/search/**",
+                                        "/api/v1/user/search",
+                                        "/api/v1/organization/search")
                                 .permitAll()
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                                 .anyRequest()
