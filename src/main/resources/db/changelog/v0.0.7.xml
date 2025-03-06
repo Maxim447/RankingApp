@@ -59,4 +59,11 @@
             <sqlFile path="v0.0.7/rollback/add_video_link_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="06-03-2025 21:20:00" author="msalyaev">
+        <sqlFile path="v0.0.7/create_map_table.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.7/rollback/create_map_table_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
