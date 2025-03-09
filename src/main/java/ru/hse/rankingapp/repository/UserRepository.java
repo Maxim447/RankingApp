@@ -113,8 +113,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     @Modifying
     @Query(value = """
             update UserEntity u
-            set u.rating = :rating, u.modifyDttm = current timestamp, u.actionIndex = 'U'
+            set u.rating = :rating, u.bestAverageTime100 = :avgTime100, u.modifyDttm = current timestamp, u.actionIndex = 'U'
             where u.id = :id
             """)
-    void updateUserRating(@Param(value = "id") Long id, @Param("rating") Double updatedRating);
+    void updateUserRating(@Param(value = "id") Long id, @Param("rating") Double updatedRating, @Param("avgTime100") Long time);
 }
