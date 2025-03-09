@@ -165,10 +165,10 @@ public class EventService {
         EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
-//        if (StatusEnum.ENDED.equals(event.getStatus())) {
-//            throw new BusinessException("Заплыв уже завершился. " +
-//                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
-//        }
+        if (StatusEnum.ENDED.equals(event.getStatus())) {
+            throw new BusinessException("Заплыв уже завершился. " +
+                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
+        }
 
         Map<String, EventUserLinkEntity> userLinkEntityMap = event.getEventUserLinks().stream()
                 .collect(Collectors.toMap(
@@ -211,14 +211,29 @@ public class EventService {
             Double points = pointsByEmail.get(resultDto.getEmail());
 
             eventUserLinkEntity.setPoints(points);
-            eventUserLinkEntity.setPlace(place++);
+            eventUserLinkEntity.setPlace(place);
             eventUserLinkEntity.setTime(resultDto.getTime());
             UserEntity user = eventUserLinkEntity.getUser();
 
             Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(), resultDto);
 
             Double updatedRating = user.getRating() + points;
-            userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100);
+
+            if (place == 1) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        1L, 0L, 0L);
+            } else if (place == 2) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 1L, 0L);
+            } else if (place == 3) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 0L, 1L);
+            } else {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 0L, 0L);
+            }
+
+            place++;
         }
 
         event.setStatus(StatusEnum.ENDED);

@@ -86,6 +86,18 @@ public class UserEntity {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
+    @Column(name = "first_place_count", nullable = false)
+    private Long firstPlaceCount = 0L;
+
+    @Column(name = "second_place_count", nullable = false)
+    private Long secondPlaceCount = 0L;
+
+    @Column(name = "third_place_count", nullable = false)
+    private Long thirdPlaceCount = 0L;
+
+    @Column(name = "starts_count", nullable = false)
+    private Long startsCount = 0L;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",
             joinColumns = @JoinColumn(name = "user_id"),
