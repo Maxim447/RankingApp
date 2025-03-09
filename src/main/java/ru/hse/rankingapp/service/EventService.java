@@ -165,10 +165,10 @@ public class EventService {
         EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
 
-        if (StatusEnum.ENDED.equals(event.getStatus())) {
-            throw new BusinessException("Заплыв уже завершился. " +
-                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
-        }
+//        if (StatusEnum.ENDED.equals(event.getStatus())) {
+//            throw new BusinessException("Заплыв уже завершился. " +
+//                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
+//        }
 
         Map<String, EventUserLinkEntity> userLinkEntityMap = event.getEventUserLinks().stream()
                 .collect(Collectors.toMap(
@@ -215,8 +215,10 @@ public class EventService {
             eventUserLinkEntity.setTime(resultDto.getTime());
             UserEntity user = eventUserLinkEntity.getUser();
 
+            Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(), resultDto);
+
             Double updatedRating = user.getRating() + points;
-            userRepository.updateUserRating(user.getId(), updatedRating);
+            userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100);
         }
 
         event.setStatus(StatusEnum.ENDED);
@@ -278,5 +280,16 @@ public class EventService {
                 });
 
         return new PageResponseDto<>(page.getTotalElements(), page.getTotalPages(), page.getContent());
+    }
+
+    private Long getBestAverageTime100(Long bestAverage100, EventResultDto result) {
+        Integer distance = result.getDistance();
+        Long time = result.getTime().toNanoOfDay() / 1_000_000 / (long) (distance / 100);
+
+        if (bestAverage100 != null && bestAverage100 < time) {
+            return bestAverage100;
+        }
+
+        return time;
     }
 }

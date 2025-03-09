@@ -80,6 +80,9 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @Column(name = "best_average_time_100")
+    private Long bestAverageTime100;
+
     @Column(name = "rating", nullable = false)
     private Double rating;
 
