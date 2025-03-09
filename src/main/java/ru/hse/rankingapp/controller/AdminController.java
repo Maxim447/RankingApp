@@ -1,7 +1,10 @@
 package ru.hse.rankingapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +29,19 @@ public class AdminController {
      * @param simpleGeoJsonDto информация о координатах
      */
     @PostMapping("/coordinates")
+    @Operation(summary = "Добавить координаты")
     public void addCoordinates(@RequestBody SimpleGeoJsonDto simpleGeoJsonDto) {
         coordinateService.addCoordinates(simpleGeoJsonDto);
+    }
+
+    /**
+     * Удалить координаты по id.
+     *
+     * @param id Id в таблице координат
+     */
+    @DeleteMapping("/coordinates/{id}")
+    @Operation(summary = "Удалить координаты")
+    public void deleteCoordinates(@PathVariable(value = "id") Long id) {
+        coordinateService.deleteById(id);
     }
 }
