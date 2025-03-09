@@ -10,4 +10,11 @@
             <sqlFile path="v0.0.8/rollback/add_average_time_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="09-03-2025 14:30:00" author="msalyaev">
+        <sqlFile path="v0.0.8/add_starts_columns.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.8/rollback/add_starts_columns_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
