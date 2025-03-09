@@ -49,5 +49,4 @@ public class CoordinateEntity {
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "organization_id")
     private OrganizationEntity organization;
-
 }

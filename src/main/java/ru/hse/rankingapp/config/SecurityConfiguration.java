@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                                         "/api/v1/event/search/**",
                                         "/api/v1/competition/find/**",
                                         "/api/v1/competition/search/**",
+                                        "/api/v1/coordinates",
                                         "/api/v1/user/search",
                                         "/api/v1/organization/search")
                                 .permitAll()
