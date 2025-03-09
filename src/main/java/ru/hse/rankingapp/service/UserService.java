@@ -18,6 +18,8 @@ import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
+import ru.hse.rankingapp.dto.user.rating.RatingSearchParamsDto;
+import ru.hse.rankingapp.dto.user.rating.UserRatingDto;
 import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
@@ -227,5 +229,21 @@ public class UserService {
         UserEntity userEntity = userRepository.findAllInfoByEmail(userInfoFromRequest.getEmail());
 
         return userMapper.mapToUserFullInfoDto(userEntity);
+    }
+
+    /**
+     * Получить данные для таблицы с общим рейтингом.
+     *
+     * @param searchParams Поисковые параметры
+     * @param pageRequest  пагинация
+     * @return данные для таблицы с общим рейтингом
+     */
+    public PageResponseDto<UserRatingDto> searchUsersRating(RatingSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        Specification<UserEntity> specification = userSearchWithSpec.searchWithSpec(searchParams);
+
+        Page<UserRatingDto> userPage = userRepository.findAll(specification, pageRequest.toPageRequest())
+                .map(userMapper::mapUserRatingDto);
+
+        return new PageResponseDto<>(userPage.getTotalElements(), userPage.getTotalPages(), userPage.getContent());
     }
 }

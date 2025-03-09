@@ -19,6 +19,8 @@ import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
+import ru.hse.rankingapp.dto.user.rating.RatingSearchParamsDto;
+import ru.hse.rankingapp.dto.user.rating.UserRatingDto;
 import ru.hse.rankingapp.service.UserService;
 
 import java.util.UUID;
@@ -111,5 +113,18 @@ public class UserController {
     @Operation(summary = "Получить полную информацию о пользователе")
     public UserFullInfoDto getUserFullInfoDto() {
         return userService.getUserFullInfo();
+    }
+
+    /**
+     * Получить данные для таблицы с общим рейтингом.
+     *
+     * @param searchParams Поисковые параметры
+     * @param pageRequest  пагинация
+     * @return данные для таблицы с общим рейтингом
+     */
+    @GetMapping("/rating-search")
+    @Operation(summary = "Получить данные для таблицы с общим рейтингом")
+    public PageResponseDto<UserRatingDto> searchUsersRating(RatingSearchParamsDto searchParams, PageRequestDto pageRequest) {
+        return userService.searchUsersRating(searchParams, pageRequest);
     }
 }
