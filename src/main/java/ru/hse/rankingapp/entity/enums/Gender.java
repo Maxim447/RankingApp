@@ -11,11 +11,12 @@ import java.util.EnumSet;
 @Getter
 @RequiredArgsConstructor
 public enum Gender {
-    MALE("Мужчина"),
-    FEMALE("Женщина"),
-    MIXED("Смешанный");
+    MALE("Мужчина", "М"),
+    FEMALE("Женщина", "Ж"),
+    MIXED("Смешанный", "М/Ж");
 
     private final String value;
+    private final String shortValue;
 
     public static Gender getGenderByValue(String value) {
         return EnumSet.allOf(Gender.class).stream()
