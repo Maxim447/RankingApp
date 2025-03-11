@@ -3,6 +3,7 @@ package ru.hse.rankingapp.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -30,7 +31,12 @@ public class FileService {
     @Value("${file-storage}")
     private String storage;
 
+    @Named("saveFile")
     public String saveFile(MultipartFile multipartFile) {
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            return null;
+        }
+
         try {
             String fileExtension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
             String fileName = UUID.randomUUID() + SeparatorEnum.DOT.getValue() + fileExtension;
