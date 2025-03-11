@@ -89,3 +89,5 @@ payment:
   key: test_vyJh2VLoyZcoJPsNgaP45hLni4SxIjnSWpx-YQPcm-k
   id: 1043964
   url: https://api.yookassa.ru/v3
+
+file-storage: ./uploads

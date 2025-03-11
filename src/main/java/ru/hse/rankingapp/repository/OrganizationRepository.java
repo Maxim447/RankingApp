@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 
 import java.util.Optional;
@@ -85,4 +86,16 @@ public interface OrganizationRepository extends JpaRepository<OrganizationEntity
             where o.email = :email
             """)
     OrganizationEntity findByEmailWithFetch(@Param(value = "email") String email);
+
+    /**
+     * Добавить фотографию организации.
+     */
+    @Query("""
+            update OrganizationEntity oe
+            set oe.image = :image
+            where oe.email = :email
+            """)
+    @Modifying
+    @Transactional
+    void uploadImageByEmail(@Param(value = "email") String email, @Param(value = "image") String path);
 }

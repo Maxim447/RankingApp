@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.entity.UserEntity;
 
 import java.util.Optional;
@@ -121,4 +122,17 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     void updateUserRating(@Param(value = "id") Long id, @Param("rating") Double updatedRating,
             @Param("avgTime100") Long time, @Param("firstPlaceInc") Long firstPlaceIncrement,
             @Param("secondPlaceInc") Long secondPlaceIncrement, @Param("thirdPlaceInc") Long thirdPlaceIncrement);
+
+
+    /**
+     * Добавить фотографию пользователю.
+     */
+    @Query("""
+            update UserEntity u
+            set u.image = :image
+            where u.email = :email
+            """)
+    @Modifying
+    @Transactional
+    void uploadImageByEmail(@Param("email") String email, @Param("image") String fileName);
 }

@@ -5,8 +5,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
@@ -20,8 +23,10 @@ import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
+import ru.hse.rankingapp.enums.FileExtensionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.OrganizationMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
@@ -34,6 +39,7 @@ import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,6 +59,7 @@ public class OrganizationService {
     private final JwtService jwtService;
     private final JwtUtils jwtUtils;
     private final AccountRepository accountRepository;
+    private final FileService fileService;
 
     /**
      * Получить данные об авторизированном пользователе.
@@ -180,5 +187,28 @@ public class OrganizationService {
         OrganizationEntity attachedOrganization = organizationRepository.findByEmailWithFetch(userInfoFromRequest.getEmail());
 
         return organizationMapper.mapToOrganizationFullInfoDto(attachedOrganization);
+    }
+
+    /**
+     * Загрузить фотографию организации.
+     *
+     * @param multipartFile файл
+     */
+    public void uploadImage(MultipartFile multipartFile) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.ORGANIZATION)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        Optional.ofNullable(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()))
+                .map(String::toLowerCase)
+                .filter(extension -> FileExtensionsEnum.JPEG.getValue().equals(extension) ||
+                        FileExtensionsEnum.PNG.getValue().equals(extension))
+                .orElseThrow(() -> new BusinessException("Нельзя сохранить файл с таким расширением", HttpStatus.BAD_REQUEST));
+
+        String path = fileService.saveFile(multipartFile);
+
+        organizationRepository.uploadImageByEmail(userInfoFromRequest.getEmail(), path);
     }
 }

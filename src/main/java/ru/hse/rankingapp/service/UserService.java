@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
@@ -28,6 +30,7 @@ import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
+import ru.hse.rankingapp.enums.FileExtensionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
@@ -38,6 +41,7 @@ import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 import ru.hse.rankingapp.utils.JwtUtils;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,6 +60,7 @@ public class UserService {
     private final JwtUtils jwtUtils;
     private final JwtService jwtService;
     private final AccountRepository accountRepository;
+    private final FileService fileService;
 
     @Value("${redirect.front-main}")
     private String frontMainPage;
@@ -245,5 +250,28 @@ public class UserService {
                 .map(userMapper::mapUserRatingDto);
 
         return new PageResponseDto<>(userPage.getTotalElements(), userPage.getTotalPages(), userPage.getContent());
+    }
+
+    /**
+     * Загрузить фотографию пользователя.
+     *
+     * @param multipartFile файл
+     */
+    public void uploadImage(MultipartFile multipartFile) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        Optional.ofNullable(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()))
+                .map(String::toLowerCase)
+                .filter(extension -> FileExtensionsEnum.JPEG.getValue().equals(extension) ||
+                        FileExtensionsEnum.PNG.getValue().equals(extension))
+                .orElseThrow(() -> new BusinessException("Нельзя сохранить файл с таким расширением", HttpStatus.BAD_REQUEST));
+
+        String path = fileService.saveFile(multipartFile);
+
+        userRepository.uploadImageByEmail(userInfoFromRequest.getEmail(), path);
     }
 }

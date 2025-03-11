@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
@@ -98,5 +101,16 @@ public class OrganizationController {
     @Operation(summary = "Отправить приглашение пользователю(ям) на вступление в организацию")
     public void addUsersToOrganization(@RequestBody Set<String> usersEmail) {
         organizationService.addUsersToOrganization(usersEmail);
+    }
+
+    /**
+     * Загрузить фотографию организации.
+     *
+     * @param multipartFile файл
+     */
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Загрузить фотографию организации")
+    public void uploadUserImage(@RequestParam("file") MultipartFile multipartFile) {
+        organizationService.uploadImage(multipartFile);
     }
 }

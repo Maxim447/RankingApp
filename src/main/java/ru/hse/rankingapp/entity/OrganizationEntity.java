@@ -51,6 +51,9 @@ public class OrganizationEntity {
     @Column(name = "is_open", nullable = false)
     private Boolean isOpen = Boolean.TRUE;
 
+    @Column(name = "image")
+    private String image;
+
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
 

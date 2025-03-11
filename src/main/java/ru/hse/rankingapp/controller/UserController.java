@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
@@ -126,5 +129,16 @@ public class UserController {
     @Operation(summary = "Получить данные для таблицы с общим рейтингом")
     public PageResponseDto<UserRatingDto> searchUsersRating(RatingSearchParamsDto searchParams, PageRequestDto pageRequest) {
         return userService.searchUsersRating(searchParams, pageRequest);
+    }
+
+    /**
+     * Загрузить фотографию пользователя.
+     *
+     * @param multipartFile файл
+     */
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Загрузить фотографию пользователя")
+    public void uploadUserImage(@RequestParam("file") MultipartFile multipartFile) {
+        userService.uploadImage(multipartFile);
     }
 }

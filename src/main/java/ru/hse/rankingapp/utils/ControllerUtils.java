@@ -1,5 +1,7 @@
 package ru.hse.rankingapp.utils;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,16 @@ public final class ControllerUtils {
         headers.setContentDisposition(buildContentDispositionWithAttachment(fileName));
 
         return new ResponseEntity<>(data, headers, HttpStatus.OK);
+    }
+
+    public static ResponseEntity<Resource> createFileResponse(Pair<MediaType, Resource> file) {
+        Resource resource = file.getRight();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(file.getLeft());
+        headers.setContentDisposition(buildContentDispositionWithAttachment(resource.getFilename()));
+
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
     private static ContentDisposition buildContentDispositionWithAttachment(String fileName) {
