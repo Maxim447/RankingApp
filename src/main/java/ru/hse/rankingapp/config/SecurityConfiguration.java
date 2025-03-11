@@ -58,7 +58,8 @@ public class SecurityConfiguration {
                                         "/api/v1/user/search",
                                         "/api/v1/user/rating-search",
                                         "/api/v1/organization/search",
-                                        "/api/v1/file/**")
+                                        "/api/v1/file/**",
+                                        "/api/v1/news")
                                 .permitAll()
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                                 .anyRequest()
