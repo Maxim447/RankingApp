@@ -98,6 +98,9 @@ public class UserEntity {
     @Column(name = "starts_count", nullable = false)
     private Long startsCount = 0L;
 
+    @Column(name = "image")
+    private String image;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",
             joinColumns = @JoinColumn(name = "user_id"),

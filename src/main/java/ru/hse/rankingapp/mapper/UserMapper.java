@@ -18,7 +18,13 @@ import java.util.Set;
 /**
  * Маппер для работы с сущностью пользователя.
  */
-@Mapper(componentModel = "spring", uses = {OrganizationMapper.class, EventMapper.class, CompetitionMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {
+                OrganizationMapper.class,
+                EventMapper.class,
+                CompetitionMapper.class
+        }
+)
 public interface UserMapper {
 
     /**

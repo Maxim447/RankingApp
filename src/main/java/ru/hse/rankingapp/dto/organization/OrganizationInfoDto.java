@@ -20,4 +20,7 @@ public class OrganizationInfoDto {
 
     @Schema(description = "Признак открытости организации (true -> открытая, false -> закрытая)")
     private Boolean isOpen;
+
+    @Schema(description = "Ссылка на фото")
+    private String image;
 }

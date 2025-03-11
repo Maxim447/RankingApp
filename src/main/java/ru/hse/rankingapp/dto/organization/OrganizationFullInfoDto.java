@@ -25,6 +25,9 @@ public class OrganizationFullInfoDto {
     @Schema(description = "Признак открытости организации (true -> открытая, false -> закрытая)")
     private Boolean isOpen;
 
+    @Schema(description = "Ссылка на фото")
+    private String image;
+
     @Schema(description = "Информация о пользователях")
     private List<UserInfoDto> users;
 
