@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.dto.news.NewsCreateDto;
 import ru.hse.rankingapp.dto.news.NewsResponseDto;
+import ru.hse.rankingapp.dto.news.NewsUpdateDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.entity.NewsEntity;
@@ -68,5 +69,37 @@ public class NewsService {
                 .forEach(fileService::deleteFile);
 
         newsRepository.deleteNewsById(id);
+    }
+
+    /**
+     * Обновить новость.
+     *
+     * @param newsUpdateDto Дто для обновления новости
+     */
+    public void updateNews(Long id, NewsUpdateDto newsUpdateDto) {
+        NewsEntity news = newsRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Не удалось найти новость по id = " + id, HttpStatus.NOT_FOUND));
+
+        newsMapper.updateNews(newsUpdateDto, news);
+
+        if (Boolean.TRUE.equals(newsUpdateDto.getIsNeedUpdateImage1())) {
+            fileService.deleteFile(news.getImage1());
+            String image1 = fileService.saveFile(newsUpdateDto.getImage1());
+            news.setImage1(image1);
+        }
+
+        if (Boolean.TRUE.equals(newsUpdateDto.getIsNeedUpdateImage3())) {
+            fileService.deleteFile(news.getImage2());
+            String image2 = fileService.saveFile(newsUpdateDto.getImage2());
+            news.setImage2(image2);
+        }
+
+        if (Boolean.TRUE.equals(newsUpdateDto.getIsNeedUpdateImage3())) {
+            fileService.deleteFile(news.getImage2());
+            String image3 = fileService.saveFile(newsUpdateDto.getImage3());
+            news.setImage1(image3);
+        }
+
+        newsRepository.save(news);
     }
 }

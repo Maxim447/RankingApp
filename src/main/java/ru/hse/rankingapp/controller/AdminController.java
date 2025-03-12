@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.news.NewsCreateDto;
+import ru.hse.rankingapp.dto.news.NewsUpdateDto;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
 
@@ -60,6 +61,17 @@ public class AdminController {
     @Operation(summary = "Создать новость")
     public void createNews(@ModelAttribute @Valid NewsCreateDto newsCreateDto) {
         newsService.createNews(newsCreateDto);
+    }
+
+    /**
+     * Обновить новость.
+     *
+     * @param newsUpdateDto Дто для обновления новости
+     */
+    @PostMapping(value = "/news-update/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Обновить новость")
+    public void updateNews(@PathVariable(value = "id") Long id, @ModelAttribute NewsUpdateDto newsUpdateDto) {
+        newsService.updateNews(id, newsUpdateDto);
     }
 
     /**

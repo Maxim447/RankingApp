@@ -74,6 +74,11 @@ public class FileService {
      * Удалить файл.
      */
     public void deleteFile(String file) {
+        if (file == null) {
+            log.warn("Файл {} не существует", file);
+            return;
+        }
+
         Path path = Paths.get(storage, file);
 
         if (!Files.exists(path)) {
