@@ -42,6 +42,17 @@ public class AdminController {
     }
 
     /**
+     * Обновить местоположение организации.
+     *
+     * @param simpleGeoJsonDto информация о координатах
+     */
+    @PostMapping("/coordinates-update/{id}")
+    @Operation(summary = "Обновить координаты")
+    public void updateCoordinates(@PathVariable(value = "id") Long id, @RequestBody SimpleGeoJsonDto simpleGeoJsonDto) {
+        coordinateService.updateCoordinates(id, simpleGeoJsonDto);
+    }
+
+    /**
      * Удалить координаты по id.
      *
      * @param id Id в таблице координат

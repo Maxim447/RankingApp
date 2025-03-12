@@ -45,6 +45,7 @@ public class FileService {
             Files.createDirectories(path.getParent());
 
             Files.write(path, multipartFile.getBytes());
+            log.info("Сохранен файл {}", fileName);
             return fileName;
         } catch (Exception e) {
             throw new BusinessException("Не удалось сохранить файл", HttpStatus.BAD_REQUEST);
@@ -88,6 +89,7 @@ public class FileService {
 
         try {
             Files.delete(path);
+            log.info("Удален файл {}", path);
         } catch (IOException e) {
             log.error("Не удалось удалить фйал по пути {}", path.toUri());
         }
