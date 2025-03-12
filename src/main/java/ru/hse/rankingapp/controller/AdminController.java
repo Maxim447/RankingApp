@@ -61,4 +61,15 @@ public class AdminController {
     public void createNews(@ModelAttribute @Valid NewsCreateDto newsCreateDto) {
         newsService.createNews(newsCreateDto);
     }
+
+    /**
+     * Удалить новость по id.
+     *
+     * @param id Ид записи
+     */
+    @DeleteMapping("/news/{id}")
+    @Operation(summary = "Удалить новость")
+    public void deleteNews(@PathVariable(value = "id") Long id) {
+        newsService.deleteNews(id);
+    }
 }

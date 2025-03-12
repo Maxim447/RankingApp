@@ -68,4 +68,23 @@ public class FileService {
             return Optional.empty();
         }
     }
+
+
+    /**
+     * Удалить файл.
+     */
+    public void deleteFile(String file) {
+        Path path = Paths.get(storage, file);
+
+        if (!Files.exists(path)) {
+            log.warn("Файл {} не существует", path);
+            return;
+        }
+
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            log.error("Не удалось удалить фйал по пути {}", path.toUri());
+        }
+    }
 }
