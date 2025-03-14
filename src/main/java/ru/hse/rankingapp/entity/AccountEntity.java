@@ -22,6 +22,7 @@ import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.enums.SeparatorEnum;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,19 @@ public class AccountEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    /**
+     * Добавить роль.
+     *
+     * @param role Роль
+     */
+    public void addRole(Role role) {
+        if (this.roles == null) {
+            this.roles = new HashSet<>();
+        }
+
+        this.roles.add(role);
     }
 
     /**

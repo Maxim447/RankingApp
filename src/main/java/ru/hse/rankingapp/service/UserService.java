@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.dto.curator.CuratorUserCreateDto;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
@@ -61,6 +63,7 @@ public class UserService {
     private final JwtService jwtService;
     private final AccountRepository accountRepository;
     private final FileService fileService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${redirect.front-main}")
     private String frontMainPage;
@@ -273,5 +276,21 @@ public class UserService {
         String path = fileService.saveFile(multipartFile);
 
         userRepository.uploadImageByEmail(userInfoFromRequest.getEmail(), path);
+    }
+
+    /**
+     * Создать аккаунт пользователя.
+     */
+    @Transactional
+    public UserEntity createUser(CuratorUserCreateDto curatorUserCreateDto) {
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.setEmail(curatorUserCreateDto.getEmail());
+        accountEntity.setPassword(passwordEncoder.encode(curatorUserCreateDto.getPassword()));
+        accountEntity.setRoles(Set.of(Role.USER));
+
+        UserEntity userEntity = userMapper.mapCuratorUserCreateDto(curatorUserCreateDto);
+
+        accountRepository.save(accountEntity);
+        return userRepository.save(userEntity);
     }
 }

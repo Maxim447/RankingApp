@@ -62,6 +62,7 @@ public class SecurityConfiguration {
                                         "/api/v1/news")
                                 .permitAll()
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
+                                .requestMatchers("/api/v1/organization/curator/**").hasAuthority(Role.CURATOR.name())
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

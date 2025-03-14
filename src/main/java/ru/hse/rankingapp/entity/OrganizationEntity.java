@@ -23,6 +23,7 @@ import lombok.ToString;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -74,6 +75,21 @@ public class OrganizationEntity {
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<CompetitionEntity> competitionEntities;
+
+    /**
+     * Добавить пользователя к организации.
+     */
+    public void addUser(UserEntity user) {
+        if (user == null) {
+            return;
+        }
+
+        if (this.users == null) {
+            this.users = new HashSet<>();
+        }
+
+        this.users.add(user);
+    }
 
     @Override
     public boolean equals(Object o) {

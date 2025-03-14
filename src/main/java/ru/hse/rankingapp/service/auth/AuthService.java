@@ -169,4 +169,11 @@ public class AuthService {
             throw new BusinessException("Не удалось достать информацию из токена", HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * Существует ли аккаунт.
+     */
+    public boolean existAccount(String email) {
+        return accountRepository.existsByEmail(email);
+    }
 }
