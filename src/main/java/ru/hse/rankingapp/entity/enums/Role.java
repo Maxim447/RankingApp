@@ -7,5 +7,6 @@ public enum Role {
 
     ADMIN,
     USER,
-    ORGANIZATION
+    ORGANIZATION,
+    CURATOR
 }

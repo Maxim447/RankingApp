@@ -3,6 +3,7 @@ package ru.hse.rankingapp.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import ru.hse.rankingapp.dto.curator.CuratorUserCreateDto;
 import ru.hse.rankingapp.dto.user.SignUpUserRequestDto;
 import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
@@ -35,6 +36,16 @@ public interface UserMapper {
      */
     @Mapping(target = "rating", constant = "0.0")
     UserEntity signUpRequestDtoToUser(SignUpUserRequestDto signUpRequestDto);
+
+    /**
+     * Маппинг сущности запроса куратора в сущность пользователя.
+     *
+     * @param curatorUserCreateDto Дто для создания пользователя, через куратора
+     * @return сущность пользователя
+     */
+    @Mapping(source = "userPhone", target = "phone")
+    @Mapping(target = "rating", constant = "0.0")
+    UserEntity mapCuratorUserCreateDto(CuratorUserCreateDto curatorUserCreateDto);
 
     /**
      * Получить информацию о пользователе.

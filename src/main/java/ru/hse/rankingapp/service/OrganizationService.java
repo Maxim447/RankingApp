@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.UserAuthentication;
+import ru.hse.rankingapp.dto.curator.CuratorUserCreateDto;
+import ru.hse.rankingapp.dto.curator.EmailPasswordDto;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
@@ -36,6 +38,7 @@ import ru.hse.rankingapp.service.auth.EmailService;
 import ru.hse.rankingapp.service.auth.JwtService;
 import ru.hse.rankingapp.service.search.OrganizationSearchWithSpec;
 import ru.hse.rankingapp.utils.JwtUtils;
+import ru.hse.rankingapp.utils.PasswordGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,5 +213,66 @@ public class OrganizationService {
         String path = fileService.saveFile(multipartFile);
 
         organizationRepository.uploadImageByEmail(userInfoFromRequest.getEmail(), path);
+    }
+
+
+    /**
+     * Добавить роль куратора.
+     *
+     * @param email Email организации
+     */
+    @Transactional
+    public void addCurator(String email) {
+        OrganizationEntity organization = organizationRepository.findByEmailOpt(email)
+                .orElseThrow(() -> new BusinessException("Организации с почтой = \"" + email + "\" отсутствует", HttpStatus.NOT_FOUND));
+
+        //todo verified
+//        organization.setVerified(true);
+
+        AccountEntity accountEntity = accountRepository.findByEmail(email);
+        accountEntity.addRole(Role.CURATOR);
+    }
+
+    /**
+     * Создать аккаунт пользователя своей организации.
+     */
+    @Transactional
+    public EmailPasswordDto curatorCreateUser(CuratorUserCreateDto curatorUserCreateDto) {
+        if (Boolean.TRUE.equals(curatorUserCreateDto.getIsNeedGeneratePassword())) {
+            String password = PasswordGenerator.generatePassword(16);
+            curatorUserCreateDto.setPassword(password);
+        } else {
+            if (!curatorUserCreateDto.getPassword().equals(curatorUserCreateDto.getConfirmPassword())) {
+                throw new BusinessException(BusinessExceptionsEnum.PASSWORD_NOT_EQUALS_CONFIRM_PASSWORD);
+            }
+        }
+
+        if (accountRepository.existsByEmail(curatorUserCreateDto.getEmail())) {
+            throw new BusinessException(BusinessExceptionsEnum.EMAIL_ALREADY_EXISTS);
+        }
+
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+        String email = userInfoFromRequest.getEmail();
+
+        OrganizationEntity organization = organizationRepository.findByEmail(email);
+
+        UserEntity user = userService.createUser(curatorUserCreateDto);
+
+        organization.addUser(user);
+
+        return new EmailPasswordDto()
+                .setEmail(curatorUserCreateDto.getEmail())
+                .setPassword(curatorUserCreateDto.getPassword());
+    }
+
+    /**
+     * Добавить пользователей к организации без приглашения.
+     */
+    @Transactional
+    public void addUsersToOrganizationWithoutConfirmation(Set<String> usersEmails) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+        OrganizationEntity organization = organizationRepository.findByEmail(userInfoFromRequest.getEmail());
+
+        userService.findUsersByEmails(usersEmails).forEach(organization::addUser);
     }
 }

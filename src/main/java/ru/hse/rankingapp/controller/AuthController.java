@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,15 @@ public class AuthController {
     @Operation(summary = "Получить код для подтверждения электронной почты")
     public VerificationCodeResponseDto getEmailVerificationCode(@RequestParam("emailToVerify") String emailToVerify) {
         return authService.getEmailVerificationCode(emailToVerify);
+    }
+
+    /**
+     * Существует ли аккаунт.
+     */
+    @GetMapping("/exist-email/{email}")
+    @Operation(summary = "Существует ли аккаунт с такой почтой")
+    public boolean existAccount(@PathVariable(value = "email") String email) {
+        return authService.existAccount(email);
     }
 
     /**

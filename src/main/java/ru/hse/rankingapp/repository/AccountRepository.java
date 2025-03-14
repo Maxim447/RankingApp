@@ -52,7 +52,9 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
             """)
     void updatePasswordByEmail(@Param(value = "email") String email, @Param(value = "password") String password);
 
-
+    /**
+     * Существует ли аккаунт.
+     */
     boolean existsByEmail(String email);
 
     /**

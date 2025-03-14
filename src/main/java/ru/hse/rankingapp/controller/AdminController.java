@@ -17,6 +17,7 @@ import ru.hse.rankingapp.dto.news.NewsCreateDto;
 import ru.hse.rankingapp.dto.news.NewsUpdateDto;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
+import ru.hse.rankingapp.service.OrganizationService;
 
 /**
  * API для админа.
@@ -27,6 +28,7 @@ import ru.hse.rankingapp.service.NewsService;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private final OrganizationService organizationService;
     private final CoordinateService coordinateService;
     private final NewsService newsService;
 
@@ -94,5 +96,16 @@ public class AdminController {
     @Operation(summary = "Удалить новость")
     public void deleteNews(@PathVariable(value = "id") Long id) {
         newsService.deleteNews(id);
+    }
+
+    /**
+     * Добавить роль куратора.
+     *
+     * @param email Email организации
+     */
+    @PostMapping("/curator/{email}")
+    @Operation(summary = "Добавить роль куратора")
+    public void addCurator(@PathVariable(value = "email") String email) {
+        organizationService.addCurator(email);
     }
 }
