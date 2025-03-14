@@ -3,6 +3,7 @@ package ru.hse.rankingapp.dto.competition;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hse.rankingapp.entity.enums.StatusEnum;
 
 import java.time.LocalDate;
 
@@ -29,7 +30,9 @@ public class CompetitionSearchParamsDto {
     @Schema(description = "Минимальное число участников")
     private Integer minParticipants;
 
-    //todo мб тут должна быть enum
+    @Schema(description = "Статус соревнования")
+    private StatusEnum status;
+
     @Schema(description = "Тип соревнования (поиск по вхождению)")
     private String competitionType;
 }
