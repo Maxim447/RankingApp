@@ -46,6 +46,10 @@ public class CompetitionSearchWithSpec {
                 predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("maxParticipants"), searchParams.getMaxParticipants()));
             }
 
+            if (searchParams.getStatus() != null) {
+                predicates.add(criteriaBuilder.equal(root.get("status"), searchParams.getStatus().name()));
+            }
+
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }
