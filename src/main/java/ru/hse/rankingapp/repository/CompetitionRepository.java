@@ -2,9 +2,11 @@ package ru.hse.rankingapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.entity.CompetitionEntity;
 
 import java.time.LocalDate;
@@ -63,6 +65,36 @@ public interface CompetitionRepository extends JpaRepository<CompetitionEntity, 
             and ce.actionIndex <> ru.hse.rankingapp.entity.enums.ActionIndex.D
             """)
     Set<CompetitionEntity> findAllByCurrentDate(@Param(value = "now") LocalDate now);
+
+    /**
+     * Найти все соревнования меньше текущей даты.
+     *
+     * @param now Текущая дата
+     * @return Все соревнования на текущую дату
+     */
+    @Query(value = """
+            select ce.id from CompetitionEntity ce
+            where ce.date < :now
+            and ce.status = ru.hse.rankingapp.entity.enums.StatusEnum.IN_PROGRESS
+            and ce.actionIndex <> ru.hse.rankingapp.entity.enums.ActionIndex.D
+            """)
+    Set<Long> findAllLowerCurrentDate(@Param(value = "now") LocalDate now);
+
+    /**
+     * Обновить статус соревнований.
+     *
+     * @param competitionIds Id соревнований.
+     */
+    @Modifying
+    @Transactional
+    @Query(value = """
+            update CompetitionEntity ce
+            set ce.status = 'ENDED', ce.modifyDttm = current timestamp, ce.actionIndex = 'U'
+            where ce.id in :ids
+            and ce.status = ru.hse.rankingapp.entity.enums.StatusEnum.IN_PROGRESS
+            and ce.actionIndex <> ru.hse.rankingapp.entity.enums.ActionIndex.D
+            """)
+    void updateStatus(@Param(value = "ids") Set<Long> competitionIds);
 
     /**
      * Получить соревнование и почту организации по uuid.

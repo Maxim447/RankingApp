@@ -1,6 +1,7 @@
 package ru.hse.rankingapp.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SchedulerService {
 
     private final CompetitionRepository competitionRepository;
@@ -27,6 +29,8 @@ public class SchedulerService {
      */
     @Scheduled(cron = "0 0 0 * * *")
     public void changeStatusInCompetition() {
+        log.info("Запустился шедуллер на обновление статуса соревнований и заплывов на IN_PROGRESS. Время: {}", OffsetDateTime.now());
+
         Set<CompetitionEntity> competitions = competitionRepository.findAllByCurrentDate(LocalDate.now());
 
         for (CompetitionEntity competition : competitions) {
@@ -43,5 +47,24 @@ public class SchedulerService {
         }
 
         competitionRepository.saveAll(competitions);
+        log.info("Шедуллер закончил обновление статуса соревнований и заплывов на IN_PROGRESS. Время: {}", OffsetDateTime.now());
+    }
+
+    /**
+     * Изменить статус соревнований на ENDED.
+     */
+    @Scheduled(cron = "30 0 0 * * *")
+    public void changeStatusInCompetitionToEnded() {
+        log.info("Запустился шедуллер на обновление статуса соревнований на ENDED. Время: {}", OffsetDateTime.now());
+
+        Set<Long> competitionIds = competitionRepository.findAllLowerCurrentDate(LocalDate.now());
+
+        log.info("Id для обновления статуса на ENDED {}", competitionIds);
+
+        if (CollectionUtils.isNotEmpty(competitionIds)) {
+            competitionRepository.updateStatus(competitionIds);
+        }
+
+        log.info("Шедуллер закончил обновление статуса соревнований на ENDED. Время: {}", OffsetDateTime.now());
     }
 }
