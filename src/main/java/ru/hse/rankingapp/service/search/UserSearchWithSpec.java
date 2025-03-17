@@ -67,6 +67,10 @@ public class UserSearchWithSpec {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (searchParams.getUserType() != null) {
+                predicates.add(cb.equal(root.get("participantsType"), searchParams.getUserType()));
+            }
+
             if (searchParams.getCategoryEnum() != null) {
                 CategoryEnum categoryEnum = searchParams.getCategoryEnum();
                 Expression<LocalDate> birthDate = root.get("birthDate");
@@ -75,7 +79,6 @@ public class UserSearchWithSpec {
                 Expression<Integer> userAge = cb.function("date_part", Integer.class, cb.literal("year"), ageInterval);
 
                 predicates.add(cb.between(userAge, categoryEnum.getFrom(), categoryEnum.getTo()));
-
             }
 
             if (searchParams.getGender() != null) {
