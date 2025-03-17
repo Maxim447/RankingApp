@@ -15,12 +15,16 @@ import ru.hse.rankingapp.dto.coordinates.GeometryDto;
 import ru.hse.rankingapp.dto.coordinates.PropertiesDto;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonResponseDto;
+import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
 import ru.hse.rankingapp.entity.CoordinateEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
+import ru.hse.rankingapp.entity.TrainerEntity;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.CoordinateMapper;
+import ru.hse.rankingapp.mapper.TrainerMapper;
 import ru.hse.rankingapp.repository.CoordinateRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
+import ru.hse.rankingapp.repository.TrainerRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +36,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CoordinateService {
 
+    private final TrainerRepository trainerRepository;
+    private final TrainerMapper trainerMapper;
     private final CoordinateRepository coordinateRepository;
     private final OrganizationRepository organizationRepository;
     private final CoordinateMapper coordinateMapper;
@@ -133,5 +139,22 @@ public class CoordinateService {
         }
 
         coordinateRepository.save(coordinateEntity);
+    }
+
+    /**
+     * Добавить тренеров к местоположению.
+     */
+    @Transactional
+    public void addTrainers(Long coordinateId, TrainerCreateDto trainerCreateDto) {
+        CoordinateEntity coordinateEntity = coordinateRepository.findById(coordinateId)
+                .orElseThrow(() -> new BusinessException("Не найдено местоположение по id", HttpStatus.NOT_FOUND));
+        OrganizationEntity organization = coordinateEntity.getOrganization();
+
+        TrainerEntity trainerEntity = trainerMapper.mapTrainer(trainerCreateDto);
+
+        trainerEntity.setCoordinate(coordinateEntity);
+        trainerEntity.setOrganization(organization);
+
+        trainerRepository.save(trainerEntity);
     }
 }
