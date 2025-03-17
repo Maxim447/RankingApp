@@ -53,6 +53,7 @@ public interface UserMapper {
      * @param user cущность пользователя
      * @return Информация о пользователе
      */
+    @Mapping(source = "participantsType.singleValue", target = "participantType")
     UserInfoDto mapToUserInfoDto(UserEntity user);
 
     /**
@@ -74,6 +75,7 @@ public interface UserMapper {
     @Mapping(source = "organizations", target = "userOrganizations")
     @Mapping(source = "competitionUserLinks", target = "userCompetitions")
     @Mapping(source = "eventUserLinks", target = "userEvents")
+    @Mapping(source = "participantsType.singleValue", target = "participantType")
     UserFullInfoDto mapToUserFullInfoDto(UserEntity userEntity);
 
     /**
@@ -87,6 +89,7 @@ public interface UserMapper {
     @Mapping(source = "birthDate", target = "age", qualifiedByName = "mapAge")
     @Mapping(source = "bestAverageTime100", target = "bestTime100", qualifiedByName = "mapTime")
     @Mapping(source = "startsCount", target = "starts")
+    @Mapping(source = "participantsType.singleValue", target = "participantType")
     UserRatingDto mapUserRatingDto(UserEntity entity);
 
     /**

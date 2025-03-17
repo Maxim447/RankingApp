@@ -33,6 +33,7 @@ import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.entity.enums.TokenAction;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
 import ru.hse.rankingapp.enums.FileExtensionsEnum;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
@@ -292,5 +293,19 @@ public class UserService {
 
         accountRepository.save(accountEntity);
         return userRepository.save(userEntity);
+    }
+
+    /**
+     * Изменить тип участника.
+     */
+    @Transactional
+    public void updateParticipantType(ParticipantsTypeEnum participantsTypeEnum) {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        userRepository.updateParticipantType(participantsTypeEnum, userInfoFromRequest.getEmail());
     }
 }

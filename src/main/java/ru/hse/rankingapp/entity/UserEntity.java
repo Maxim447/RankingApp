@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.hse.rankingapp.entity.enums.ActionIndex;
 import ru.hse.rankingapp.entity.enums.Gender;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -100,6 +101,10 @@ public class UserEntity {
 
     @Column(name = "image")
     private String image;
+
+    @Column(name = "participants_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ParticipantsTypeEnum participantsType = ParticipantsTypeEnum.AMATEURS;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_organizations_link",

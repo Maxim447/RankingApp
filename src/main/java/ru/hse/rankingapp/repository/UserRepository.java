@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rankingapp.entity.UserEntity;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 
 import java.util.Optional;
 import java.util.Set;
@@ -135,4 +136,15 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     @Modifying
     @Transactional
     void uploadImageByEmail(@Param("email") String email, @Param("image") String fileName);
+
+    /**
+     * Изменить тип участника.
+     */
+    @Query("""
+            update UserEntity u
+            set u.participantsType = :participantsTypeEnum
+            where u.email = :email
+            """)
+    @Modifying
+    void updateParticipantType(@Param("participantsTypeEnum") ParticipantsTypeEnum participantsTypeEnum, @Param("email") String email);
 }

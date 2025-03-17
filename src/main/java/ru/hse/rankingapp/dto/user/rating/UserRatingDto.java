@@ -43,4 +43,7 @@ public class UserRatingDto {
 
     @Schema(description = "Лучший темп на 100 метров пользователя")
     private LocalTime bestTime100;
+
+    @Schema(description = "Любитель/Профессионал")
+    private String participantType;
 }

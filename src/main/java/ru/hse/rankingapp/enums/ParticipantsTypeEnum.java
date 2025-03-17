@@ -10,8 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ParticipantsTypeEnum {
 
-    PROFESSIONALS("Профессионалы"),
-    AMATEURS("Любители");
+    PROFESSIONALS("Профессионалы", "Профессионал"),
+    AMATEURS("Любители", "Любитель");
 
     private final String value;
+    private final String singleValue;
 }
