@@ -59,6 +59,7 @@ public class JwtService {
         extraClaims.put("roles", accountEntity.getRoleString());
         extraClaims.put("isOrganization", roles.contains(Role.ORGANIZATION));
         extraClaims.put("isAdmin", roles.contains(Role.ADMIN));
+        extraClaims.put("isCurator", roles.contains(Role.CURATOR));
 
         return Jwts
                 .builder()
