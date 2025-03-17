@@ -85,12 +85,13 @@ public class JwtUtils {
         String rolesString = claims.get("roles", String.class);
         boolean isOrganization = claims.get("isOrganization", Boolean.class);
         boolean isAdmin = claims.get("isAdmin", Boolean.class);
+        boolean isCurator = claims.get("isCurator", Boolean.class);
 
         Set<Role> roles = Arrays.stream(rolesString.split(SeparatorEnum.SPACE.getValue()))
                 .map(Role::valueOf)
                 .collect(Collectors.toSet());
 
-        return UserAuthentication.of(email, isOrganization, isAdmin, roles);
+        return UserAuthentication.of(email, isOrganization, isAdmin, isCurator, roles);
     }
 
     /**

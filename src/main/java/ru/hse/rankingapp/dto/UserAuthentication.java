@@ -28,6 +28,9 @@ public class UserAuthentication {
     @Schema(description = "Является ли пользователь админом")
     private boolean isAdmin;
 
+    @Schema(description = "Является ли пользователь куратором организации")
+    private boolean isCurator;
+
     /**
      * Роли пользователя.
      */
