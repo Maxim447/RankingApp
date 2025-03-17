@@ -55,6 +55,9 @@ public class UserFullInfoDto {
     @Schema(description = "Организации в которых состоит пользователь")
     private List<OrganizationInfoDto> userOrganizations;
 
+    @Schema(description = "Любитель/Профессионал")
+    private String participantType;
+
     @Schema(description = "Ссылка на фото")
     private String image;
 }

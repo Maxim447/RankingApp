@@ -10,4 +10,11 @@
             <sqlFile path="v0.0.9/rollback/trainer_table_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="17-03-2025 21:00:00" author="msalyaev">
+        <sqlFile path="v0.0.9/user_participants_type.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.9/rollback/user_participants_type_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>

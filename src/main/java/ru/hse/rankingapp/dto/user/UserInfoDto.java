@@ -44,4 +44,7 @@ public class UserInfoDto {
 
     @Schema(description = "Ссылка на фото")
     private String image;
+
+    @Schema(description = "Любитель/Профессионал")
+    private String participantType;
 }

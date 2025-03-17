@@ -24,6 +24,7 @@ import ru.hse.rankingapp.dto.user.UserInfoDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.RatingSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.UserRatingDto;
+import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 import ru.hse.rankingapp.service.UserService;
 
 import java.util.UUID;
@@ -140,5 +141,14 @@ public class UserController {
     @Operation(summary = "Загрузить фотографию пользователя")
     public void uploadUserImage(@RequestParam("file") MultipartFile multipartFile) {
         userService.uploadImage(multipartFile);
+    }
+
+    /**
+     * Изменить тип участника.
+     */
+    @PostMapping(value = "/update-participant-type")
+    @Operation(summary = "Изменить тип участника")
+    public void updateParticipantType(@RequestParam ParticipantsTypeEnum participantsTypeEnum) {
+        userService.updateParticipantType(participantsTypeEnum);
     }
 }
