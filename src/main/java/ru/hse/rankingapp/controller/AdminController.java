@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.news.NewsCreateDto;
 import ru.hse.rankingapp.dto.news.NewsUpdateDto;
+import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
 import ru.hse.rankingapp.service.OrganizationService;
@@ -41,6 +42,15 @@ public class AdminController {
     @Operation(summary = "Добавить координаты")
     public void addCoordinates(@RequestBody SimpleGeoJsonDto simpleGeoJsonDto) {
         coordinateService.addCoordinates(simpleGeoJsonDto);
+    }
+
+    /**
+     * Добавить тренеров к местоположению.
+     */
+    @PostMapping(value = "/add-trainer/{coordinateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Добавить тренеров к местоположению")
+    public void addTrainers(@PathVariable(name = "coordinateId") Long coordinateId, @ModelAttribute @Valid TrainerCreateDto trainerCreateDto) {
+        coordinateService.addTrainers(coordinateId, trainerCreateDto);
     }
 
     /**

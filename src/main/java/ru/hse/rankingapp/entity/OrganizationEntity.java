@@ -76,6 +76,9 @@ public class OrganizationEntity {
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Set<CompetitionEntity> competitionEntities;
 
+    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Set<TrainerEntity> trainers;
+
     /**
      * Добавить пользователя к организации.
      */
