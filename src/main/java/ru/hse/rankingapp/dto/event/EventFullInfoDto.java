@@ -42,9 +42,6 @@ public class EventFullInfoDto {
     @Schema(description = "Стоимость заплыва")
     private Double price;
 
-    @Schema(description = "Максимальное кол-во очков за заплыв")
-    private Integer maxPoints;
-
     @Schema(description = "Время начала заплыва")
     private OffsetDateTime startTime;
 

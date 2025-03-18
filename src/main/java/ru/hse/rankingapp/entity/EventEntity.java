@@ -60,9 +60,6 @@ public class EventEntity {
     @Column(name = "age_to", nullable = false)
     private Integer ageTo;
 
-    @Column(name = "max_points", nullable = false)
-    private Integer maxPoints;
-
     @Column(name = "start_time", nullable = false)
     private OffsetDateTime startTime;
 

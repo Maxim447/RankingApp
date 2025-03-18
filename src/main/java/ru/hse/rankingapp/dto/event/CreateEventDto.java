@@ -33,9 +33,6 @@ public class CreateEventDto {
     @Schema(description = "Стоимость участия", defaultValue = "0.0")
     private Double price;
 
-    @Schema(description = "Максимальное кол-во очков за событие")
-    private Integer maxPoints;
-
     @Schema(description = "Максимальное число участников")
     private Integer maxParticipants;
 
