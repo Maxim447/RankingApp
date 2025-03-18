@@ -17,4 +17,11 @@
             <sqlFile path="v0.0.9/rollback/user_participants_type_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="18-03-2025 21:00:00" author="msalyaev">
+        <sqlFile path="v0.0.9/drop_points_column.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.9/rollback/drop_points_column_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
