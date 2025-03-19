@@ -15,7 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.news.NewsCreateDto;
 import ru.hse.rankingapp.dto.news.NewsUpdateDto;
+import ru.hse.rankingapp.dto.partner.PartnerCreateDto;
+import ru.hse.rankingapp.dto.partner.PartnerUpdateDto;
+import ru.hse.rankingapp.dto.sponsor.SponsorCreateDto;
+import ru.hse.rankingapp.dto.sponsor.SponsorUpdateDto;
 import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
+import ru.hse.rankingapp.service.AboutUsService;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
 import ru.hse.rankingapp.service.OrganizationService;
@@ -29,6 +34,7 @@ import ru.hse.rankingapp.service.OrganizationService;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private final AboutUsService aboutUsService;
     private final OrganizationService organizationService;
     private final CoordinateService coordinateService;
     private final NewsService newsService;
@@ -117,5 +123,68 @@ public class AdminController {
     @Operation(summary = "Добавить роль куратора")
     public void addCurator(@PathVariable(value = "email") String email) {
         organizationService.addCurator(email);
+    }
+
+    /**
+     * Обновить информацию о нас.
+     */
+    @PostMapping("/update-about-us")
+    @Operation(summary = "Обновить информацию о нас")
+    public void updateAboutUs(@RequestBody String description) {
+        aboutUsService.updateAboutUs(description);
+    }
+
+    /**
+     * Создать партнера.
+     */
+    @PostMapping(value = "/add-partner", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Создать партнера")
+    public void addPartner(@ModelAttribute @Valid PartnerCreateDto createDto) {
+        aboutUsService.addPartner(createDto);
+    }
+
+    /**
+     * Создать спонсора.
+     */
+    @PostMapping(value = "/add-sponsor", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Создать спонсора")
+    public void addSponsor(@ModelAttribute @Valid SponsorCreateDto createDto) {
+        aboutUsService.addSponsor(createDto);
+    }
+
+    /**
+     * Обновить спонсора.
+     */
+    @PostMapping(value = "/update-sponsor/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Обновить спонсора")
+    public void updateSponsor(@PathVariable(value = "id") Long id, @ModelAttribute SponsorUpdateDto updateDto) {
+        aboutUsService.updateSponsor(id, updateDto);
+    }
+
+    /**
+     * Обновить партнера.
+     */
+    @PostMapping(value = "/update-partner/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Обновить партнера")
+    public void updatePartner(@PathVariable(value = "id") Long id, @ModelAttribute PartnerUpdateDto updateDto) {
+        aboutUsService.updatePartner(id, updateDto);
+    }
+
+    /**
+     * Удалить партнера по id.
+     */
+    @DeleteMapping("/partners/{id}")
+    @Operation(summary = "Удалить партнера по id")
+    public void deletePartnerById(@PathVariable(value = "id") Long id) {
+        aboutUsService.deletePartnerById(id);
+    }
+
+    /**
+     * Удалить спонсора по id.
+     */
+    @DeleteMapping("/sponsors/{id}")
+    @Operation(summary = "Удалить спонсора по id")
+    public void deleteSponsorById(@PathVariable(value = "id") Long id) {
+        aboutUsService.deleteSponsorById(id);
     }
 }
