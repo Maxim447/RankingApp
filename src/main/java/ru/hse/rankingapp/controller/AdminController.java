@@ -20,6 +20,7 @@ import ru.hse.rankingapp.dto.partner.PartnerUpdateDto;
 import ru.hse.rankingapp.dto.sponsor.SponsorCreateDto;
 import ru.hse.rankingapp.dto.sponsor.SponsorUpdateDto;
 import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
+import ru.hse.rankingapp.dto.trainer.TrainerUpdateDto;
 import ru.hse.rankingapp.service.AboutUsService;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
@@ -57,6 +58,15 @@ public class AdminController {
     @Operation(summary = "Добавить тренеров к местоположению")
     public void addTrainers(@PathVariable(name = "coordinateId") Long coordinateId, @ModelAttribute @Valid TrainerCreateDto trainerCreateDto) {
         coordinateService.addTrainers(coordinateId, trainerCreateDto);
+    }
+
+    /**
+     * Обновить тренера.
+     */
+    @PostMapping(value = "/update-trainer/{trainerId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Обновить тренера по id")
+    public void updateTrainers(@PathVariable(name = "trainerId") Long trainerId, @ModelAttribute TrainerUpdateDto trainerUpdateDto) {
+        coordinateService.updateTrainer(trainerId, trainerUpdateDto);
     }
 
     /**

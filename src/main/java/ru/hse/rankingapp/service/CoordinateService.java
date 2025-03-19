@@ -16,6 +16,7 @@ import ru.hse.rankingapp.dto.coordinates.PropertiesDto;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonResponseDto;
 import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
+import ru.hse.rankingapp.dto.trainer.TrainerUpdateDto;
 import ru.hse.rankingapp.entity.CoordinateEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TrainerEntity;
@@ -43,6 +44,7 @@ public class CoordinateService {
     private final CoordinateMapper coordinateMapper;
     private final ObjectMapper objectMapper;
     private final GeoJsonReader geoJsonReader = new GeoJsonReader();
+    private final FileService fileService;
 
     /**
      * Сохранить местоположение организации.
@@ -156,5 +158,22 @@ public class CoordinateService {
         trainerEntity.setOrganization(organization);
 
         trainerRepository.save(trainerEntity);
+    }
+
+    /**
+     * Обновить тренера.
+     */
+    @Transactional
+    public void updateTrainer(Long trainerId, TrainerUpdateDto trainerUpdateDto) {
+        TrainerEntity trainerEntity = trainerRepository.findById(trainerId)
+                .orElseThrow(() -> new BusinessException("Не найден тренер по id = " + trainerId, HttpStatus.NOT_FOUND));
+
+        trainerMapper.updateTrainerEntity(trainerUpdateDto, trainerEntity);
+
+        if (Boolean.TRUE.equals(trainerUpdateDto.getIsNeedUpdatePhoto()) && trainerUpdateDto.getImage() != null) {
+            fileService.deleteFile(trainerEntity.getImage());
+            String image = fileService.saveFile(trainerUpdateDto.getImage());
+            trainerEntity.setImage(image);
+        }
     }
 }

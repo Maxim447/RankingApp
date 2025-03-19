@@ -31,4 +31,11 @@
             <sqlFile path="v0.0.9/rollback/about_us_table_rollback.sql" relativeToChangelogFile="true"/>
         </rollback>
     </changeSet>
+
+    <changeSet id="19-03-2025 21:30:00" author="msalyaev">
+        <sqlFile path="v0.0.9/alter_table_trainers.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.0.9/rollback/alter_table_trainers_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
 </databaseChangeLog>
