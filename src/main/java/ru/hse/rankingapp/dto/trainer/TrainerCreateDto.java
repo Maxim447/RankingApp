@@ -25,8 +25,14 @@ public class TrainerCreateDto {
     @Schema(description = "Отчество")
     private String middleName;
 
-    @Schema(description = "Описание тренера")
-    private String description;
+    @Schema(description = "Образование тренера")
+    private String education;
+
+    @Schema(description = "Специализация тренера")
+    private String specialization;
+
+    @Schema(description = "Достижения тренера")
+    private String achievements;
 
     @Schema(description = "Фотография")
     private MultipartFile image;

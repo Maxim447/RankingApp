@@ -47,8 +47,14 @@ public class TrainerEntity {
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "education")
+    private String education;
+
+    @Column(name = "specialization")
+    private String specialization;
+
+    @Column(name = "achievements")
+    private String achievements;
 
     @Column(name = "image")
     private String image;
