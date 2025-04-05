@@ -25,6 +25,7 @@ import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.UserRepository;
+import ru.hse.rankingapp.service.EmailService;
 import ru.hse.rankingapp.utils.JwtUtils;
 import ru.hse.rankingapp.utils.Validator;
 import ru.hse.rankingapp.utils.VerificationCodeGenerator;

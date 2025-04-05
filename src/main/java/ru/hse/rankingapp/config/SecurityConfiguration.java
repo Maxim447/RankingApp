@@ -60,7 +60,8 @@ public class SecurityConfiguration {
                                         "/api/v1/organization/search",
                                         "/api/v1/file/**",
                                         "/api/v1/news",
-                                        "/api/v1/about-us/**")
+                                        "/api/v1/about-us/**",
+                                        "/api/v1/organization/curator/{token}")
                                 .permitAll()
                                 .requestMatchers("/api/v1/admin/**").hasAuthority(Role.ADMIN.name())
                                 .requestMatchers("/api/v1/organization/curator/**").hasAuthority(Role.CURATOR.name())
