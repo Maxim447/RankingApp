@@ -15,4 +15,6 @@ public class EmailLinkProperties {
     private String addToOrganization;
 
     private String recoveryPassword;
+
+    private String addRoleCurator;
 }

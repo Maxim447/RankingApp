@@ -6,12 +6,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 import ru.hse.rankingapp.dto.login.LoginResponseDto;
 import ru.hse.rankingapp.dto.organization.OrganizationFullInfoDto;
 import ru.hse.rankingapp.dto.organization.OrganizationInfoDto;
@@ -23,6 +25,7 @@ import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.service.OrganizationService;
 
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * API для организаций.
@@ -112,5 +115,23 @@ public class OrganizationController {
     @Operation(summary = "Загрузить фотографию организации")
     public void uploadUserImage(@RequestParam("file") MultipartFile multipartFile) {
         organizationService.uploadImage(multipartFile);
+    }
+
+    /**
+     * Отправить запрос админу на добавление роли куратора.
+     */
+    @PostMapping(value = "/send-request-to-admin")
+    @Operation(summary = "Отправить запрос админу на добавление роли куратора")
+    public void sendMessageToAdmin(@RequestBody String text) {
+        organizationService.sendMessageToAdmin(text);
+    }
+
+    /**
+     * Отправить запрос админу на добавление роли куратора.
+     */
+    @GetMapping(value = "/curator/{token}")
+    @Operation(summary = "Отправить запрос админу на добавление роли куратора")
+    public RedirectView sendMessageToAdmin(@PathVariable("token") UUID token) {
+        return organizationService.addCurator(token);
     }
 }

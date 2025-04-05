@@ -68,6 +68,15 @@ public class TokenEntity {
     /**
      * Создать сущность.
      */
+    public TokenEntity(UUID id, TokenAction tokenAction, OrganizationEntity organization) {
+        this.id = id;
+        this.tokenAction = tokenAction;
+        this.organization = organization;
+    }
+
+    /**
+     * Создать сущность.
+     */
     public TokenEntity(UUID id, TokenAction tokenAction, UserEntity user, OrganizationEntity organization) {
         this.id = id;
         this.tokenAction = tokenAction;

@@ -21,7 +21,6 @@ import ru.hse.rankingapp.repository.AccountRepository;
 import ru.hse.rankingapp.repository.OrganizationRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
-import ru.hse.rankingapp.service.auth.EmailService;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;

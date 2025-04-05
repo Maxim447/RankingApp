@@ -1,4 +1,4 @@
-package ru.hse.rankingapp.service.auth;
+package ru.hse.rankingapp.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -8,6 +8,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import ru.hse.rankingapp.entity.AccountEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -106,6 +107,34 @@ public class EmailService {
         }
 
         return uuid;
+    }
+
+    /**
+     * Отправить письмо для добавления роли куратора организации.
+     */
+    public void sendMessageToAddCurator(AccountEntity adminAccount, OrganizationEntity organization, String text, UUID token) throws MessagingException {
+        log.info("Страт отправки сообщения на почту {} для добавления роли куратора", adminAccount.getEmail());
+
+        String confirmationLink = String.format(
+                emailLinkProperties.getAddRoleCurator(), token
+        );
+
+        String subject = "Добавление роли куратора";
+        String body = """
+                <html>
+                <body>
+                    <p>Сообщение организации:</p>
+                    <p>%s</p>
+                    <p>Почта организации: %s </>
+                    <p>Вы можете добавить роль куратора организации "%s", нажав на кнопку ниже. Или через панель админа на сайте.</p>
+                    <a href="%s" style="display:inline-block; padding:10px 20px; background-color:#4CAF50; color:white; text-decoration:none; border-radius:5px;">Добавить роль куратора</a>
+                    <p>С уважением, Ваша команда.</p>
+                    <p>Если письмо пришло к Вам по ошибке, проигнорируете его.<p>
+                </body>
+                </html>
+                """.formatted(text, organization.getEmail(), organization.getName(), confirmationLink);
+
+        sendMessageWithBody(subject, body, adminAccount.getEmail());
     }
 
     private void sendRecoveryPasswordEmail(String email, String name, UUID uuid) throws MessagingException {
