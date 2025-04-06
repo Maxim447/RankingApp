@@ -12,6 +12,7 @@ import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
 import ru.hse.rankingapp.dto.event.EventResultDto;
+import ru.hse.rankingapp.dto.event.EventResultRequestDto;
 import ru.hse.rankingapp.dto.event.EventUserSearchRequestDto;
 import ru.hse.rankingapp.dto.event.EventUserSearchResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
@@ -161,6 +162,85 @@ public class EventService {
     }
 
     @Transactional
+    public void uploadEventResults(List<EventResultRequestDto> requestDto, UUID eventUuid) {
+        EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
+                new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
+
+        if (StatusEnum.ENDED.equals(event.getStatus())) {
+            throw new BusinessException("Заплыв уже завершился. " +
+                    "Если при внесении данных была совершена ошибка, обратитесь к администратору.", HttpStatus.BAD_REQUEST);
+        }
+
+        Map<String, EventUserLinkEntity> userLinkEntityMap = event.getEventUserLinks().stream()
+                .collect(Collectors.toMap(
+                        userEvent -> userEvent.getUser().getEmail(),
+                        Function.identity()
+                ));
+
+        Map<Gender, List<EventResultRequestDto>> collect = requestDto.stream()
+                .collect(Collectors.groupingBy(
+                        EventResultRequestDto::getGender,
+                        Collectors.collectingAndThen(Collectors.toList(), list -> {
+                            list.sort(Comparator.comparing(EventResultRequestDto::getUserTime));
+                            return list;
+                        }))
+                );
+
+        requestDto.sort(Comparator.comparing(EventResultRequestDto::getUserTime));
+
+        CompetitionEntity competition = event.getCompetition();
+        ParticipantsTypeEnum participantsType = competition.getParticipantsType();
+
+        Map<String, Double> pointsByEmail = new HashMap<>();
+        for (Map.Entry<Gender, List<EventResultRequestDto>> genderListEntry : collect.entrySet()) {
+            List<EventResultRequestDto> value = genderListEntry.getValue();
+            LocalTime fastestTime = value.getFirst().getUserTime();
+
+            for (EventResultRequestDto resultDto : value) {
+                if (ParticipantsTypeEnum.AMATEURS.equals(participantsType)) {
+                    Double points = RatingCalculator.calculate(fastestTime, resultDto.getUserTime(), resultDto.getDistance());
+                    pointsByEmail.put(resultDto.getUserEmail(), points);
+                }
+            }
+        }
+
+        int place = 1;
+
+        for (EventResultRequestDto resultDto : requestDto) {
+            EventUserLinkEntity eventUserLinkEntity = userLinkEntityMap.get(resultDto.getUserEmail());
+            Double points = pointsByEmail.get(resultDto.getUserEmail());
+
+            eventUserLinkEntity.setPoints(points);
+            eventUserLinkEntity.setPlace(place);
+            eventUserLinkEntity.setTime(resultDto.getUserTime());
+            UserEntity user = eventUserLinkEntity.getUser();
+
+            Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(),
+                    resultDto.getDistance(), resultDto.getUserTime());
+
+            Double updatedRating = user.getRating() + points;
+
+            if (place == 1) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        1L, 0L, 0L);
+            } else if (place == 2) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 1L, 0L);
+            } else if (place == 3) {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 0L, 1L);
+            } else {
+                userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
+                        0L, 0L, 0L);
+            }
+
+            place++;
+        }
+
+        event.setStatus(StatusEnum.ENDED);
+    }
+
+    @Transactional
     public void uploadEventResults(MultipartFile file, UUID eventUuid) {
         EventEntity event = eventRepository.findByUuid(eventUuid).orElseThrow(() ->
                 new BusinessException("Не удалось найти заплыв по uuid = " + eventUuid, HttpStatus.NOT_FOUND));
@@ -215,7 +295,8 @@ public class EventService {
             eventUserLinkEntity.setTime(resultDto.getTime());
             UserEntity user = eventUserLinkEntity.getUser();
 
-            Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(), resultDto);
+            Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(),
+                    resultDto.getDistance(), resultDto.getTime());
 
             Double updatedRating = user.getRating() + points;
 
@@ -297,9 +378,8 @@ public class EventService {
         return new PageResponseDto<>(page.getTotalElements(), page.getTotalPages(), page.getContent());
     }
 
-    private Long getBestAverageTime100(Long bestAverage100, EventResultDto result) {
-        Integer distance = result.getDistance();
-        Long time = result.getTime().toNanoOfDay() / 1_000_000 / (long) (distance / 100);
+    private Long getBestAverageTime100(Long bestAverage100, Integer distance, LocalTime localTime) {
+        Long time = localTime.toNanoOfDay() / 1_000_000 / (long) (distance / 100);
 
         if (bestAverage100 != null && bestAverage100 < time) {
             return bestAverage100;

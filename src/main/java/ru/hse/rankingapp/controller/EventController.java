@@ -2,6 +2,7 @@ package ru.hse.rankingapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.event.CreateEventDto;
 import ru.hse.rankingapp.dto.event.EventFullInfoDto;
+import ru.hse.rankingapp.dto.event.EventResultRequestDto;
 import ru.hse.rankingapp.dto.event.EventUserSearchRequestDto;
 import ru.hse.rankingapp.dto.event.EventUserSearchResponseDto;
 import ru.hse.rankingapp.dto.paging.PageRequestDto;
@@ -24,6 +26,7 @@ import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.service.EventService;
 import ru.hse.rankingapp.utils.ControllerUtils;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -73,6 +76,24 @@ public class EventController {
         return ControllerUtils.createFileResponse(template.getFirst(), template.getSecond());
     }
 
+    /**
+     * Загрузить результаты заплыва.
+     *
+     * @param requestDto информация о пользователе и его времени
+     * @param uuid uuid заплыва
+     */
+    @PostMapping(value = "/result/{uuid}")
+    @Operation(summary = "Загрузить результаты заплыва (фронтовая форма)")
+    public void uploadEventResults(@RequestBody @Valid List<EventResultRequestDto> requestDto, @PathVariable("uuid") UUID uuid) {
+        eventService.uploadEventResults(requestDto, uuid);
+    }
+
+    /**
+     * Загрузить результаты заплыва.
+     *
+     * @param file xlsx файл
+     * @param uuid uuid заплыва
+     */
     @PostMapping(value = "/upload-result/{uuid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Загрузить результаты в xlsx формате")
     public void uploadEventResults(@RequestPart MultipartFile file, @PathVariable("uuid") UUID uuid) {
