@@ -21,7 +21,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker compose -f docker-compose.yaml build
-          docker compose -f docker-compose.yaml push app
+          docker compose -f docker-compose.yaml push ranking-app-service
 
       - name: Deploy to Yandex Cloud VM
         uses: appleboy/ssh-action@v1.0.0
