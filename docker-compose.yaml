@@ -3,8 +3,8 @@ version: '3.8'
 services:
 
   ranking-app-service:
-    image: maxim777/rankingapp-ranking-app-service:latest 
-    build: .
+    build:
+      dockerfile: ./Dockerfile
     restart: unless-stopped
     ports:
       - "9000:9000"
