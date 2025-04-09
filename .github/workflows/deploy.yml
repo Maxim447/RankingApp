@@ -22,7 +22,15 @@ jobs:
         run: |
           docker compose -f docker-compose.yaml build
           docker compose -f docker-compose.yaml push ranking-app-service
-        
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.YC_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.YC_VM_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          
       - name: Copy docker-compose.yml to server
         uses: appleboy/scp-action@v0.1.4
         with:
