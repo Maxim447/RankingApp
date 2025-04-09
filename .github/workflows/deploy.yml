@@ -29,7 +29,7 @@ jobs:
           host: ${{ secrets.YC_VM_HOST }}
           username: ${{ secrets.YC_VM_USER }}
           key: ${{ secrets.YC_VM_SSH_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-compose.yaml"
           target: "/opt/app/"
 
       - name: Copy postgres/Dockerfile to server
