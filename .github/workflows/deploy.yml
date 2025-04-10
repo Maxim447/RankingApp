@@ -74,5 +74,5 @@ jobs:
           username: ${{ secrets.YC_VM_USER }}
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
-            docker compose -f /path/to/docker-compose.yaml pull app
-            docker compose -f /path/to/docker-compose.yaml up -d
+            docker compose -f /backend/docker-compose.yaml pull app
+            docker compose -f /backend/docker-compose.yaml up -d
