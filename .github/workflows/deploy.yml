@@ -28,8 +28,10 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             sudo mkdir -p /backend
+            sudo chown -R $USER:$USER /backend
             sudo chmod 755 /backend
             sudo mkdir -p /backend/postgres
+            sudo chown -R $USER:$USER /backend/postgres
             sudo chmod 755 /backend/postgres
           
       - name: Copy docker-compose.yml to server
@@ -40,6 +42,8 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           source: "docker-compose.yaml"
           target: "/backend/"
+          strip_components: 0  # Сохранять структуру директорий
+          overwrite: true  # Разрешить перезапись
 
       - name: Copy postgres/Dockerfile to server
         uses: appleboy/scp-action@v0.1.7
@@ -49,6 +53,8 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           source: "postgres/Dockerfile"
           target: "/backend/postgres/"
+          strip_components: 0  # Сохранять структуру директорий
+          overwrite: true  # Разрешить перезапись
           
       - name: Login to Docker Hub
         uses: docker/login-action@v3
