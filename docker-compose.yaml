@@ -13,7 +13,7 @@ services:
         condition: service_started
     environment:
       DB_HOST: ranking-app-service-database
-      DB_PORT: 8000
+      DB_PORT: 5432
       POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
       spring.liquibase.enabled: "true"
@@ -32,9 +32,9 @@ services:
       POSTGRES_PASSWORD: odn1Dl
       POSTGRES_DB: RankingAppDB
     ports:
-      - "5436:8000"
+      - "5436:5432"
     volumes:
-      - ./postgres-data:/var/lib/ranking-app-service-database/data
+      - postgres-data:/var/lib/postgresql/data
     command: -p 8000
     networks:
       - ranking-app-network
