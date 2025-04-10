@@ -33,6 +33,9 @@ jobs:
             sudo mkdir -p /backend/postgres
             sudo chown -R $USER:$USER /backend/postgres
             sudo chmod 755 /backend/postgres
+            sudo mkdir -p /backend/postgres/init-scripts
+            sudo chown -R $USER:$USER /backend/postgres/init-scripts
+            sudo chmod 755 /backend/postgres/init-scripts
           
       - name: Copy docker-compose.yml to server
         uses: appleboy/scp-action@v0.1.7
@@ -51,7 +54,7 @@ jobs:
           host: ${{ secrets.YC_VM_HOST }}
           username: ${{ secrets.YC_VM_USER }}
           key: ${{ secrets.YC_VM_SSH_KEY }}
-          source: "postgres/Dockerfile"
+          source: "postgres/"
           target: "/backend/"
           strip_components: 0  # Сохранять структуру директорий
           overwrite: true  # Разрешить перезапись
