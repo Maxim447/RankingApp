@@ -21,7 +21,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           
       - name: Copy docker-compose.yml to server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.YC_VM_HOST }}
           username: ${{ secrets.YC_VM_USER }}
@@ -30,7 +30,7 @@ jobs:
           target: "/opt/app/"
 
       - name: Copy postgres/Dockerfile to server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.YC_VM_HOST }}
           username: ${{ secrets.YC_VM_USER }}
