@@ -52,7 +52,7 @@ jobs:
           username: ${{ secrets.YC_VM_USER }}
           key: ${{ secrets.YC_VM_SSH_KEY }}
           source: "postgres/Dockerfile"
-          target: "/backend/postgres/"
+          target: "/backend/"
           strip_components: 0  # Сохранять структуру директорий
           overwrite: true  # Разрешить перезапись
           
