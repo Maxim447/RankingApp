@@ -16,7 +16,7 @@ services:
       DB_PORT: 8000
       POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
-      spring.liquibase.enabled: true
+      spring.liquibase.enabled: "true"
     volumes:
       - file-storage:/uploads
     networks:
