@@ -78,4 +78,4 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             cd /backend
-            docker-compose up --build -d
+            docker-compose up -d --build --no-deps ranking-app-service
