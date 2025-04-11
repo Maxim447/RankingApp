@@ -2,10 +2,29 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "ci-cd" ]
 
 jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t maxim777/rankingapp-ranking-app-service:latest .
+          docker push maxim777/rankingapp-ranking-app-service:latest
+  
   deploy:
+    needs: build-and-push
     runs-on: ubuntu-latest
 
     steps:
@@ -58,17 +77,6 @@ jobs:
           target: "/backend/"
           strip_components: 0  # Сохранять структуру директорий
           overwrite: true  # Разрешить перезапись
-          
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        run: |
-          docker build -t maxim777/rankingapp-ranking-app-service:latest .
-          docker push maxim777/rankingapp-ranking-app-service:latest
           
       - name: Deploy to Yandex Cloud VM
         uses: appleboy/ssh-action@v1.2.0
