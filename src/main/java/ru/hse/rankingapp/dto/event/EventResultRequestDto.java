@@ -1,9 +1,11 @@
 package ru.hse.rankingapp.dto.event;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import ru.hse.rankingapp.deserializer.LocalTimeDeserializer;
 import ru.hse.rankingapp.entity.enums.Gender;
 
 import java.time.LocalTime;
@@ -30,5 +32,6 @@ public class EventResultRequestDto {
 
     @Schema(description = "Время пользователя")
     @NotNull(message = "Время участника обязательно к заполнению")
+    @JsonDeserialize(using = LocalTimeDeserializer.class)
     private LocalTime userTime;
 }
