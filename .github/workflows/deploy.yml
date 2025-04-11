@@ -86,5 +86,4 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             cd /backend
-            docker-compose pull ranking-app-service
             docker-compose up -d --no-deps ranking-app-service
