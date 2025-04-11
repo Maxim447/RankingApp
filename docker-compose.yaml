@@ -3,8 +3,7 @@ version: '3.8'
 services:
 
   ranking-app-service:
-    build:
-      dockerfile: ./Dockerfile
+    image: maxim777/rankingapp-ranking-app-service:latest
     restart: unless-stopped
     ports:
       - "9000:9000"
@@ -13,10 +12,10 @@ services:
         condition: service_started
     environment:
       DB_HOST: ranking-app-service-database
-      DB_PORT: 8000
+      DB_PORT: 5432
       POSTGRES_USER: ranking-app-user
       POSTGRES_PASSWORD: odn1Dl
-      spring.liquibase.enabled: true
+      spring.liquibase.enabled: "true"
     volumes:
       - file-storage:/uploads
     networks:
@@ -32,10 +31,9 @@ services:
       POSTGRES_PASSWORD: odn1Dl
       POSTGRES_DB: RankingAppDB
     ports:
-      - "5436:8000"
+      - "5436:5432"
     volumes:
-      - ./postgres-data:/var/lib/ranking-app-service-database/data
-    command: -p 8000
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - ranking-app-network
 
