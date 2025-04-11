@@ -67,7 +67,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker compose -f docker-compose.yaml build --no-cache
+          docker compose -f docker-compose.yaml build --no-cache .
           docker compose -f docker-compose.yaml push ranking-app-service
 
       - name: Deploy to Yandex Cloud VM
@@ -78,4 +78,6 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             cd /backend
-            docker-compose up -d --build --no-deps ranking-app-service
+            docker-compose pull ranking-app-service
+            docker-compose up -d --no-deps ranking-app-service
+            docker system prune -f --all --volumes
