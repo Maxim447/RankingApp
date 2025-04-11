@@ -80,4 +80,3 @@ jobs:
             cd /backend
             docker-compose pull ranking-app-service
             docker-compose up -d --no-deps ranking-app-service
-            docker system prune -f --all --volumes
