@@ -80,6 +80,9 @@ public class CompetitionEntity {
     @Enumerated(EnumType.STRING)
     private ParticipantsTypeEnum participantsType;
 
+    @Column(name = "video_link")
+    private String videoLink;
+
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
 
