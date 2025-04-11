@@ -67,8 +67,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker compose -f docker-compose.yaml build --no-cache .
-          docker compose -f docker-compose.yaml push ranking-app-service
+          docker build -t maxim777/ranking-app:latest .
+          docker push maxim777/ranking-app:latest
 
       - name: Deploy to Yandex Cloud VM
         uses: appleboy/ssh-action@v1.2.0
