@@ -44,6 +44,9 @@ public class CreateCompetitionDto {
     @Schema(description = "Тип соревнования")
     private String competitionType;
 
+    @Schema(description = "Ссылка на трансляцию (Например, ВК видео)")
+    private String videoLink;
+
     @Schema(description = "Заплывы соревнования")
     private List<CreateEventDto> events;
 }

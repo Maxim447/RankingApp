@@ -49,6 +49,9 @@ public class CompetitionFullInfoDto {
     @Schema(description = "Юид соревнования")
     private UUID competitionUuid;
 
+    @Schema(description = "Ссылка на трансляцию")
+    private String videoLink;
+
     @Schema(description = "Информация о заплывах")
     private List<EventInfoDto> events;
 

@@ -46,6 +46,7 @@ public interface CompetitionMapper {
     @Mapping(source = "competition.events", target = "eventEntities")
     @Mapping(target = "status", expression = "java(StatusEnum.CREATED)")
     @Mapping(source = "competition.participantsType", target = "participantsType")
+    @Mapping(source = "competition.videoLink", target = "videoLink")
     CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition);
 
     /**

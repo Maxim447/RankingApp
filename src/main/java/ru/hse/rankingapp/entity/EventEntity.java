@@ -69,9 +69,6 @@ public class EventEntity {
     @Column(name = "max_participants", nullable = false)
     private Integer maxParticipants;
 
-    @Column(name = "video_link")
-    private String videoLink;
-
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
