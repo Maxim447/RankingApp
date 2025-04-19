@@ -21,6 +21,7 @@ import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.EventEntity;
 import ru.hse.rankingapp.entity.EventUserLinkEntity;
+import ru.hse.rankingapp.entity.ProfessionalRecordEntity;
 import ru.hse.rankingapp.entity.UserEntity;
 import ru.hse.rankingapp.entity.enums.Gender;
 import ru.hse.rankingapp.entity.enums.Role;
@@ -33,6 +34,7 @@ import ru.hse.rankingapp.mapper.EventMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
 import ru.hse.rankingapp.repository.EventRepository;
 import ru.hse.rankingapp.repository.EventUserRepository;
+import ru.hse.rankingapp.repository.ProfessionalRecordRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.search.EventUserSearchWithSpec;
 import ru.hse.rankingapp.utils.FioUtils;
@@ -42,6 +44,7 @@ import ru.hse.rankingapp.utils.RatingCalculator;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -61,6 +64,7 @@ public class EventService {
 
     private static final String XLSX_TEMPLATE_NAME = "Шаблон_для_заполнения_результатов_заплыва_%s.xlsx";
 
+    private final ProfessionalRecordRepository professionalRecordRepository;
     private final EventRepository eventRepository;
     private final CompetitionRepository competitionRepository;
     private final EventMapper eventMapper;
@@ -196,11 +200,28 @@ public class EventService {
             List<EventResultRequestDto> value = genderListEntry.getValue();
             LocalTime fastestTime = value.getFirst().getUserTime();
 
+            Pair<ProfessionalRecordEntity, LocalTime> professionalRecordEntity = null;
+
+            if (ParticipantsTypeEnum.PROFESSIONALS.equals(participantsType)) {
+                professionalRecordEntity = getProfessionalRecordEntity(genderListEntry.getKey(), event, fastestTime);
+            }
+
             for (EventResultRequestDto resultDto : value) {
+                Double points;
                 if (ParticipantsTypeEnum.AMATEURS.equals(participantsType)) {
-                    Double points = RatingCalculator.calculate(fastestTime, resultDto.getUserTime(), resultDto.getDistance());
-                    pointsByEmail.put(resultDto.getUserEmail(), points);
+                    points = RatingCalculator.calculate(fastestTime, resultDto.getUserTime(), resultDto.getDistance());
+                } else if (ParticipantsTypeEnum.PROFESSIONALS.equals(participantsType)) {
+                    points = RatingCalculator.calculateProfessional(professionalRecordEntity.getSecond(), resultDto.getUserTime());
+                } else {
+                    throw new BusinessException("Неизвестный тип участников.", HttpStatus.BAD_REQUEST);
                 }
+
+                pointsByEmail.put(resultDto.getUserEmail(), points);
+            }
+
+            if (professionalRecordEntity != null) {
+                ProfessionalRecordEntity first = professionalRecordEntity.getFirst();
+                professionalRecordRepository.save(first);
             }
         }
 
@@ -218,7 +239,7 @@ public class EventService {
             Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(),
                     resultDto.getDistance(), resultDto.getUserTime());
 
-            Double updatedRating = user.getRating() + points;
+            Double updatedRating = getUpdatedRating(participantsType, user, points);
 
             if (place == 1) {
                 userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
@@ -238,6 +259,57 @@ public class EventService {
         }
 
         event.setStatus(StatusEnum.ENDED);
+    }
+
+    private Double getUpdatedRating(ParticipantsTypeEnum participantsType, UserEntity user, Double points) {
+        if (ParticipantsTypeEnum.AMATEURS.equals(participantsType)) {
+            return user.getRating() + points;
+        }
+
+        Double rating = user.getRating();
+
+        if (user.getProfessionalMaxPoints1() == null) {
+            rating += points;
+            user.setProfessionalMaxPoints1(points);
+        } else if (user.getProfessionalMaxPoints2() == null) {
+            rating += points;
+            user.setProfessionalMaxPoints2(points);
+        } else if (user.getProfessionalMaxPoints3() == null) {
+            rating += points;
+            user.setProfessionalMaxPoints3(points);
+        } else {
+            List<Map.Entry<String, Double>> pointsWithFields = List.of(
+                    new AbstractMap.SimpleEntry<>("professionalMaxPoints1", user.getProfessionalMaxPoints1()),
+                    new AbstractMap.SimpleEntry<>("professionalMaxPoints2", user.getProfessionalMaxPoints2()),
+                    new AbstractMap.SimpleEntry<>("professionalMaxPoints3", user.getProfessionalMaxPoints3())
+            );
+
+            Map.Entry<String, Double> minEntry = pointsWithFields.stream()
+                    .min(Comparator.comparingDouble(Map.Entry::getValue))
+                    .orElseThrow(() -> new BusinessException("Не удалось обновить рейтинг", HttpStatus.INTERNAL_SERVER_ERROR));
+
+            if (minEntry.getValue() < points) {
+                switch (minEntry.getKey()) {
+                    case "professionalMaxPoints1":
+                        rating = rating - user.getProfessionalMaxPoints1() + points;
+                        user.setProfessionalMaxPoints1(points);
+                        break;
+                    case "professionalMaxPoints2":
+                        rating = rating - user.getProfessionalMaxPoints2() + points;
+                        user.setProfessionalMaxPoints2(points);
+                        break;
+                    case "professionalMaxPoints3":
+                        rating = rating - user.getProfessionalMaxPoints3() + points;
+                        user.setProfessionalMaxPoints3(points);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+
+        return rating;
     }
 
     @Transactional
@@ -275,11 +347,28 @@ public class EventService {
             List<EventResultDto> value = genderListEntry.getValue();
             LocalTime fastestTime = value.getFirst().getTime();
 
+            Pair<ProfessionalRecordEntity, LocalTime> professionalRecordEntity = null;
+
+            if (ParticipantsTypeEnum.PROFESSIONALS.equals(participantsType)) {
+                professionalRecordEntity = getProfessionalRecordEntity(genderListEntry.getKey(), event, fastestTime);
+            }
+
             for (EventResultDto resultDto : value) {
+                Double points;
                 if (ParticipantsTypeEnum.AMATEURS.equals(participantsType)) {
-                    Double points = RatingCalculator.calculate(fastestTime, resultDto.getTime(), resultDto.getDistance());
-                    pointsByEmail.put(resultDto.getEmail(), points);
+                    points = RatingCalculator.calculate(fastestTime, resultDto.getTime(), resultDto.getDistance());
+                } else if (ParticipantsTypeEnum.PROFESSIONALS.equals(participantsType)) {
+                    points = RatingCalculator.calculateProfessional(professionalRecordEntity.getSecond(), resultDto.getTime());
+                } else {
+                    throw new BusinessException("Неизвестный тип участников.", HttpStatus.BAD_REQUEST);
                 }
+
+                pointsByEmail.put(resultDto.getEmail(), points);
+            }
+
+            if (professionalRecordEntity != null) {
+                ProfessionalRecordEntity first = professionalRecordEntity.getFirst();
+                professionalRecordRepository.save(first);
             }
 
         }
@@ -298,7 +387,7 @@ public class EventService {
             Long bestAverageTime100 = getBestAverageTime100(user.getBestAverageTime100(),
                     resultDto.getDistance(), resultDto.getTime());
 
-            Double updatedRating = user.getRating() + points;
+            Double updatedRating = getUpdatedRating(participantsType, user, points);
 
             if (place == 1) {
                 userRepository.updateUserRating(user.getId(), updatedRating, bestAverageTime100,
@@ -318,6 +407,32 @@ public class EventService {
         }
 
         event.setStatus(StatusEnum.ENDED);
+    }
+
+    private Pair<ProfessionalRecordEntity, LocalTime> getProfessionalRecordEntity(Gender gender, EventEntity event, LocalTime fastestTime) {
+        ProfessionalRecordEntity professionalRecordEntity;
+
+        Optional<ProfessionalRecordEntity> professionalRecordTimeOpt = professionalRecordRepository
+                .findRecordTimeByGenderDistanceStyle(event.getDistance(), gender, event.getStyle());
+
+        LocalTime oldFastestTime;
+        if (professionalRecordTimeOpt.isPresent()) {
+            professionalRecordEntity = professionalRecordTimeOpt.get();
+            oldFastestTime = professionalRecordEntity.getLocalTime();
+            if (professionalRecordEntity.getTime() > fastestTime.toNanoOfDay() / 1_000_000) {
+                professionalRecordEntity.setTime(fastestTime);
+            }
+        } else {
+            professionalRecordEntity = new ProfessionalRecordEntity();
+            professionalRecordEntity.setDistance(event.getDistance());
+            professionalRecordEntity.setTime(fastestTime);
+            professionalRecordEntity.setGender(gender);
+            professionalRecordEntity.setStyle(event.getStyle());
+
+            oldFastestTime = professionalRecordEntity.getLocalTime();
+        }
+
+        return Pair.of(professionalRecordEntity, oldFastestTime);
     }
 
     /**
