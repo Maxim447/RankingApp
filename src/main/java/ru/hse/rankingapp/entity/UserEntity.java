@@ -87,6 +87,15 @@ public class UserEntity {
     @Column(name = "rating", nullable = false)
     private Double rating;
 
+    @Column(name = "professional_max_points_1")
+    private Double professionalMaxPoints1;
+
+    @Column(name = "professional_max_points_2")
+    private Double professionalMaxPoints2;
+
+    @Column(name = "professional_max_points_3")
+    private Double professionalMaxPoints3;
+
     @Column(name = "first_place_count", nullable = false)
     private Long firstPlaceCount = 0L;
 

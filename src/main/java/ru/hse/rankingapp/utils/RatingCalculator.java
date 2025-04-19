@@ -13,16 +13,32 @@ import java.time.LocalTime;
 public class RatingCalculator {
 
     /**
-     * Рассчитать очки за заплыв.
+     * Рассчитать очки за заплыв (Любители).
      *
      * @param fastestTime Лучшее время участника определенного пола
-     * @param time время участника
-     * @param distance дистанция
+     * @param time        время участника
+     * @param distance    дистанция
      * @return кол-во очков
      */
     public Double calculate(LocalTime fastestTime, LocalTime time, Integer distance) {
         double result = 10d * convertTimeToSeconds(fastestTime) / convertTimeToSeconds(time) + getPointsByDistance(distance);
         return BigDecimal.valueOf(result)
+                .setScale(3, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
+
+    /**
+     * Рассчитать очки за заплыв (Профи).
+     *
+     * @param fastestTime Время рекорда
+     * @param time        время участника
+     * @return кол-во очков
+     */
+    public Double calculateProfessional(LocalTime fastestTime, LocalTime time) {
+        double fastestTimeSeconds = convertTimeToSeconds(fastestTime);
+        double userTimeSeconds = convertTimeToSeconds(time);
+
+        return BigDecimal.valueOf(1000 * Math.pow(fastestTimeSeconds / userTimeSeconds, 3.0))
                 .setScale(3, RoundingMode.HALF_UP)
                 .doubleValue();
     }

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.hse.rankingapp.dto.coordinates.SimpleGeoJsonDto;
 import ru.hse.rankingapp.dto.news.NewsCreateDto;
 import ru.hse.rankingapp.dto.news.NewsUpdateDto;
+import ru.hse.rankingapp.dto.paging.PageRequestDto;
+import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.partner.PartnerCreateDto;
 import ru.hse.rankingapp.dto.partner.PartnerUpdateDto;
+import ru.hse.rankingapp.dto.professional.records.CreateProfessionalRecordDto;
+import ru.hse.rankingapp.dto.professional.records.ProfessionalRecordsInfoDto;
+import ru.hse.rankingapp.dto.professional.records.RecordSearchParamsDto;
+import ru.hse.rankingapp.dto.professional.records.UpdateRecordTimeDto;
 import ru.hse.rankingapp.dto.sponsor.SponsorCreateDto;
 import ru.hse.rankingapp.dto.sponsor.SponsorUpdateDto;
 import ru.hse.rankingapp.dto.trainer.TrainerCreateDto;
@@ -25,6 +32,7 @@ import ru.hse.rankingapp.service.AboutUsService;
 import ru.hse.rankingapp.service.CoordinateService;
 import ru.hse.rankingapp.service.NewsService;
 import ru.hse.rankingapp.service.OrganizationService;
+import ru.hse.rankingapp.service.ProfessionalRecordService;
 
 /**
  * API для админа.
@@ -39,6 +47,7 @@ public class AdminController {
     private final OrganizationService organizationService;
     private final CoordinateService coordinateService;
     private final NewsService newsService;
+    private final ProfessionalRecordService professionalRecordService;
 
     /**
      * Сохранить местоположение организации.
@@ -196,5 +205,33 @@ public class AdminController {
     @Operation(summary = "Удалить спонсора по id")
     public void deleteSponsorById(@PathVariable(value = "id") Long id) {
         aboutUsService.deleteSponsorById(id);
+    }
+
+    /**
+     * Получить табличку с рекордами.
+     */
+    @Operation(summary = "Получить табличку с рекордами")
+    @GetMapping("/record/search")
+    public PageResponseDto<ProfessionalRecordsInfoDto> findProfessionalRecords(PageRequestDto pageRequestDto,
+            RecordSearchParamsDto searchParamsDto) {
+        return professionalRecordService.findProfessionalRecords(pageRequestDto, searchParamsDto);
+    }
+
+    /**
+     * Изменить время рекорда (если его побили не в рамках платформы).
+     */
+    @Operation(summary = "Изменить время рекорда (если его побили не в рамках платформы)")
+    @PostMapping("/record/update")
+    public void updateRecordTime(@RequestBody @Valid UpdateRecordTimeDto updateRecordTimeDto) {
+        professionalRecordService.updateRecordTime(updateRecordTimeDto);
+    }
+
+    /**
+     * Создать новую запись в таблице рекордов.
+     */
+    @Operation(summary = "Создать новую запись в таблице рекордов")
+    @PostMapping("/record/create")
+    public void createRecord(@RequestBody @Valid CreateProfessionalRecordDto createProfessionalRecordDto) {
+        professionalRecordService.createRecord(createProfessionalRecordDto);
     }
 }

@@ -11,4 +11,18 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="19-04-2025 11:30:00" author="msalyaev">
+        <sqlFile path="v0.1.0/professional_records_table.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.1.0/rollback/professional_records_table_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="19-04-2025 15:30:00" author="msalyaev">
+        <sqlFile path="v0.1.0/add_professional_points_columns.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.1.0/rollback/add_professional_points_columns_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
