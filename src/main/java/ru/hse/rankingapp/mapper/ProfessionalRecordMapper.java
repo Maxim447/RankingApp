@@ -19,6 +19,7 @@ public interface ProfessionalRecordMapper {
      * Маппинг из {@link ProfessionalRecordEntity} в {@link ProfessionalRecordsInfoDto}.
      */
     @Mapping(source = "time", target = "time", qualifiedByName = "mapToLocalTime")
+    @Mapping(source = "gender", target = "gender")
     ProfessionalRecordsInfoDto mapToDto(ProfessionalRecordEntity professionalRecordEntity);
 
     /**

@@ -3,7 +3,6 @@ package ru.hse.rankingapp.dto.professional.records;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import ru.hse.rankingapp.entity.enums.Gender;
 
 import java.time.LocalTime;
 
@@ -25,7 +24,7 @@ public class ProfessionalRecordsInfoDto {
     private String style;
 
     @Schema(description = "Гендер")
-    private Gender gender;
+    private String gender;
 
     @Schema(description = "Время")
     private LocalTime time;
