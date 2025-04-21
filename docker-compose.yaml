@@ -11,10 +11,19 @@ services:
       ranking-app-service-database:
         condition: service_started
     environment:
-      DB_HOST: ranking-app-service-database
-      DB_PORT: 5432
-      POSTGRES_USER: ranking-app-user
-      POSTGRES_PASSWORD: odn1Dl
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      EMAIL_USERNAME: ${EMAIL_USERNAME}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      ADD_TO_ORG_URL: ${ADD_TO_ORG_URL}
+      RECOVERY_URL: ${RECOVERY_URL}
+      CURATOR_URL: ${CURATOR_URL}
+      FRONT_MAIN_URL: ${FRONT_MAIN_URL}
+      PAYMENT_KEY: ${PAYMENT_KEY}
+      PAYMENT_ID: ${PAYMENT_ID}
       spring.liquibase.enabled: "true"
     volumes:
       - file-storage:/uploads
@@ -27,9 +36,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ranking-app-user
-      POSTGRES_PASSWORD: odn1Dl
-      POSTGRES_DB: RankingAppDB
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5436:5432"
     volumes:
