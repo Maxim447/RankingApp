@@ -86,6 +86,23 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             cd /backend
+            
+            cat <<EOF > .env
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+            ADD_TO_ORG_URL=${{ secrets.ADD_TO_ORG_URL }}
+            RECOVERY_URL=${{ secrets.RECOVERY_URL }}
+            CURATOR_URL=${{ secrets.CURATOR_URL }}
+            FRONT_MAIN_URL=${{ secrets.FRONT_MAIN_URL }}
+            PAYMENT_KEY=${{ secrets.PAYMENT_KEY }}
+            PAYMENT_ID=${{ secrets.PAYMENT_ID }}
+            EOF
+            
             docker-compose stop ranking-app-service
             docker-compose rm -f ranking-app-service
             docker-compose pull ranking-app-service
