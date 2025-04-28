@@ -17,6 +17,9 @@ public class UserRatingDto {
     @Schema(description = "Id пользователя")
     private Long id;
 
+    @Schema(description = "Ссылка на фото")
+    private String image;
+
     @Schema(description = "ФИО пользователя")
     private String fullName;
 
