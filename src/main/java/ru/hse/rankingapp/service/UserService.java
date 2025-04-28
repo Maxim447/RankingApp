@@ -19,12 +19,18 @@ import ru.hse.rankingapp.dto.paging.PageRequestDto;
 import ru.hse.rankingapp.dto.paging.PageResponseDto;
 import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
+import ru.hse.rankingapp.dto.user.UserCompetitionMyResultsDto;
+import ru.hse.rankingapp.dto.user.UserEventMyResultsDto;
 import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
+import ru.hse.rankingapp.dto.user.UserMyResultsDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.RatingSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.UserRatingDto;
 import ru.hse.rankingapp.entity.AccountEntity;
+import ru.hse.rankingapp.entity.CompetitionEntity;
+import ru.hse.rankingapp.entity.EventEntity;
+import ru.hse.rankingapp.entity.EventUserLinkEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.TokenEntity;
 import ru.hse.rankingapp.entity.UserEntity;
@@ -37,13 +43,19 @@ import ru.hse.rankingapp.enums.ParticipantsTypeEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.UserMapper;
 import ru.hse.rankingapp.repository.AccountRepository;
+import ru.hse.rankingapp.repository.EventUserRepository;
 import ru.hse.rankingapp.repository.TokenRepository;
 import ru.hse.rankingapp.repository.UserRepository;
 import ru.hse.rankingapp.service.auth.JwtService;
 import ru.hse.rankingapp.service.search.UserSearchWithSpec;
 import ru.hse.rankingapp.utils.JwtUtils;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -65,6 +77,7 @@ public class UserService {
     private final AccountRepository accountRepository;
     private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
+    private final EventUserRepository eventUserRepository;
 
     @Value("${redirect.front-main}")
     private String frontMainPage;
@@ -307,5 +320,59 @@ public class UserService {
         }
 
         userRepository.updateParticipantType(participantsTypeEnum, userInfoFromRequest.getEmail());
+    }
+
+    /**
+     * Метод для карточки мои результаты.
+     */
+    public UserMyResultsDto getUserMyResults() {
+        UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
+
+        if (userInfoFromRequest == null || !userInfoFromRequest.getRoles().contains(Role.USER)) {
+            throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
+        }
+
+        Map<CompetitionEntity, List<UserEventMyResultsDto>> competitionEntityListMap = new HashMap<>();
+
+        Set<EventUserLinkEntity> eventUserLinks = eventUserRepository.findByUserEmail(userInfoFromRequest.getEmail());
+
+        for (EventUserLinkEntity eventUserLink : eventUserLinks) {
+            UserEventMyResultsDto eventMyResultsDto = new UserEventMyResultsDto();
+
+            eventMyResultsDto.setPlace(eventUserLink.getPlace());
+            eventMyResultsDto.setTime(eventUserLink.getTime());
+
+            EventEntity event = eventUserLink.getEvent();
+
+            eventMyResultsDto.setGender(event.getGender().getShortValue());
+            eventMyResultsDto.setAgeFrom(event.getAgeFrom());
+            eventMyResultsDto.setAgeTo(event.getAgeTo());
+            eventMyResultsDto.setDistance(event.getDistance());
+            eventMyResultsDto.setStyle(event.getStyle());
+
+            CompetitionEntity competition = event.getCompetition();
+
+            List<UserEventMyResultsDto> orDefault = competitionEntityListMap.getOrDefault(competition, new ArrayList<>());
+            orDefault.add(eventMyResultsDto);
+            competitionEntityListMap.put(competition, orDefault);
+        }
+
+        List<UserCompetitionMyResultsDto> competitionMyResultsDtos = new ArrayList<>();
+        for (Map.Entry<CompetitionEntity, List<UserEventMyResultsDto>> entry : competitionEntityListMap.entrySet()) {
+            UserCompetitionMyResultsDto userCompetitionMyResultsDto = new UserCompetitionMyResultsDto();
+            userCompetitionMyResultsDto.setCompetitionName(entry.getKey().getName());
+            userCompetitionMyResultsDto.setEvents(entry.getValue());
+            competitionMyResultsDtos.add(userCompetitionMyResultsDto);
+        }
+
+        BigDecimal rating = eventUserLinks.stream().findFirst()
+                .map(EventUserLinkEntity::getUser)
+                .map(UserEntity::getRating)
+                .map(BigDecimal::valueOf)
+                .orElse(null);
+
+        return new UserMyResultsDto()
+                .setUserRating(rating)
+                .setCompetitions(competitionMyResultsDtos);
     }
 }

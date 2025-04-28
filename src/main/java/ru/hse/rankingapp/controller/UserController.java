@@ -21,6 +21,7 @@ import ru.hse.rankingapp.dto.user.EmailRequestDto;
 import ru.hse.rankingapp.dto.user.UpdatePhoneRequestDto;
 import ru.hse.rankingapp.dto.user.UserFullInfoDto;
 import ru.hse.rankingapp.dto.user.UserInfoDto;
+import ru.hse.rankingapp.dto.user.UserMyResultsDto;
 import ru.hse.rankingapp.dto.user.UserSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.RatingSearchParamsDto;
 import ru.hse.rankingapp.dto.user.rating.UserRatingDto;
@@ -150,5 +151,14 @@ public class UserController {
     @Operation(summary = "Изменить тип участника")
     public void updateParticipantType(@RequestParam ParticipantsTypeEnum participantsTypeEnum) {
         userService.updateParticipantType(participantsTypeEnum);
+    }
+
+    /**
+     * Метод для карточки мои результаты.
+     */
+    @GetMapping(value = "/my-results")
+    @Operation(summary = "Метод для карточки мои результаты")
+    public UserMyResultsDto getUserMyResults() {
+        return userService.getUserMyResults();
     }
 }
