@@ -55,6 +55,7 @@ public interface CompetitionMapper {
      * @param competition сущность соревнования
      * @return Информация о соревновании
      */
+    @Mapping(source = "organization.image", target = "image")
     CompetitionInfoDto mapToCompetitionInfoDto(CompetitionEntity competition);
 
     /**
