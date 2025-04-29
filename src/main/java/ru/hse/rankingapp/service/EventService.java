@@ -487,6 +487,7 @@ public class EventService {
                             .setGender(user.getGender().getValue())
                             .setRating(user.getRating())
                             .setFullName(FioUtils.buildFullName(user))
+                            .setImage(user.getImage())
                             .setCategory(category == null ? null : category.getStringValue());
                 });
 

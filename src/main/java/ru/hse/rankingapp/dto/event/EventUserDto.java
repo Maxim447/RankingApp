@@ -34,6 +34,9 @@ public class EventUserDto {
     @Schema(description = "Почта участника")
     private String email;
 
+    @Schema(description = "Фото пользователя")
+    private String image;
+
     @Schema(description = "Телефон участника")
     private String phone;
 
