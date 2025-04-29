@@ -91,5 +91,6 @@ public interface CompetitionMapper {
      * @return Информация о соревнованиях
      */
     @Mapping(source = "competitionEntity", target = ".")
+    @Mapping(source = "competitionEntity.organization.image", target = "image")
     CompetitionInfoDto mapCompetitionInfoDtoList(CompetitionUserLinkEntity competitionUserLinkEntities);
 }

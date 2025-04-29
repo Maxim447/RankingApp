@@ -19,6 +19,9 @@ public class CompetitionInfoDto {
     @Schema(description = "Название соревнования")
     private String name;
 
+    @Schema(description = "Фото организации")
+    private String image;
+
     @Schema(description = "Местоположение соревнования")
     private String location;
 
