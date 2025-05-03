@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.UserAuthentication;
 import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
@@ -18,6 +20,7 @@ import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.enums.Role;
 import ru.hse.rankingapp.enums.BusinessExceptionsEnum;
+import ru.hse.rankingapp.enums.FileExtensionsEnum;
 import ru.hse.rankingapp.exception.BusinessException;
 import ru.hse.rankingapp.mapper.CompetitionMapper;
 import ru.hse.rankingapp.repository.CompetitionRepository;
@@ -40,6 +43,7 @@ public class CompetitionService {
     private final CompetitionMapper competitionMapper;
     private final OrganizationRepository organizationRepository;
     private final JwtUtils jwtUtils;
+    private final FileService fileService;
 
     /**
      * Создать соревнование.
@@ -47,15 +51,26 @@ public class CompetitionService {
      * @param createCompetitionDto Дто для создания соревнования
      */
     @Transactional
-    public void createCompetition(CreateCompetitionDto createCompetitionDto) {
+    public void createCompetition(CreateCompetitionDto createCompetitionDto, MultipartFile attachment) {
         UserAuthentication userInfoFromRequest = jwtUtils.getUserInfoFromRequest();
 
         if (userInfoFromRequest == null || !userInfoFromRequest.isOrganization()) {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
+        String fileExtension = Optional.ofNullable(attachment.getOriginalFilename())
+                .map(StringUtils::getFilenameExtension)
+                .map(String::toLowerCase)
+                .orElseThrow(() -> new BusinessException("У приложенного файла отсутствует расширение. " +
+                        "Допустимое расширение для данного файла - \".pdf\".", HttpStatus.BAD_REQUEST));
+
+        if (!FileExtensionsEnum.PDF.getValue().equals(fileExtension)) {
+            throw new BusinessException("Допустимое расширение для приложенного файла - \".pdf\".", HttpStatus.BAD_REQUEST);
+        }
+
         OrganizationEntity organizationEntity = organizationRepository.findByEmail(userInfoFromRequest.getEmail());
-        CompetitionEntity competitionEntity = competitionMapper.toCompetitionEntity(organizationEntity, createCompetitionDto);
+        CompetitionEntity competitionEntity = competitionMapper
+                .toCompetitionEntity(organizationEntity, createCompetitionDto, attachment);
 
         CollectionUtils.emptyIfNull(competitionEntity.getEventEntities())
                 .forEach(event -> event.setCompetition(competitionEntity));
@@ -116,6 +131,10 @@ public class CompetitionService {
             throw new BusinessException(BusinessExceptionsEnum.NOT_ENOUGH_RULES);
         }
 
+        String attachment = competition.getAttachment();
+
         competitionRepository.delete(competition);
+
+        fileService.deleteFile(attachment);
     }
 }

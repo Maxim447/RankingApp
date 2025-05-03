@@ -7,7 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FileExtensionsEnum {
     JPEG("jpeg"),
-    PNG("png");
+    PNG("png"),
+    PDF("pdf");
 
     private final String value;
 }

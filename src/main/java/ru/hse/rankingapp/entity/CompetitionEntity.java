@@ -83,6 +83,9 @@ public class CompetitionEntity {
     @Column(name = "video_link")
     private String videoLink;
 
+    @Column(name = "attachment", nullable = false)
+    private String attachment;
+
     @Column(name = "create_dttm", nullable = false)
     private OffsetDateTime createDttm = OffsetDateTime.now();
 
