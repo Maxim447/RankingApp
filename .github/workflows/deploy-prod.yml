@@ -1,0 +1,111 @@
+name: Build and Deploy PROD
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image PROD
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "Building and pushing release tag: $TAG"
+          docker build -t maxim777/rankingapp-ranking-app-service:$TAG .
+          docker push maxim777/rankingapp-ranking-app-service:$TAG
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.YC_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.YC_VM_HOST_PROD }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Ensure directory exists
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.YC_VM_HOST_PROD }}
+          username: ${{ secrets.YC_VM_USER_PROD }}
+          key: ${{ secrets.YC_VM_SSH_KEY }}
+          script: |
+            sudo mkdir -p /backend
+            sudo chown -R $USER:$USER /backend
+            sudo chmod 755 /backend
+            sudo mkdir -p /backend/postgres
+            sudo chown -R $USER:$USER /backend/postgres
+            sudo chmod 755 /backend/postgres
+            sudo mkdir -p /backend/postgres/init-scripts
+            sudo chown -R $USER:$USER /backend/postgres/init-scripts
+            sudo chmod 755 /backend/postgres/init-scripts
+
+      - name: Copy docker-compose.yml to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.YC_VM_HOST_PROD }}
+          username: ${{ secrets.YC_VM_USER_PROD }}
+          key: ${{ secrets.YC_VM_SSH_KEY }}
+          source: "docker-compose.yaml"
+          target: "/backend/"
+          strip_components: 0  # Сохранять структуру директорий
+          overwrite: true  # Разрешить перезапись
+
+      - name: Copy postgres/Dockerfile to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.YC_VM_HOST_PROD }}
+          username: ${{ secrets.YC_VM_USER_PROD }}
+          key: ${{ secrets.YC_VM_SSH_KEY }}
+          source: "postgres/"
+          target: "/backend/"
+          strip_components: 0  # Сохранять структуру директорий
+          overwrite: true  # Разрешить перезапись
+
+      - name: Deploy to Yandex Cloud VM PROD
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.YC_VM_HOST_PROD }}
+          username: ${{ secrets.YC_VM_USER_PROD }}
+          key: ${{ secrets.YC_VM_SSH_KEY }}
+          script: |
+            cd /backend
+            
+            cat <<EOF > .env
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            DB_NAME=${{ secrets.DB_NAME }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER_PROD }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD_PROD }}
+            EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+            ADD_TO_ORG_URL=${{ secrets.ADD_TO_ORG_URL_PROD }}
+            RECOVERY_URL=${{ secrets.RECOVERY_URL_PROD }}
+            CURATOR_URL=${{ secrets.CURATOR_URL_PROD }}
+            FRONT_MAIN_URL=${{ secrets.FRONT_MAIN_URL_PROD }}
+            PAYMENT_KEY=${{ secrets.PAYMENT_KEY_PROD }}
+            PAYMENT_ID=${{ secrets.PAYMENT_ID_PROD }}
+            EOF
+            
+            docker-compose stop ranking-app-service
+            docker-compose rm -f ranking-app-service
+            docker-compose pull ranking-app-service:$TAG
+            docker-compose up -d --no-deps ranking-app-service
