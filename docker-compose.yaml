@@ -3,7 +3,7 @@ version: '3.8'
 services:
 
   ranking-app-service:
-    image: maxim777/rankingapp-ranking-app-service:latest
+    image: maxim777/rankingapp-ranking-app-service:${TAG:-latest}
     restart: unless-stopped
     ports:
       - "9000:9000"
