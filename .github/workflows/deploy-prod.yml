@@ -8,10 +8,17 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    outputs:
+      tag: ${{ steps.extract-tag.outputs.tag }}
+      
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Extract release tag
+        id: extract-tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -20,7 +27,7 @@ jobs:
 
       - name: Build and push Docker image PROD
         run: |
-          TAG=${GITHUB_REF#refs/tags/}
+          TAG=${{ steps.extract-tag.outputs.tag }}
           echo "Building and pushing release tag: $TAG"
           docker build -t maxim777/rankingapp-ranking-app-service:$TAG .
           docker push maxim777/rankingapp-ranking-app-service:$TAG
@@ -88,8 +95,10 @@ jobs:
           key: ${{ secrets.YC_VM_SSH_KEY }}
           script: |
             cd /backend
+            TAG=${{ needs.build-and-push.outputs.tag }}
             
             cat <<EOF > .env
+            TAG=$TAG
             DB_HOST=${{ secrets.DB_HOST }}
             DB_PORT=${{ secrets.DB_PORT }}
             DB_NAME=${{ secrets.DB_NAME }}
