@@ -40,6 +40,9 @@ public class CompetitionInfoDto {
     @Schema(description = "Поле для связи с организатором")
     private String contactLink3;
 
+    @Schema(description = "Файл приложения")
+    private String attachment;
+
     @Schema(description = "Тип участников")
     private ParticipantsTypeEnum participantsType;
 

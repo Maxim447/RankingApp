@@ -25,4 +25,11 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="03-05-2025 15:30:00" author="msalyaev">
+        <sqlFile path="v0.1.0/add_attachment_competitions.sql" relativeToChangelogFile="true"/>
+        <rollback>
+            <sqlFile path="v0.1.0/rollback/add_attachment_competitions_rollback.sql" relativeToChangelogFile="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

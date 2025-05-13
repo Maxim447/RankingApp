@@ -20,6 +20,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,7 +40,8 @@ public class FileService {
 
         try {
             String fileExtension = StringUtils.getFilenameExtension(multipartFile.getOriginalFilename());
-            String fileName = UUID.randomUUID() + SeparatorEnum.DOT.getValue() + fileExtension;
+            String fileName = UUID.randomUUID() + SeparatorEnum.DASH.getValue() + LocalDate.now()
+                    + SeparatorEnum.DOT.getValue() + fileExtension;
             Path path = Paths.get(storage, fileName);
 
             Files.createDirectories(path.getParent());

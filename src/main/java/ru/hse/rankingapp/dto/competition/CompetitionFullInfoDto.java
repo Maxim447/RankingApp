@@ -46,6 +46,9 @@ public class CompetitionFullInfoDto {
     @Schema(description = "Тип соревнования")
     private String competitionType;
 
+    @Schema(description = "Файл приложения")
+    private String attachment;
+
     @Schema(description = "Юид соревнования")
     private UUID competitionUuid;
 

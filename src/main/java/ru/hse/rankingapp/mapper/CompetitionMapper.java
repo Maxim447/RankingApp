@@ -5,6 +5,7 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.springframework.web.multipart.MultipartFile;
 import ru.hse.rankingapp.dto.competition.CompetitionFullInfoDto;
 import ru.hse.rankingapp.dto.competition.CompetitionInfoDto;
 import ru.hse.rankingapp.dto.competition.CreateCompetitionDto;
@@ -12,6 +13,7 @@ import ru.hse.rankingapp.entity.CompetitionEntity;
 import ru.hse.rankingapp.entity.CompetitionUserLinkEntity;
 import ru.hse.rankingapp.entity.OrganizationEntity;
 import ru.hse.rankingapp.entity.enums.StatusEnum;
+import ru.hse.rankingapp.service.FileService;
 
 import java.util.List;
 import java.util.Set;
@@ -20,7 +22,7 @@ import java.util.Set;
  * Маппер для работы с сущностью соревнований.
  */
 @Mapper(componentModel = "spring",
-        uses = {EventMapper.class, OrganizationMapper.class},
+        uses = {EventMapper.class, OrganizationMapper.class, FileService.class},
         imports = StatusEnum.class,
         injectionStrategy = InjectionStrategy.SETTER
 )
@@ -47,7 +49,9 @@ public interface CompetitionMapper {
     @Mapping(target = "status", expression = "java(StatusEnum.CREATED)")
     @Mapping(source = "competition.participantsType", target = "participantsType")
     @Mapping(source = "competition.videoLink", target = "videoLink")
-    CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition);
+    @Mapping(source = "attachment", target = "attachment", qualifiedByName = "saveFile")
+    CompetitionEntity toCompetitionEntity(OrganizationEntity organization, CreateCompetitionDto competition,
+            MultipartFile attachment);
 
     /**
      * Получить информацию о соревновании.
